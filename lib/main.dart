@@ -1,29 +1,17 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
-import 'app/common/router.dart';
-import 'app/common/theme.dart';
+import 'app/common/utils/router.dart';
+import 'app/common/utils/system_services.dart';
+import 'app/common/utils/theme.dart';
 import 'app/settings/about.dart';
 import 'generated/l10n.dart';
 
 void main() {
-  runApp(GeometricWeather());
+  setupLocator();
 
-  if (Platform.isAndroid || Platform.isIOS) {
-    SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.dark,
-      // systemNavigationBarColor: null,
-      // systemNavigationBarDividerColor: null,
-      // systemNavigationBarIconBrightness: Brightness.light,
-    );
-    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-  }
+  runApp(GeometricWeather());
 }
 
 class GeometricWeather extends StatefulWidget {

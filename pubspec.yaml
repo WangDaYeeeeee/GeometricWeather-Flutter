@@ -32,6 +32,9 @@ dependencies:
 
   intl: ^0.17.0
   provider: ^5.0.0
+  package_info: ^0.4.0+4
+  url_launcher: ^5.0.3
+  get_it: ^1.0.3+2
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +55,10 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+  assets:
+    - images/ic_launcher.png
+    - images/donate_wechat.png
+    - images/donate_alipay.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
