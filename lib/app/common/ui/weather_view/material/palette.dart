@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/cloud.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/sun.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 
@@ -15,11 +16,13 @@ MaterialWeatherPainter getCustomPainter(
       return SunPainter(repaint);
 
     case WeatherKind.CLOUD:
-    // TODO: Handle this case.
-      break;
+      return CloudPainter(
+          daylight ? CloudType.CLOUD_DAY : CloudType.CLOUD_NIGHT, repaint);
+
     case WeatherKind.CLOUDY:
-    // TODO: Handle this case.
-      break;
+      return CloudPainter(
+          daylight ? CloudType.CLOUDY_DAY : CloudType.CLOUDY_NIGHT, repaint);
+
     case WeatherKind.RAINY:
     // TODO: Handle this case.
       break;
@@ -33,14 +36,14 @@ MaterialWeatherPainter getCustomPainter(
     // TODO: Handle this case.
       break;
     case WeatherKind.FOG:
-    // TODO: Handle this case.
-      break;
+      return CloudPainter(CloudType.FOG, repaint);
+
     case WeatherKind.HAZE:
-    // TODO: Handle this case.
-      break;
+      return CloudPainter(CloudType.HAZE, repaint);
+
     case WeatherKind.THUNDER:
-    // TODO: Handle this case.
-      break;
+      return CloudPainter(CloudType.THUNDER, repaint);
+
     case WeatherKind.THUNDERSTORM:
     // TODO: Handle this case.
       break;
@@ -60,11 +63,11 @@ Gradient getGradient(WeatherKind weatherKind, bool daylight) {
       return sunGradient;
 
     case WeatherKind.CLOUD:
-      // TODO: Handle this case.
-      break;
+      return daylight ? cloudDayGradient : cloudNightGradient;
+
     case WeatherKind.CLOUDY:
-      // TODO: Handle this case.
-      break;
+      return daylight ? cloudyDayGradient : cloudyNightGradient;
+
     case WeatherKind.RAINY:
       // TODO: Handle this case.
       break;
@@ -78,14 +81,14 @@ Gradient getGradient(WeatherKind weatherKind, bool daylight) {
       // TODO: Handle this case.
       break;
     case WeatherKind.FOG:
-      // TODO: Handle this case.
-      break;
+      return fogGradient;
+
     case WeatherKind.HAZE:
-      // TODO: Handle this case.
-      break;
+      return hazeGradient;
+
     case WeatherKind.THUNDER:
-      // TODO: Handle this case.
-      break;
+      return thunderGradient;
+
     case WeatherKind.THUNDERSTORM:
       // TODO: Handle this case.
       break;

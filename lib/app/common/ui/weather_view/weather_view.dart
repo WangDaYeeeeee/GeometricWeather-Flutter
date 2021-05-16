@@ -35,7 +35,7 @@ abstract class WeatherView {
 
   Color getBackgroundColor();
 
-  int get headerHeight;
+  double get headerHeight;
 
   set drawable(bool drawable);
 

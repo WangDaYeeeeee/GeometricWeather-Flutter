@@ -16,24 +16,15 @@ class SunPainter extends MaterialWeatherPainter  {
   final List<double> _angles = [0, 0, 0];
   final List<double> _unitSizes = [0, 0, 0];
 
-  final IntervalComputer _intervalComputer = IntervalComputer();
-
-  @override
-  double rotation2D = 0;
-  @override
-  double rotation3D = 0;
-  @override
-  double scrollRate = 0;
-
   SunPainter(Listenable repaint) : super(repaint);
 
   @override
-  void paint(Canvas canvas, Size size) {
+  void paintWithInterval(Canvas canvas, Size size, int intervalWithMilli,
+      double scrollRate, double rotation2D, double rotation3D) {
     _ensureUnitSizes(size);
-    double interval = _intervalComputer.invalidate();
 
     for (int i = 0; i < _angles.length; i ++) {
-      _angles[i] = (_angles[i] + (90.0 / (3000 + 1000 * i) * interval)) % 90;
+      _angles[i] = (_angles[i] + (90.0 / (3000 + 1000 * i) * intervalWithMilli)) % 90;
     }
 
     if (scrollRate < 1) {
@@ -44,37 +35,37 @@ class SunPainter extends MaterialWeatherPainter  {
           size.width + deltaX, 0.0333 * size.width + deltaY);
 
       _paint.color = SUN_COLOR.withAlpha(((1 - scrollRate) * 255 * 0.40).toInt());
-      canvas.rotate(_angles[0]);
+      canvas.rotate(toRadians(_angles[0]));
       for (int i = 0; i < 4; i ++) {
         canvas.drawRect(
             Rect.fromLTRB(-_unitSizes[0], -_unitSizes[0], _unitSizes[0], _unitSizes[0]),
             _paint
         );
-        canvas.rotate(22.5);
+        canvas.rotate(toRadians(22.5));
       }
-      canvas.rotate(-90 - _angles[0]);
+      canvas.rotate(toRadians(-90 - _angles[0]));
 
       _paint.color = SUN_COLOR.withAlpha(((1 - scrollRate) * 255 * 0.16).toInt());
-      canvas.rotate(_angles[1]);
+      canvas.rotate(toRadians(_angles[1]));
       for (int i = 0; i < 4; i ++) {
         canvas.drawRect(
             Rect.fromLTRB(-_unitSizes[1], -_unitSizes[1], _unitSizes[1], _unitSizes[1]),
             _paint
         );
-        canvas.rotate(22.5);
+        canvas.rotate(toRadians(22.5));
       }
-      canvas.rotate(-90 - _angles[1]);
+      canvas.rotate(toRadians(-90 - _angles[1]));
 
       _paint.color = SUN_COLOR.withAlpha(((1 - scrollRate) * 255 * 0.08).toInt());
-      canvas.rotate(_angles[2]);
+      canvas.rotate(toRadians(_angles[2]));
       for (int i = 0; i < 4; i ++) {
         canvas.drawRect(
             Rect.fromLTRB(-_unitSizes[2], -_unitSizes[2], _unitSizes[2], _unitSizes[2]),
             _paint
         );
-        canvas.rotate(22.5);
+        canvas.rotate(toRadians(22.5));
       }
-      canvas.rotate(-90 - _angles[2]);
+      canvas.rotate(toRadians(-90 - _angles[2]));
     }
   }
 
