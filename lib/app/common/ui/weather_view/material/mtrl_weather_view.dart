@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/utils.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/palette.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
-import 'package:geometricweather_flutter/app/common/utils/logger.dart';
 import 'package:sensors/sensors.dart';
 
 class MaterialWeatherView extends StatefulWidget {
@@ -34,7 +33,7 @@ class MaterialWeatherView extends StatefulWidget {
 
 class MaterialWeatherViewState extends State<MaterialWeatherView>
     with TickerProviderStateMixin
-    implements WeatherView {
+    implements WeatherViewState {
 
   WeatherKind _weatherKind;
   bool _daylight;
@@ -97,8 +96,6 @@ class MaterialWeatherViewState extends State<MaterialWeatherView>
 
           double rotation2D = toDegrees(acos(cos2D)) * (aX >= 0 ? 1 : -1);
           double rotation3D = toDegrees(acos(cos3D)) * (aZ >= 0 ? 1 : -1);
-
-          log('$rotation2D , $rotation3D');
 
           if (60 < rotation3D.abs() && rotation3D.abs() < 120) {
             rotation2D *= (rotation3D.abs() - 90).abs() / 30.0;
@@ -229,14 +226,16 @@ abstract class MaterialWeatherPainter extends CustomPainter {
   // 0: no scroll -> show anim with a full alpha value (255).
   // 1: child has already scrolled to hide this view -> hide anim.
   double _scrollRate = 0;
+  double _rotation2D = 0;
+  double _rotation3D = 0;
 
   void _setScrollRate(double scrollRate) {
     _scrollRate = scrollRate;
   }
 
   void _setRotation(double rotation2D, double rotation3D) {
-    _rotationControllers[0].updateTargetRotation(rotation2D);
-    _rotationControllers[1].updateTargetRotation(rotation3D);
+    _rotation2D = rotation2D;
+    _rotation3D = rotation3D;
   }
 
   @override
@@ -244,8 +243,8 @@ abstract class MaterialWeatherPainter extends CustomPainter {
     if (_scrollRate < 1) {
       int interval = _intervalComputer.invalidate();
 
-      _rotationControllers[0].updateCurrentRotation(interval);
-      _rotationControllers[1].updateCurrentRotation(interval);
+      _rotationControllers[0].updateRotation(_rotation2D, interval);
+      _rotationControllers[1].updateRotation(_rotation3D, interval);
 
       paintWithInterval(
           canvas,
@@ -272,43 +271,78 @@ class _DelayRotationController {
   double _targetRotation;
   double _currentRotation;
   double _velocity;
+  double _acceleration;
 
-  IntervalComputer _intervalComputer;
+  static const DEFAULT_ABS_ACCELERATION = 90.0 / 200.0 / 800.0 * 1.5;
 
   _DelayRotationController(double initRotation) {
     _targetRotation = _getRotationInScope(initRotation);
     _currentRotation = _targetRotation;
     _velocity = 0;
-
-    _intervalComputer = IntervalComputer();
+    _acceleration = 0;
   }
 
-  void updateCurrentRotation(int interval) {
-    if (_intervalComputer.interval == 0) {
+  void updateRotation(double rotation, int interval) {
+    _targetRotation = _getRotationInScope(rotation);
+
+    if (_targetRotation == _currentRotation) {
+      // no need to move.
+      _acceleration = 0;
+      _velocity = 0;
       return;
     }
 
-    _velocity = (_targetRotation - _currentRotation) / _intervalComputer.interval;
-    _currentRotation += _velocity * interval;
-  }
+    double d;
+    if (_velocity == 0 || (_targetRotation - _currentRotation) * _velocity < 0) {
+      // start or turn around.
+      _acceleration = (_targetRotation > _currentRotation ? 1 : -1) * DEFAULT_ABS_ACCELERATION;
+      d = _acceleration * pow(interval, 2) / 2.0;
+      _velocity = _acceleration * interval;
 
-  void updateTargetRotation(double targetRotation) {
-    _targetRotation = _getRotationInScope(targetRotation);
-    _intervalComputer.invalidate();
+    } else if (pow(_velocity.abs(), 2) / (2 * DEFAULT_ABS_ACCELERATION)
+        < (_targetRotation - _currentRotation).abs()) {
+      // speed up.
+      _acceleration = (_targetRotation > _currentRotation ? 1 : -1) * DEFAULT_ABS_ACCELERATION;
+      d = _velocity * interval + _acceleration * pow(interval, 2) / 2.0;
+      _velocity += _acceleration * interval;
+
+    } else {
+      // slow down.
+      _acceleration = (_targetRotation > _currentRotation ? -1 : 1)
+          * pow(_velocity, 2) / (2.0 * (_targetRotation - _currentRotation).abs());
+      d = _velocity * interval + _acceleration * pow(interval, 2) / 2.0;
+      _velocity += _acceleration * interval;
+    }
+
+    if (d.abs() > (_targetRotation - _currentRotation).abs()) {
+      _acceleration = 0;
+      _currentRotation = _targetRotation;
+      _velocity = 0;
+    } else {
+      _currentRotation += d;
+    }
   }
 
   double get rotation => _currentRotation;
 
+  // ensure the rotation value between -180 and 180.
   double _getRotationInScope(double rotation) {
-    rotation %= 180;
-    if (rotation.abs() <= 90) {
+    if (-180 <= rotation && rotation <= 180) {
       return rotation;
-    } else { // abs(rotation) < 180
-      if (rotation > 0) {
-        return 90 - (rotation - 90);
-      } else {
-        return -90 - (rotation + 90);
-      }
     }
+
+    while(rotation < 0) {
+      rotation += 180;
+    }
+    return rotation % 180;
+  }
+
+  double _getDeltaRotation() {
+    double delta = _targetRotation - _currentRotation;
+    if (delta.abs() < 180) {
+      return delta;
+    }
+
+    return delta > 0 ? delta - 360 : delta + 360;
   }
 }

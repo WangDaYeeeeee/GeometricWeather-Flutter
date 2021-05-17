@@ -16,7 +16,7 @@ enum WeatherKind {
   WIND
 }
 
-abstract class WeatherView {
+abstract class WeatherViewState {
 
   void setWeather(WeatherKind weatherKind, bool daylight);
 
