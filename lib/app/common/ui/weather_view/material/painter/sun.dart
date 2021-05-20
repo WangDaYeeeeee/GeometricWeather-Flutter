@@ -31,8 +31,8 @@ class SunPainter extends MaterialWeatherPainter  {
       double deltaX = sin(rotation2D * pi / 180.0) * 0.3 * size.width;
       double deltaY = sin(rotation3D * pi / 180.0) * -0.3 * size.width;
 
-      canvas.translate(
-          size.width + deltaX, 0.0333 * size.width + deltaY);
+      // 1.
+      canvas.translate(size.width + deltaX, 0.0333 * size.width + deltaY);
 
       _paint.color = SUN_COLOR.withAlpha(((1 - scrollRate) * 255 * 0.40).toInt());
       canvas.rotate(toRadians(_angles[0]));
@@ -45,6 +45,9 @@ class SunPainter extends MaterialWeatherPainter  {
       }
       canvas.rotate(toRadians(-90 - _angles[0]));
 
+      // 2.
+      canvas.translate(0.1 * deltaX, 0.1 * deltaY);
+
       _paint.color = SUN_COLOR.withAlpha(((1 - scrollRate) * 255 * 0.16).toInt());
       canvas.rotate(toRadians(_angles[1]));
       for (int i = 0; i < 4; i ++) {
@@ -55,6 +58,9 @@ class SunPainter extends MaterialWeatherPainter  {
         canvas.rotate(toRadians(22.5));
       }
       canvas.rotate(toRadians(-90 - _angles[1]));
+
+      // 3.
+      canvas.translate(0.1 * deltaX, 0.1 * deltaY);
 
       _paint.color = SUN_COLOR.withAlpha(((1 - scrollRate) * 255 * 0.08).toInt());
       canvas.rotate(toRadians(_angles[2]));

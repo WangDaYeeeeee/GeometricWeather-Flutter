@@ -11,6 +11,7 @@ import 'generated/l10n.dart';
 
 void main() {
   setupLocator();
+  Paint.enableDithering = true;
 
   runApp(GeometricWeather());
 }

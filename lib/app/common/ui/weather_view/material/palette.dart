@@ -1,6 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/cloud.dart';
+import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/hail.dart';
+import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/metro_shower.dart';
+import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/rain.dart';
+import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/snow.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/sun.dart';
+import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/wind.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 
 import 'mtrl_weather_view.dart';
@@ -11,10 +16,10 @@ MaterialWeatherPainter getCustomPainter(
     Listenable repaint) {
 
   switch(weatherKind) {
-    case WeatherKind.NULL:
     case WeatherKind.CLEAR:
-      return SunPainter(repaint);
+      return daylight ? SunPainter(repaint) : MeteorShowerPainter(repaint);
 
+    case WeatherKind.NULL:
     case WeatherKind.CLOUD:
       return CloudPainter(
           daylight ? CloudType.CLOUD_DAY : CloudType.CLOUD_NIGHT, repaint);
@@ -24,17 +29,17 @@ MaterialWeatherPainter getCustomPainter(
           daylight ? CloudType.CLOUDY_DAY : CloudType.CLOUDY_NIGHT, repaint);
 
     case WeatherKind.RAINY:
-    // TODO: Handle this case.
-      break;
+      return RainPainter(daylight ? RainType.RAIN_DAY : RainType.RAIN_NIGHT, repaint);
+
     case WeatherKind.SNOW:
-    // TODO: Handle this case.
-      break;
+      return SnowPainter(daylight, repaint);
+
     case WeatherKind.SLEET:
-    // TODO: Handle this case.
-      break;
+      return RainPainter(daylight ? RainType.SLEET_DAY : RainType.SLEET_NIGHT, repaint);
+
     case WeatherKind.HAIL:
-    // TODO: Handle this case.
-      break;
+      return HailPainter(daylight, repaint);
+
     case WeatherKind.FOG:
       return CloudPainter(CloudType.FOG, repaint);
 
@@ -45,11 +50,10 @@ MaterialWeatherPainter getCustomPainter(
       return CloudPainter(CloudType.THUNDER, repaint);
 
     case WeatherKind.THUNDERSTORM:
-    // TODO: Handle this case.
-      break;
+      return RainPainter(RainType.THUNDERSTORM, repaint);
+
     case WeatherKind.WIND:
-    // TODO: Handle this case.
-      break;
+      return WindPainter(repaint);
   }
 
   return SunPainter(repaint);
@@ -58,10 +62,10 @@ MaterialWeatherPainter getCustomPainter(
 Gradient getGradient(WeatherKind weatherKind, bool daylight) {
   switch(weatherKind) {
 
-    case WeatherKind.NULL:
     case WeatherKind.CLEAR:
-      return sunGradient;
+      return daylight ? sunGradient : metroShowerGradient;
 
+    case WeatherKind.NULL:
     case WeatherKind.CLOUD:
       return daylight ? cloudDayGradient : cloudNightGradient;
 
@@ -69,17 +73,17 @@ Gradient getGradient(WeatherKind weatherKind, bool daylight) {
       return daylight ? cloudyDayGradient : cloudyNightGradient;
 
     case WeatherKind.RAINY:
-      // TODO: Handle this case.
-      break;
+      return daylight ? rainDayGradient : rainNightGradient;
+
     case WeatherKind.SNOW:
-      // TODO: Handle this case.
-      break;
+      return daylight ? snowDayGradient : snowNightGradient;
+
     case WeatherKind.SLEET:
-      // TODO: Handle this case.
-      break;
+      return daylight ? sleetDayGradient : sleetNightGradient;
+
     case WeatherKind.HAIL:
-      // TODO: Handle this case.
-      break;
+      return daylight ? hailDayGradient : hailNightGradient;
+
     case WeatherKind.FOG:
       return fogGradient;
 
@@ -90,11 +94,10 @@ Gradient getGradient(WeatherKind weatherKind, bool daylight) {
       return thunderGradient;
 
     case WeatherKind.THUNDERSTORM:
-      // TODO: Handle this case.
-      break;
+      return thunderstormGradient;
+
     case WeatherKind.WIND:
-      // TODO: Handle this case.
-      break;
+      return windGradient;
   }
 
   return sunGradient;

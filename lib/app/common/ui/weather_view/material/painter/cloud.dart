@@ -34,6 +34,8 @@ class _Cloud {
   int duration;
   int progress;
 
+  double _progressRate;
+
   _Cloud(
       double centerX, double centerY,
       double radius, double scaleRatio, double moveFactor,
@@ -69,9 +71,15 @@ class _Cloud {
 
   void _computeRadius(int duration, int progress) {
     if (progress < 0.5 * duration) {
-      radius = initRadius * (1 + (scaleRatio - 1) * progress / 0.5 / duration);
+      _progressRate = progress / (0.5 * duration);
+      _progressRate = (sin(_progressRate * pi - pi / 2) + 1) / 2;
+      radius = initRadius * (1 + (scaleRatio - 1) * _progressRate);
     } else {
-      radius = initRadius * (scaleRatio - (scaleRatio - 1) * (progress - 0.5 * duration) / 0.5 / duration);
+      _progressRate = (progress - 0.5 * duration) / (0.5 * duration);
+      _progressRate = 1 - _progressRate;
+      _progressRate = (sin(_progressRate * pi - pi / 2) + 1) / 2;
+      _progressRate = 1 - _progressRate;
+      radius = initRadius * (scaleRatio - (scaleRatio - 1) * _progressRate);
     }
   }
 }
@@ -140,7 +148,7 @@ class _Thunder {
   void _init() {
     _progress = 0;
     _duration = 300;
-    _delay = new Random().nextInt(5000) + 2000;
+    _delay = new Random().nextInt(5000) + 3000;
   }
 
   void _computeFrame() {

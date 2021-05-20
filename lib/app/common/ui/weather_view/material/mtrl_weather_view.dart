@@ -1,27 +1,30 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/utils.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/palette.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 import 'package:sensors/sensors.dart';
 
+const SWITCH_ANIMATION_DURATION = 350;
+
 class MaterialWeatherView extends StatefulWidget {
 
   const MaterialWeatherView({
     Key key,
-    this.initWeatherKind = WeatherKind.CLEAR,
-    this.initDaylight = true,
-    this.initDrawable = true,
-    this.initGravitySensorEnabled = true,
+    this.weatherKind = WeatherKind.NULL,
+    this.daylight = true,
+    this.drawable = true,
+    this.gravitySensorEnabled = true,
     this.child
   }) : super(key: key);
 
-  final WeatherKind initWeatherKind;
-  final bool initDaylight;
-  final bool initDrawable;
-  final bool initGravitySensorEnabled;
+  final WeatherKind weatherKind;
+  final bool daylight;
+  final bool drawable;
+  final bool gravitySensorEnabled;
 
   final Widget child;
 
@@ -31,18 +34,24 @@ class MaterialWeatherView extends StatefulWidget {
   }
 }
 
-class MaterialWeatherViewState extends State<MaterialWeatherView>
-    with TickerProviderStateMixin
-    implements WeatherViewState {
+class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
+    with TickerProviderStateMixin {
 
-  WeatherKind _weatherKind;
-  bool _daylight;
+  WeatherKind _weatherKindIn;
+  bool _daylightIn;
+  MaterialWeatherPainter _painterIn;
+  Gradient _gradientIn;
+
+  MaterialWeatherPainter _painterOut;
+  Gradient _gradientOut;
+
+  double _switchInProgress; // 0 - 1.
+
+  AnimationController _switchAnimController;
+  AnimationController _paintingAnimController;
+
   bool _drawable;
   bool _gravitySensorEnabled;
-
-  AnimationController _animController;
-  MaterialWeatherPainter _painter;
-
   double _headerHeight = 0;
 
   List<StreamSubscription<dynamic>> _streamSubscriptions = [];
@@ -54,10 +63,14 @@ class MaterialWeatherViewState extends State<MaterialWeatherView>
   void initState() {
     super.initState();
 
-    _weatherKind = widget.initWeatherKind;
-    _daylight = widget.initDaylight;
-    _drawable = widget.initDrawable;
-    _gravitySensorEnabled = widget.initGravitySensorEnabled;
+    _weatherKindIn = widget.weatherKind;
+    _daylightIn = widget.daylight;
+
+
+    _switchInProgress = 1;
+
+    _drawable = widget.drawable;
+    _gravitySensorEnabled = widget.gravitySensorEnabled;
 
     _streamSubscriptions.add(accelerometerEvents.listen((AccelerometerEvent event) {
       if (accelerometer == null) {
@@ -78,57 +91,63 @@ class MaterialWeatherViewState extends State<MaterialWeatherView>
         userAccelerometer[2] = event.z;
       }
 
-      Timer.run(() {
-        if (_gravitySensorEnabled && accelerometer != null && userAccelerometer != null) {
-          // update gravity.
-          for (int i = 0; i < accelerometerOfGravity.length; i ++) {
-            accelerometerOfGravity[i] = accelerometer[i] - userAccelerometer[i];
-          }
-
-          // display.
-          double aX = accelerometerOfGravity[0];
-          double aY = accelerometerOfGravity[1];
-          double aZ = accelerometerOfGravity[2];
-          double g2D = sqrt(aX * aX + aY * aY);
-          double g3D = sqrt(aX * aX + aY * aY + aZ * aZ);
-          double cos2D = max(min(1, aY / g2D), -1);
-          double cos3D = max(min(1, g2D * (aY >= 0 ? 1 : -1) / g3D), -1);
-
-          double rotation2D = toDegrees(acos(cos2D)) * (aX >= 0 ? 1 : -1);
-          double rotation3D = toDegrees(acos(cos3D)) * (aZ >= 0 ? 1 : -1);
-
-          if (60 < rotation3D.abs() && rotation3D.abs() < 120) {
-            rotation2D *= (rotation3D.abs() - 90).abs() / 30.0;
-          }
-
-          _painter?._setRotation(rotation2D, rotation3D);
-        } else {
-          _painter?._setRotation(0, 0);
+      if (_gravitySensorEnabled && accelerometer != null && userAccelerometer != null) {
+        // update gravity.
+        for (int i = 0; i < accelerometerOfGravity.length; i ++) {
+          accelerometerOfGravity[i] = accelerometer[i] - userAccelerometer[i];
         }
-      });
+
+        // display.
+        double aX = accelerometerOfGravity[0];
+        double aY = accelerometerOfGravity[1];
+        double aZ = accelerometerOfGravity[2];
+        double g2D = sqrt(aX * aX + aY * aY);
+        double g3D = sqrt(aX * aX + aY * aY + aZ * aZ);
+        double cos2D = max(min(1, aY / g2D), -1);
+        double cos3D = max(min(1, g2D * (aY >= 0 ? 1 : -1) / g3D), -1);
+
+        double rotation2D = toDegrees(acos(cos2D)) * (aX >= 0 ? 1 : -1);
+        double rotation3D = toDegrees(acos(cos3D)) * (aZ >= 0 ? 1 : -1);
+
+        if (60 < rotation3D.abs() && rotation3D.abs() < 120) {
+          rotation2D *= (rotation3D.abs() - 90).abs() / 30.0;
+        }
+
+        _painterIn?._setRotation(rotation2D, rotation3D);
+      } else {
+        _painterIn?._setRotation(0, 0);
+      }
     }));
 
-    _animController = AnimationController(
+    _paintingAnimController = AnimationController(
       duration: const Duration(milliseconds: 9007199254740992),
       vsync: this,
     );
-    Tween<double>(begin: 0, end: 1).animate(_animController)
+    Tween<double>(begin: 0, end: 1).animate(_paintingAnimController)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          _animController.reverse();
+          _paintingAnimController.reverse();
         } else if (status == AnimationStatus.dismissed) {
-          _animController.forward();
+          _paintingAnimController.forward();
         }
       });
-    _animController.forward();
+    _paintingAnimController.forward();
 
-    _painter = getCustomPainter(_weatherKind, _daylight, _animController);
+    _switchAnimController = null;
+
+    _painterIn = getCustomPainter(_weatherKindIn, _daylightIn, _paintingAnimController);
+    _gradientIn = getGradient(_weatherKindIn, _daylightIn);
+
+    _painterOut = null;
+    _gradientOut = null;
   }
 
   @override
   void dispose() {
     super.dispose();
-    _animController.dispose();
+    _paintingAnimController.dispose();
+
+    cancelSwitchAnimation();
   }
 
   @override
@@ -137,21 +156,39 @@ class MaterialWeatherViewState extends State<MaterialWeatherView>
     _headerHeight = max(MediaQuery.of(context).size.height * 0.55, 180.0);
 
     if (_drawable) {
-      return DecoratedBox(
-        decoration: BoxDecoration(
-            gradient: getGradient(_weatherKind, _daylight)
-        ),
-        child: RepaintBoundary(
-            child: CustomPaint(
-              size: Size.infinite,
-              painter: _painter,
-              child: RepaintBoundary(child: widget.child),
-            )
-        ),
-      );
+      if (0 <= _switchInProgress && _switchInProgress < 1) {
+        // executing switch animation.
+        return Stack(children: [
+          Opacity(
+            opacity: 1 - _switchInProgress,
+            child: _innerBuild(_gradientOut, _painterOut, null)
+          ),
+          Opacity(
+            opacity: _switchInProgress,
+            child: _innerBuild(_gradientIn, _painterIn,widget.child)
+          )
+        ]);
+      }
+
+      return _innerBuild(_gradientIn, _painterIn, widget.child);
     } else {
       return Container(child: widget.child);
     }
+  }
+
+  Widget _innerBuild(Gradient gradient, CustomPainter painter, Widget child) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+          gradient: gradient
+      ),
+      child: RepaintBoundary(
+          child: CustomPaint(
+            size: Size.infinite,
+            painter: painter,
+            child: child == null ? null : RepaintBoundary(child: widget.child),
+          )
+      ),
+    );
   }
 
   @override
@@ -164,15 +201,25 @@ class MaterialWeatherViewState extends State<MaterialWeatherView>
   }
 
   @override
-  Color getBackgroundColor() {
-    // TODO: implement getBackgroundColor
-    throw UnimplementedError();
-  }
+  Color getBackgroundColor() => _gradientIn.colors[0];
 
   @override
   List<Color> getThemeColors(bool lightTheme) {
-    // TODO: implement getThemeColors
-    throw UnimplementedError();
+    Color color = getBackgroundColor();
+    if (!lightTheme) {
+      color = _getBrighterColor(color);
+    }
+    return [color, color, color.withAlpha((0.5 * 255).toInt())];
+  }
+
+  static Color _getBrighterColor(Color color){
+    HSVColor hsv = HSVColor.fromColor(color);
+    return HSLColor.fromAHSL(
+        hsv.alpha,
+        hsv.hue,
+        hsv.saturation - 0.25,
+        hsv.value + 0.25
+    ).toColor();
   }
 
   @override
@@ -191,25 +238,60 @@ class MaterialWeatherViewState extends State<MaterialWeatherView>
   @override
   void onScroll(int offset) {
     if (_headerHeight == 0) {
-      _painter._setScrollRate(0);
+      _painterIn._setScrollRate(0);
     } else {
-      _painter._setScrollRate(1.0 * offset / _headerHeight);
+      _painterIn._setScrollRate(1.0 * offset / _headerHeight);
     }
   }
 
   @override
   void setWeather(WeatherKind weatherKind, bool daylight) {
-    if (_weatherKind != weatherKind || _daylight != daylight) {
+    if (_weatherKindIn != weatherKind || _daylightIn != daylight) {
       setState(() {
-        _weatherKind = weatherKind;
-        _daylight = daylight;
-        _painter = getCustomPainter(_weatherKind, _daylight, _animController);
+        // save current data.
+        _painterOut = _painterIn;
+        _gradientOut = _gradientIn;
+
+        // register new data.
+        _weatherKindIn = weatherKind;
+        _daylightIn = daylight;
+        _painterIn = getCustomPainter(weatherKind, daylight, _paintingAnimController);
+        _gradientIn = getGradient(weatherKind, daylight);
+
+        cancelSwitchAnimation();
+        startSwitchAnimation();
       });
     }
   }
 
+  void startSwitchAnimation() {
+    _switchAnimController = AnimationController(
+        duration: Duration(milliseconds: SWITCH_ANIMATION_DURATION),
+        vsync: this
+    );
+
+    Animation a = CurvedAnimation(
+        parent: _switchAnimController,
+        curve: Curves.easeInOutCubic
+    );
+    a.addListener(() {
+      setState(() {
+        _switchInProgress = a.value;
+      });
+    });
+
+    a = Tween(begin: 1 - _switchInProgress, end: 1.0).animate(a);
+
+    _switchAnimController.forward();
+  }
+
+  void cancelSwitchAnimation() {
+    _switchAnimController?.dispose();
+    _switchAnimController = null;
+  }
+
   @override
-  WeatherKind get weatherKind => _weatherKind;
+  WeatherKind get weatherKind => _weatherKindIn;
 }
 
 abstract class MaterialWeatherPainter extends CustomPainter {
@@ -335,14 +417,5 @@ class _DelayRotationController {
       rotation += 180;
     }
     return rotation % 180;
-  }
-
-  double _getDeltaRotation() {
-    double delta = _targetRotation - _currentRotation;
-    if (delta.abs() < 180) {
-      return delta;
-    }
-
-    return delta > 0 ? delta - 360 : delta + 360;
   }
 }

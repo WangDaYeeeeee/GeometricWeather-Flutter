@@ -16,7 +16,7 @@ enum WeatherKind {
   WIND
 }
 
-abstract class WeatherViewState {
+abstract class WeatherViewState<T extends StatefulWidget> extends State<T> {
 
   void setWeather(WeatherKind weatherKind, bool daylight);
 
