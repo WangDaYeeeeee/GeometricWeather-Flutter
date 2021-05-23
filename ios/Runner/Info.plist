@@ -41,5 +41,8 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+
+	<key>NSMotionUsageDescription</key>
+    <string>A reason to get the permission</string>
 </dict>
 </plist>

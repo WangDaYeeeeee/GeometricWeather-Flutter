@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 enum WeatherKind {
@@ -14,6 +16,26 @@ enum WeatherKind {
   THUNDER,
   THUNDERSTORM,
   WIND
+}
+
+typedef OnStateCreatedCallback = void Function();
+
+abstract class WeatherView extends StatefulWidget {
+
+  const WeatherView({
+    Key key,
+    this.onStateCreated
+  }) : super(key: key);
+
+  final OnStateCreatedCallback onStateCreated;
+
+  @override
+  State<StatefulWidget> createState() {
+    Timer.run(() {
+      onStateCreated?.call();
+    });
+    return null;
+  }
 }
 
 abstract class WeatherViewState<T extends StatefulWidget> extends State<T> {

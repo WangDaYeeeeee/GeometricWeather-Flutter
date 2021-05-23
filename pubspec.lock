@@ -67,6 +67,20 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_platform_widgets:
+    dependency: "direct main"
+    description:
+      name: flutter_platform_widgets
+      url: "https://flutter.alibaba-inc.com"
+    source: hosted
+    version: "1.8.1"
+  flutter_sensors:
+    dependency: "direct main"
+    description:
+      name: flutter_sensors
+      url: "https://flutter.alibaba-inc.com"
+    source: hosted
+    version: "0.1.6"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -147,13 +161,6 @@ packages:
       url: "https://flutter.alibaba-inc.com"
     source: hosted
     version: "5.0.0"
-  sensors:
-    dependency: "direct main"
-    description:
-      name: sensors
-      url: "https://flutter.alibaba-inc.com"
-    source: hosted
-    version: "2.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -259,4 +266,4 @@ packages:
     version: "2.1.0"
 sdks:
   dart: ">=2.12.0 <3.0.0"
-  flutter: ">=1.22.0"
+  flutter: ">=1.24.0"

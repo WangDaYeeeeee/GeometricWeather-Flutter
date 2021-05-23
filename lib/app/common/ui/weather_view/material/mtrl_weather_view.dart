@@ -1,16 +1,18 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_sensors/flutter_sensors.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/utils.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/palette.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
-import 'package:sensors/sensors.dart';
+import 'package:geometricweather_flutter/app/common/utils/logger.dart';
 
 const SWITCH_ANIMATION_DURATION = 350;
 
-class MaterialWeatherView extends StatefulWidget {
+class MaterialWeatherView extends WeatherView {
 
   const MaterialWeatherView({
     Key key,
@@ -18,15 +20,13 @@ class MaterialWeatherView extends StatefulWidget {
     this.daylight = true,
     this.drawable = true,
     this.gravitySensorEnabled = true,
-    this.child
-  }) : super(key: key);
+    OnStateCreatedCallback onStateCreated
+  }) : super(key: key, onStateCreated: onStateCreated);
 
   final WeatherKind weatherKind;
   final bool daylight;
   final bool drawable;
   final bool gravitySensorEnabled;
-
-  final Widget child;
 
   @override
   State<StatefulWidget> createState() {
@@ -48,6 +48,7 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   double _switchInProgress; // 0 - 1.
 
   AnimationController _switchAnimController;
+  Animation<double> _switchAnim;
   AnimationController _paintingAnimController;
 
   bool _drawable;
@@ -66,58 +67,10 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
     _weatherKindIn = widget.weatherKind;
     _daylightIn = widget.daylight;
 
-
     _switchInProgress = 1;
 
     _drawable = widget.drawable;
     _gravitySensorEnabled = widget.gravitySensorEnabled;
-
-    _streamSubscriptions.add(accelerometerEvents.listen((AccelerometerEvent event) {
-      if (accelerometer == null) {
-        accelerometer = [event.x, event.y, event.z];
-      } else {
-        accelerometer[0] = event.x;
-        accelerometer[1] = event.y;
-        accelerometer[2] = event.z;
-      }
-    }));
-
-    _streamSubscriptions.add(userAccelerometerEvents.listen((UserAccelerometerEvent event) {
-      if (userAccelerometer == null) {
-        userAccelerometer = [event.x, event.y, event.z];
-      } else {
-        userAccelerometer[0] = event.x;
-        userAccelerometer[1] = event.y;
-        userAccelerometer[2] = event.z;
-      }
-
-      if (_gravitySensorEnabled && accelerometer != null && userAccelerometer != null) {
-        // update gravity.
-        for (int i = 0; i < accelerometerOfGravity.length; i ++) {
-          accelerometerOfGravity[i] = accelerometer[i] - userAccelerometer[i];
-        }
-
-        // display.
-        double aX = accelerometerOfGravity[0];
-        double aY = accelerometerOfGravity[1];
-        double aZ = accelerometerOfGravity[2];
-        double g2D = sqrt(aX * aX + aY * aY);
-        double g3D = sqrt(aX * aX + aY * aY + aZ * aZ);
-        double cos2D = max(min(1, aY / g2D), -1);
-        double cos3D = max(min(1, g2D * (aY >= 0 ? 1 : -1) / g3D), -1);
-
-        double rotation2D = toDegrees(acos(cos2D)) * (aX >= 0 ? 1 : -1);
-        double rotation3D = toDegrees(acos(cos3D)) * (aZ >= 0 ? 1 : -1);
-
-        if (60 < rotation3D.abs() && rotation3D.abs() < 120) {
-          rotation2D *= (rotation3D.abs() - 90).abs() / 30.0;
-        }
-
-        _painterIn?._setRotation(rotation2D, rotation3D);
-      } else {
-        _painterIn?._setRotation(0, 0);
-      }
-    }));
 
     _paintingAnimController = AnimationController(
       duration: const Duration(milliseconds: 9007199254740992),
@@ -140,14 +93,16 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
 
     _painterOut = null;
     _gradientOut = null;
+
+    _registerSensors();
   }
 
   @override
   void dispose() {
     super.dispose();
+    _unregisterSensors();
     _paintingAnimController.dispose();
-
-    cancelSwitchAnimation();
+    _cancelSwitchAnimation();
   }
 
   @override
@@ -159,24 +114,21 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
       if (0 <= _switchInProgress && _switchInProgress < 1) {
         // executing switch animation.
         return Stack(children: [
-          Opacity(
-            opacity: 1 - _switchInProgress,
-            child: _innerBuild(_gradientOut, _painterOut, null)
-          ),
-          Opacity(
-            opacity: _switchInProgress,
-            child: _innerBuild(_gradientIn, _painterIn,widget.child)
+          _innerBuild(_gradientOut, _painterOut),
+          FadeTransition(
+              opacity: _switchAnim,
+              child: _innerBuild(_gradientIn, _painterIn)
           )
         ]);
       }
 
-      return _innerBuild(_gradientIn, _painterIn, widget.child);
+      return _innerBuild(_gradientIn, _painterIn);
     } else {
-      return Container(child: widget.child);
+      return Container(child: null);
     }
   }
 
-  Widget _innerBuild(Gradient gradient, CustomPainter painter, Widget child) {
+  Widget _innerBuild(Gradient gradient, CustomPainter painter) {
     return DecoratedBox(
       decoration: BoxDecoration(
           gradient: gradient
@@ -184,11 +136,115 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
       child: RepaintBoundary(
           child: CustomPaint(
             size: Size.infinite,
-            painter: painter,
-            child: child == null ? null : RepaintBoundary(child: widget.child),
+            painter: painter
           )
       ),
     );
+  }
+
+  void _registerSensors() {
+    SensorManager().sensorUpdates(
+      sensorId: Sensors.ACCELEROMETER,
+      interval: Sensors.SENSOR_DELAY_FASTEST
+    ).then((value) => {
+      _streamSubscriptions.add(value.listen((event) {
+        accelerometer = event.data;
+
+        if (Platform.isIOS) {
+          for (int i = 0; i < accelerometer.length; i ++) {
+            accelerometer[i] *= -9.81;
+          }
+        }
+      }))
+    });
+
+    SensorManager().sensorUpdates(
+      sensorId: Sensors.LINEAR_ACCELERATION,
+      interval: Sensors.SENSOR_DELAY_FASTEST
+    ).then((value) => {
+      _streamSubscriptions.add(value.listen((event) {
+        userAccelerometer = event.data;
+
+        if (Platform.isIOS) {
+          for (int i = 0; i < userAccelerometer.length; i ++) {
+            userAccelerometer[i] *= -9.81;
+          }
+        }
+
+        if (_gravitySensorEnabled
+            && accelerometer != null
+            && userAccelerometer != null
+            && accelerometer.length == 3
+            && userAccelerometer.length == 3) {
+
+          for (int i = 0; i < accelerometerOfGravity.length; i ++) {
+            accelerometerOfGravity[i] = accelerometer[i] - userAccelerometer[i];
+          }
+
+          double aX = accelerometerOfGravity[0];
+          double aY = accelerometerOfGravity[1];
+          double aZ = accelerometerOfGravity[2];
+          double g2D = sqrt(aX * aX + aY * aY);
+          double g3D = sqrt(aX * aX + aY * aY + aZ * aZ);
+          double cos2D = max(min(1, aY / g2D), -1);
+          double cos3D = max(min(1, g2D * (aY >= 0 ? 1 : -1) / g3D), -1);
+
+          double rotation2D = toDegrees(acos(cos2D)) * (aX >= 0 ? 1 : -1);
+          double rotation3D = toDegrees(acos(cos3D)) * (aZ >= 0 ? 1 : -1);
+
+          if (60 < rotation3D.abs() && rotation3D.abs() < 120) {
+            rotation2D *= (rotation3D.abs() - 90).abs() / 30.0;
+          }
+
+          _painterIn?._setRotation(rotation2D, rotation3D);
+        } else {
+          _painterIn?._setRotation(0, 0);
+        }
+      }))
+    });
+  }
+
+  void _unregisterSensors() {
+    for (StreamSubscription s in _streamSubscriptions) {
+      s.cancel();
+    }
+  }
+
+  void _startSwitchAnimation() {
+    _switchAnimController = AnimationController(
+        duration: Duration(milliseconds: SWITCH_ANIMATION_DURATION),
+        vsync: this
+    );
+
+    Animation a = CurvedAnimation(
+        parent: _switchAnimController,
+        curve: Curves.easeInOutCubic
+    );
+    a.addListener(() {
+      setState(() {
+        _switchInProgress = a.value;
+      });
+    });
+
+    _switchAnim = a;
+    a = Tween(begin: 1 - _switchInProgress, end: 1.0).animate(_switchAnim);
+
+    _switchAnimController.forward();
+  }
+
+  void _cancelSwitchAnimation() {
+    _switchAnimController?.dispose();
+    _switchAnimController = null;
+  }
+
+  static Color _getBrighterColor(Color color){
+    HSVColor hsv = HSVColor.fromColor(color);
+    return HSLColor.fromAHSL(
+        hsv.alpha,
+        hsv.hue,
+        max(0, hsv.saturation - 0.25),
+        min(1, hsv.value + 0.25)
+    ).toColor();
   }
 
   @override
@@ -210,16 +266,6 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
       color = _getBrighterColor(color);
     }
     return [color, color, color.withAlpha((0.5 * 255).toInt())];
-  }
-
-  static Color _getBrighterColor(Color color){
-    HSVColor hsv = HSVColor.fromColor(color);
-    return HSLColor.fromAHSL(
-        hsv.alpha,
-        hsv.hue,
-        hsv.saturation - 0.25,
-        hsv.value + 0.25
-    ).toColor();
   }
 
   @override
@@ -258,36 +304,10 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
         _painterIn = getCustomPainter(weatherKind, daylight, _paintingAnimController);
         _gradientIn = getGradient(weatherKind, daylight);
 
-        cancelSwitchAnimation();
-        startSwitchAnimation();
+        _cancelSwitchAnimation();
+        _startSwitchAnimation();
       });
     }
-  }
-
-  void startSwitchAnimation() {
-    _switchAnimController = AnimationController(
-        duration: Duration(milliseconds: SWITCH_ANIMATION_DURATION),
-        vsync: this
-    );
-
-    Animation a = CurvedAnimation(
-        parent: _switchAnimController,
-        curve: Curves.easeInOutCubic
-    );
-    a.addListener(() {
-      setState(() {
-        _switchInProgress = a.value;
-      });
-    });
-
-    a = Tween(begin: 1 - _switchInProgress, end: 1.0).animate(a);
-
-    _switchAnimController.forward();
-  }
-
-  void cancelSwitchAnimation() {
-    _switchAnimController?.dispose();
-    _switchAnimController = null;
   }
 
   @override
@@ -355,7 +375,7 @@ class _DelayRotationController {
   double _velocity;
   double _acceleration;
 
-  static const DEFAULT_ABS_ACCELERATION = 90.0 / 200.0 / 800.0 * 1.5;
+  static const DEFAULT_ABS_ACCELERATION = 90.0 / 200.0 / 800.0;
 
   _DelayRotationController(double initRotation) {
     _targetRotation = _getRotationInScope(initRotation);

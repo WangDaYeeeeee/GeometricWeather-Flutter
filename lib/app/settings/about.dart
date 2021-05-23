@@ -1,6 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:geometricweather_flutter/app/common/ui/platform/app_bar.dart';
+import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/utils/system_services.dart';
+import 'package:geometricweather_flutter/app/common/utils/theme.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 import 'package:package_info/package_info.dart';
 
@@ -52,7 +57,7 @@ class AboutPage extends StatelessWidget {
           style: textTheme.caption,
         ),
       ),
-      InkWell(
+      PlatformInkWell(
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Row(
@@ -70,7 +75,7 @@ class AboutPage extends StatelessWidget {
         ),
         onTap: () => sysServices.launchUrl('https://github.com/WangDaYeeeeee'),
       ),
-      InkWell(
+      PlatformInkWell(
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Row(
@@ -96,7 +101,7 @@ class AboutPage extends StatelessWidget {
           style: textTheme.caption,
         ),
       ),
-      InkWell(
+      PlatformInkWell(
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Text(S.of(context).wechat,
@@ -114,7 +119,7 @@ class AboutPage extends StatelessWidget {
           );
         },
       ),
-      InkWell(
+      PlatformInkWell(
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Text(S.of(context).alipay,
@@ -192,24 +197,30 @@ class AboutPage extends StatelessWidget {
           true, textTheme, sysServices)
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pop();
-            }
+    return PlatformScaffold(
+      appBar: PlatformAppBar(
+        leading: PlatformAppBarIconButton(
+          materialIconData: Icons.arrow_back,
+          cupertinoIconData: CupertinoIcons.back,
+          onPressed: () {
+            Navigator.of(context).pop();
+          }
         ),
         title: Text(S.of(context).action_about),
-        brightness: Brightness.dark,
+        material: (_,  __) => MaterialAppBarData(
+          brightness: Brightness.dark,
+          backgroundColor: Theme.of(context).primaryColor
+        ),
+        cupertino: (_, __) => CupertinoNavigationBarData(
+          brightness: Theme.of(context).brightness,
+          backgroundColor: getCupertinoAppbarBackground(context)
+        ),
       ),
-      body: SafeArea(
-          child: ListView.builder(
-              itemCount: itemList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return itemList[index];
-              }
-          )
+      body: ListView.builder(
+          itemCount: itemList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return itemList[index];
+          }
       ),
     );
   }
@@ -237,7 +248,7 @@ class _TranslatorItem extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return PlatformInkWell(
       child: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(

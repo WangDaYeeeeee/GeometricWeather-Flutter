@@ -35,21 +35,21 @@ class _GeometricWeatherState extends State<GeometricWeather> {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
           return MaterialApp(
-              title: 'Geometric Weather',
-              theme: themeProvider.lightTheme,
-              darkTheme: themeProvider.darkTheme,
-              themeMode: themeProvider.themeMode,
-              routes: {
-                ROUTER_ID_ROOT:(context) => RootPage(),
-                ROUTER_ID_ABOUT:(context) => AboutPage(),
-              },
-              localizationsDelegates: [
-                S.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate
-              ],
-              supportedLocales: S.delegate.supportedLocales
+            title: 'Geometric Weather',
+            theme: themeProvider.lightTheme,
+            darkTheme: themeProvider.darkTheme,
+            themeMode: themeProvider.themeMode,
+            routes: {
+              Routers.ROUTER_ID_ROOT:(context) => RootPage(),
+              Routers.ROUTER_ID_ABOUT:(context) => AboutPage(),
+            },
+            localizationsDelegates: [
+              S.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate
+            ],
+            supportedLocales: S.delegate.supportedLocales
           );
         },
       ),

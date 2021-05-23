@@ -13,6 +13,9 @@ class ThemeColors {
   static const darkDividerColor = Color(0xFF363636);
 }
 
+Color getCupertinoAppbarBackground(BuildContext context) =>
+    Theme.of(context).primaryColor.withAlpha((255 * 0.05).toInt());
+
 class ThemeProvider with ChangeNotifier {
 
   ThemeMode themeMode;
@@ -27,8 +30,10 @@ class ThemeProvider with ChangeNotifier {
         brightness: Brightness.light,
         primarySwatch: Colors.grey,
         primaryColor: ThemeColors.primaryColor,
+        primaryColorBrightness: Brightness.dark,
         primaryColorDark: ThemeColors.primaryDarkColor,
         accentColor: ThemeColors.primaryAccentColor,
+        accentColorBrightness: Brightness.dark,
         backgroundColor: ThemeColors.lightBackgroundColor,
         dividerColor: ThemeColors.lightDividerColor
     );
@@ -36,8 +41,10 @@ class ThemeProvider with ChangeNotifier {
         brightness: Brightness.dark,
         primarySwatch: Colors.grey,
         primaryColor: ThemeColors.primaryColor,
+        primaryColorBrightness: Brightness.dark,
         primaryColorDark: ThemeColors.primaryDarkColor,
         accentColor: ThemeColors.primaryAccentColor,
+        accentColorBrightness: Brightness.dark,
         backgroundColor: ThemeColors.darkBackgroundColor,
         dividerColor: ThemeColors.darkDividerColor
     );
