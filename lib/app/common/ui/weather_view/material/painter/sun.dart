@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/utils.dart';
 
 import '../mtrl_weather_view.dart';
+
+final double sinkFactor = Platform.isIOS ? 0.25 : 0;
 
 class SunPainter extends MaterialWeatherPainter  {
 
@@ -29,7 +32,8 @@ class SunPainter extends MaterialWeatherPainter  {
 
     if (scrollRate < 1) {
       double deltaX = sin(rotation2D * pi / 180.0) * 0.3 * size.width;
-      double deltaY = sin(rotation3D * pi / 180.0) * -0.3 * size.width;
+      double deltaY = sin(rotation3D * pi / 180.0) * -0.3 * size.width
+          + size.width * sinkFactor;
 
       // 1.
       canvas.translate(size.width + deltaX, 0.0333 * size.width + deltaY);

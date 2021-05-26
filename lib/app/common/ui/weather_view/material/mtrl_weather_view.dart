@@ -8,7 +8,6 @@ import 'package:flutter_sensors/flutter_sensors.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/utils.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/palette.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
-import 'package:geometricweather_flutter/app/common/utils/logger.dart';
 
 const SWITCH_ANIMATION_DURATION = 350;
 

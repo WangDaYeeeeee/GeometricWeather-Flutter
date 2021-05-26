@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -29,9 +31,15 @@ class ThemeProvider with ChangeNotifier {
     lightTheme = ThemeData(
         brightness: Brightness.light,
         primarySwatch: Colors.grey,
-        primaryColor: ThemeColors.primaryColor,
-        primaryColorBrightness: Brightness.dark,
-        primaryColorDark: ThemeColors.primaryDarkColor,
+        primaryColor: Platform.isIOS
+            ? ThemeColors.lightBackgroundColor
+            : ThemeColors.primaryColor,
+        primaryColorBrightness: Platform.isIOS
+            ? Brightness.light
+            : Brightness.dark,
+        primaryColorDark: Platform.isIOS
+            ? ThemeColors.lightBackgroundColor
+            : ThemeColors.primaryDarkColor,
         accentColor: ThemeColors.primaryAccentColor,
         accentColorBrightness: Brightness.dark,
         backgroundColor: ThemeColors.lightBackgroundColor,
@@ -40,9 +48,13 @@ class ThemeProvider with ChangeNotifier {
     darkTheme = ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.grey,
-        primaryColor: ThemeColors.primaryColor,
+        primaryColor: Platform.isIOS
+            ? ThemeColors.darkBackgroundColor
+            : ThemeColors.primaryColor,
         primaryColorBrightness: Brightness.dark,
-        primaryColorDark: ThemeColors.primaryDarkColor,
+        primaryColorDark: Platform.isIOS
+            ? ThemeColors.darkBackgroundColor
+            : ThemeColors.primaryDarkColor,
         accentColor: ThemeColors.primaryAccentColor,
         accentColorBrightness: Brightness.dark,
         backgroundColor: ThemeColors.darkBackgroundColor,

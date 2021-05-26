@@ -5,7 +5,6 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/app_bar.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/utils/system_services.dart';
-import 'package:geometricweather_flutter/app/common/utils/theme.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 import 'package:package_info/package_info.dart';
 
@@ -198,23 +197,13 @@ class AboutPage extends StatelessWidget {
     ];
 
     return PlatformScaffold(
-      appBar: PlatformAppBar(
-        leading: PlatformAppBarIconButton(
-          materialIconData: Icons.arrow_back,
-          cupertinoIconData: CupertinoIcons.back,
+      appBar: GeoPlatformAppBar(context,
+        leading: GeoPlatformAppBarBackLeading(context,
           onPressed: () {
             Navigator.of(context).pop();
           }
         ),
-        title: Text(S.of(context).action_about),
-        material: (_,  __) => MaterialAppBarData(
-          brightness: Brightness.dark,
-          backgroundColor: Theme.of(context).primaryColor
-        ),
-        cupertino: (_, __) => CupertinoNavigationBarData(
-          brightness: Theme.of(context).brightness,
-          backgroundColor: getCupertinoAppbarBackground(context)
-        ),
+        title: GeoPlatformAppBarTitle(context, S.of(context).action_about),
       ),
       body: ListView.builder(
           itemCount: itemList.length,
