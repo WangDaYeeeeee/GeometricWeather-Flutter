@@ -50,7 +50,6 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   Animation<double> _switchAnim;
   AnimationController _paintingAnimController;
 
-  bool _drawable;
   bool _gravitySensorEnabled;
   double _headerHeight = 0;
 
@@ -68,7 +67,6 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
 
     _switchInProgress = 1;
 
-    _drawable = widget.drawable;
     _gravitySensorEnabled = widget.gravitySensorEnabled;
 
     _paintingAnimController = AnimationController(
@@ -109,22 +107,18 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
     // todo: fix it.
     _headerHeight = max(MediaQuery.of(context).size.height * 0.55, 180.0);
 
-    if (_drawable) {
-      if (0 <= _switchInProgress && _switchInProgress < 1) {
-        // executing switch animation.
-        return Stack(children: [
-          _innerBuild(_gradientOut, _painterOut),
-          FadeTransition(
-              opacity: _switchAnim,
-              child: _innerBuild(_gradientIn, _painterIn)
-          )
-        ]);
-      }
-
-      return _innerBuild(_gradientIn, _painterIn);
-    } else {
-      return Container(child: null);
+    if (0 <= _switchInProgress && _switchInProgress < 1) {
+      // executing switch animation.
+      return Stack(children: [
+        _innerBuild(_gradientOut, _painterOut),
+        FadeTransition(
+            opacity: _switchAnim,
+            child: _innerBuild(_gradientIn, _painterIn)
+        )
+      ]);
     }
+
+    return _innerBuild(_gradientIn, _painterIn);
   }
 
   Widget _innerBuild(Gradient gradient, CustomPainter painter) {
@@ -234,6 +228,8 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   void _cancelSwitchAnimation() {
     _switchAnimController?.dispose();
     _switchAnimController = null;
+
+    _switchInProgress = 1;
   }
 
   static Color _getBrighterColor(Color color){
@@ -244,15 +240,6 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
         max(0, hsv.saturation - 0.25),
         min(1, hsv.value + 0.25)
     ).toColor();
-  }
-
-  @override
-  set drawable(bool drawable) {
-    if (_drawable != drawable) {
-      setState(() {
-        _drawable = drawable;
-      });
-    }
   }
 
   @override
@@ -310,10 +297,27 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   }
 
   @override
+  void reset() {
+    setState(() {
+      _cancelSwitchAnimation();
+
+      _painterIn = getCustomPainter(_weatherKindIn, _daylightIn, _paintingAnimController);
+      _gradientIn = getGradient(_weatherKindIn, _daylightIn);
+
+      _painterOut = null;
+      _gradientOut = null;
+    });
+  }
+
+  @override
   WeatherKind get weatherKind => _weatherKindIn;
 }
 
 abstract class MaterialWeatherPainter extends CustomPainter {
+
+  static final double _sinkDistance = Platform.isIOS ? kToolbarHeight : 0;
+
+  get sinkDistance => _sinkDistance;
 
   MaterialWeatherPainter(this.repaint): super(repaint: repaint);
 

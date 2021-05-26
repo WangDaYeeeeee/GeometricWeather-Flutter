@@ -9,6 +9,8 @@ import 'app/common/utils/theme.dart';
 import 'app/settings/about.dart';
 import 'generated/l10n.dart';
 
+final routeObserver = RouteObserver<PageRoute>();
+
 void main() {
   setupLocator();
   Paint.enableDithering = true;
@@ -43,6 +45,7 @@ class _GeometricWeatherState extends State<GeometricWeather> {
               Routers.ROUTER_ID_ROOT:(context) => RootPage(),
               Routers.ROUTER_ID_ABOUT:(context) => AboutPage(),
             },
+            navigatorObservers: [routeObserver],
             localizationsDelegates: [
               S.delegate,
               GlobalMaterialLocalizations.delegate,

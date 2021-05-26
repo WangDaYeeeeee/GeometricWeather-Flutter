@@ -16,7 +16,7 @@ class ThemeColors {
 }
 
 Color getCupertinoAppbarBackground(BuildContext context) =>
-    Theme.of(context).primaryColor.withAlpha((255 * 0.05).toInt());
+    Theme.of(context).primaryColor.withAlpha((255 * 0.5).toInt());
 
 class ThemeProvider with ChangeNotifier {
 
@@ -32,13 +32,13 @@ class ThemeProvider with ChangeNotifier {
         brightness: Brightness.light,
         primarySwatch: Colors.grey,
         primaryColor: Platform.isIOS
-            ? ThemeColors.lightBackgroundColor
+            ? ThemeColors.lightDividerColor
             : ThemeColors.primaryColor,
         primaryColorBrightness: Platform.isIOS
             ? Brightness.light
             : Brightness.dark,
         primaryColorDark: Platform.isIOS
-            ? ThemeColors.lightBackgroundColor
+            ? ThemeColors.lightDividerColor
             : ThemeColors.primaryDarkColor,
         accentColor: ThemeColors.primaryAccentColor,
         accentColorBrightness: Brightness.dark,
@@ -49,11 +49,11 @@ class ThemeProvider with ChangeNotifier {
         brightness: Brightness.dark,
         primarySwatch: Colors.grey,
         primaryColor: Platform.isIOS
-            ? ThemeColors.darkBackgroundColor
+            ? ThemeColors.darkDividerColor
             : ThemeColors.primaryColor,
         primaryColorBrightness: Brightness.dark,
         primaryColorDark: Platform.isIOS
-            ? ThemeColors.darkBackgroundColor
+            ? ThemeColors.darkDividerColor
             : ThemeColors.primaryDarkColor,
         accentColor: ThemeColors.primaryAccentColor,
         accentColorBrightness: Brightness.dark,

@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 
-class CardDisplay {
+import '_base.dart';
+
+class CardDisplay extends Pair<String, String> {
 
   static CardDisplay dailyOverview(BuildContext context) =>
       CardDisplay._("daily_overview", S.of(context).daily_overview);
@@ -21,70 +23,85 @@ class CardDisplay {
   static CardDisplay lifeDetails(BuildContext context) =>
       CardDisplay._("life_details", S.of(context).life_details);
 
-  final String value;
-  final String name;
+  CardDisplay._(String key, String value): super(key, value);
 
-  CardDisplay._(this.value, this.name);
-
-  static List<CardDisplay> toCardDisplayList(BuildContext context, List<String> cards) {
-    try {
-      List<CardDisplay> list = [];
-      for (String card in cards) {
-        switch (card) {
-          case "daily_overview":
-            list.add(dailyOverview(context));
-            break;
-
-          case "hourly_overview":
-            list.add(hourlyOverview(context));
-            break;
-
-          case "air_quality":
-            list.add(airQuality(context));
-            break;
-
-          case "allergen":
-            list.add(allergen(context));
-            break;
-
-          case "life_details":
-            list.add(lifeDetails(context));
-            break;
-
-          case "sunrise_sunset":
-            list.add(sunriseSunset(context));
-            break;
-        }
-      }
-      return list;
-    } catch (e) {
-    return [];
-    }
+  static List<Pair> toCardDisplayList(BuildContext context, List<String> keyList) {
+    return Pair.toPairList(keyList, {
+      'daily_overview': dailyOverview(context),
+      'hourly_overview': hourlyOverview(context),
+      'air_quality': airQuality(context),
+      'allergen': allergen(context),
+      'sunrise_sunset': sunriseSunset(context),
+      'life_details': lifeDetails(context)
+    });
   }
+}
 
-  static List<String> toValue(List<CardDisplay> list) {
-    List<String> values = [];
-    for (CardDisplay v in list) {
-      values.add(v.value);
-    }
-    return values;
+class DailyTrendDisplay extends Pair<String, String> {
+
+  static DailyTrendDisplay temperature(BuildContext context) =>
+      DailyTrendDisplay._("temperature", S.of(context).temperature);
+
+  static DailyTrendDisplay airQuality(BuildContext context) =>
+      DailyTrendDisplay._("air_quality", S.of(context).air_quality);
+
+  static DailyTrendDisplay wind(BuildContext context) =>
+      DailyTrendDisplay._("wind", S.of(context).wind);
+
+  static DailyTrendDisplay uvIndex(BuildContext context) =>
+      DailyTrendDisplay._("uv_index", S.of(context).uv_index);
+
+  static DailyTrendDisplay precipitation(BuildContext context) =>
+      DailyTrendDisplay._("precipitation", S.of(context).precipitation);
+
+  DailyTrendDisplay._(String key, String value): super(key, value);
+
+  static List<DailyTrendDisplay> toDailyTrendDisplayList(
+      BuildContext context, List<String> keyList) {
+    return Pair.toPairList(keyList, {
+      'temperature': temperature(context),
+      'air_quality': airQuality(context),
+      'wind': wind(context),
+      'uv_index': uvIndex(context),
+      'precipitation': precipitation(context)
+    });
   }
+}
 
-  static String getSummary(List<CardDisplay> list) {
-    StringBuffer b = new StringBuffer();
-    for (CardDisplay item in list) {
-      b.write(",");
-      b.write(item.name);
-    }
+class UIStyle extends Pair<String, String> {
 
-    if (b.isEmpty) {
-      return "";
-    }
+  static UIStyle circular(BuildContext context) =>
+      UIStyle._("circular", S.of(context).circular);
 
-    String summary = b.toString();
-    if (summary[0] == ',') {
-      return summary.substring(1);
-    }
-    return summary;
+  material("material");
+
+  UIStyle._(String key, String value): super(key, value);
+
+
+
+private final String styleId;
+
+UIStyle(String styleId) {
+  this.styleId = styleId;
+}
+
+@Nullable
+public String getUIStyleName(Context context) {
+  return Utils.getNameByValue(
+      context.getResources(),
+      styleId,
+      R.array.ui_styles,
+      R.array.ui_style_values
+  );
+}
+
+public static UIStyle getInstance(String value) {
+  switch (value) {
+    case  "circular":
+      return CIRCULAR;
+
+    default:
+      return MATERIAL;
   }
+}
 }

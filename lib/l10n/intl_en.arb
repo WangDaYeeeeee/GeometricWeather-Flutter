@@ -340,5 +340,175 @@
     "settings_notification_hide_in_lockScreen_off": "Show",
     "settings_title_notification_hide_big_view": "Extended style",
     "settings_notification_hide_big_view_on": "Hide",
-    "settings_notification_hide_big_view_off": "Show"
+    "settings_notification_hide_big_view_off": "Show",
+
+    "weather_source_cn": "weather.com.cn (Only For China)",
+    "weather_source_caiyun": "caiyunapp.com (Only For China)",
+    "weather_source_accu": "accuweather.com",
+    "weather_source_owm": "OpenWeather",
+    "weather_source_mf": "Météo France",
+
+    "weather_source_voice_cn": "weather.com.CN",
+    "weather_source_voice_caiyun": "CaiYun App.com",
+    "weather_source_voice_accu": "ACCU weather.com",
+    "weather_source_voice_owm": "Open Weather",
+    "weather_source_voice_mf": "Météo France",
+
+    "dark_mode_auto": "Automatic",
+    "dark_mode_system": "Follow system",
+    "dark_mode_light": "Always light",
+    "dark_mode_dark": "Always dark",
+
+    "ui_style_circular": "Circular sky",
+    "ui_style_material": "Material animation",
+
+    "speed_unit_kph": "km/h",
+    "speed_unit_mps": "m/s",
+    "speed_unit_kn": "kn",
+    "speed_unit_mph": "mph",
+    "speed_unit_ftps": "ft/s",
+
+    "speed_unit_voice_kph": "Kilometers per hour",
+    "speed_unit_voice_mps": "Meters per second",
+    "speed_unit_voice_kn": "Knots,",
+    "speed_unit_voice_mph": "Miles per hour",
+    "speed_unit_voice_ftps": "Feet per second",
+
+    <!-- precipitation unit. -->
+    <string-array name="precipitation_units">
+    <item>mm</item>
+    <item>cm</item>
+    <item>inch</item>
+    <item>L/m²</item>
+    </string-array>
+    <string-array name="precipitation_unit_voices">
+    <item>Millimeters</item>
+    <item>Centimeter</item>
+    <item>Inches</item>
+    <item>Liters per square meter</item>
+    </string-array>
+    <string-array name="precipitation_unit_values">
+    <item>mm</item>
+    <item>cm</item>
+    <item>in</item>
+    <item>lpsqm</item>
+    </string-array>
+
+    <!-- temperature unit. -->
+    <string-array name="temperature_units">
+    <item>℃</item>
+    <item>℉</item>
+    <item>K</item>
+    </string-array>
+    <string-array name="temperature_units_short">
+    <item>°</item>
+    <item>°</item>
+    <item>K</item>
+    </string-array>
+    <string-array name="temperature_units_long">
+    <item>°C</item>
+    <item>°F</item>
+    <item>K</item>
+    </string-array>
+    <string-array name="temperature_unit_values">
+    <item>c</item>
+    <item>f</item>
+    <item>k</item>
+    </string-array>
+
+    <!-- distance unit. -->
+    <string-array name="distance_units">
+    <item>km</item>
+    <item>m</item>
+    <item>mi</item>
+    <item>nmi</item>
+    <item>ft</item>
+    </string-array>
+    <string-array name="distance_unit_voices">
+    <item>Kilometers</item>
+    <item>Meters</item>
+    <item>Miles</item>
+    <item>Nautical miles</item>
+    <item>Feet</item>
+    </string-array>
+    <string-array name="distance_unit_values">
+    <item>km</item>
+    <item>m</item>
+    <item>mi</item>
+    <item>nmi</item>
+    <item>ft</item>
+    </string-array>
+
+    <!-- pressure unit. -->
+    <string-array name="pressure_units">
+    <item>mb</item>
+    <item>kPa</item>
+    <item>hPa</item>
+    <item>atm</item>
+    <item>mmHg</item>
+    <item>inHg</item>
+    <item>kgf/cm²</item>
+    </string-array>
+    <string-array name="pressure_unit_voices">
+    <item>Millibars</item>
+    <item>kilo pascals</item>
+    <item>Hecto pascals</item>
+    <item>Atmospheres</item>
+    <item>Millimeters of mercury</item>
+    <item>Inches of mercury</item>
+    <item>Kilogram force per square centimetre</item>
+    </string-array>
+    <string-array name="pressure_unit_values">
+    <item>mb</item>
+    <item>kpa</item>
+    <item>hpa</item>
+    <item>atm</item>
+    <item>mmhg</item>
+    <item>inhg</item>
+    <item>kgfpsqcm</item>
+    </string-array>
+
+    <!-- air quality unit. -->
+    <string-array name="air_quality_units">
+    <item>μg/m³</item>
+    </string-array>
+    <string-array name="air_quality_unit_voices">
+    <item>Micrograms per cubic meter</item>
+    </string-array>
+    <string-array name="air_quality_unit_values">
+    <item>mugpcum</item>
+    </string-array>
+
+    <!-- air quality co unit. -->
+    <string-array name="air_quality_co_units">
+    <item>mg/m³</item>
+    </string-array>
+    <string-array name="air_quality_co_unit_voices">
+    <item>Milligrams per cubic meter</item>
+    </string-array>
+    <string-array name="air_quality_co_unit_values">
+    <item>mgpcum</item>
+    </string-array>
+
+    <!-- duration unit. -->
+    <string-array name="duration_units">
+    <item>h</item> <!-- hour -->
+    </string-array>
+    <string-array name="duration_unit_voices">
+    <item>hours</item>
+    </string-array>
+    <string-array name="duration_unit_values">
+    <item>h</item>
+    </string-array>
+
+    <!-- pollen unit. -->
+    <string-array name="pollen_units">
+    <item>/m³</item>
+    </string-array>
+    <string-array name="pollen_unit_voices">
+    <item>Per cubic meter</item>
+    </string-array>
+    <string-array name="pollen_unit_values">
+    <item>ppcm</item>
+    </string-array>
 }

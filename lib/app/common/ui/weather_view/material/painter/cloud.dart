@@ -1,12 +1,9 @@
-import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/mtrl_weather_view.dart';
-
-double sinkFactor = Platform.isIOS ? 5.0 : 1.0;
 
 enum CloudType {
   CLOUD_DAY,
@@ -256,42 +253,42 @@ class CloudPainter extends MaterialWeatherPainter {
         _clouds = [
           _Cloud(
             size.width * 0.1529,
-            size.width * 0.1529 * 0.5568 + size.width * 0.050 * sinkFactor,
+            size.width * 0.1529 * 0.5568 + size.width * 0.050 + sinkDistance,
             size.width * 0.2649, 1.20, _getRandomFactor(1.5, 1.8),
             cloudColor, cloudAlphas[0],
             7000, 0
           ),
           _Cloud(
             size.width * 0.4793,
-            size.width * 0.4793 * 0.2185 + size.width * 0.050 * sinkFactor,
+            size.width * 0.4793 * 0.2185 + size.width * 0.050 + sinkDistance,
             size.width * 0.2426, 1.20, _getRandomFactor(1.5, 1.8),
             cloudColor, cloudAlphas[0],
             7000, 1500
           ),
           _Cloud(
             size.width * 0.8531,
-            size.width * 0.8531 * 0.1286 + size.width * 0.050 * sinkFactor,
+            size.width * 0.8531 * 0.1286 + size.width * 0.050 + sinkDistance,
             size.width * 0.2970, 1.20, _getRandomFactor(1.5, 1.8),
             cloudColor, cloudAlphas[0],
             7000, 0
           ),
           _Cloud(
             size.width * 0.0551,
-            size.width * 0.0551 * 2.8600 + size.width * 0.050 * sinkFactor,
+            size.width * 0.0551 * 2.8600 + size.width * 0.050 + sinkDistance,
             size.width * 0.4125, 1.15, _getRandomFactor(1.3, 1.5),
             cloudColor, cloudAlphas[1],
             7000, 2000
           ),
           _Cloud(
             size.width * 0.4928,
-            size.width * 0.4928 * 0.3897 + size.width * 0.050 * sinkFactor,
+            size.width * 0.4928 * 0.3897 + size.width * 0.050 + sinkDistance,
             size.width * 0.3521, 1.15, _getRandomFactor(1.3, 1.5),
             cloudColor, cloudAlphas[1],
             7000, 3500
           ),
           _Cloud(
             size.width * 1.0499,
-            size.width * 1.0499 * 0.1875 + size.width * 0.050 * sinkFactor,
+            size.width * 1.0499 * 0.1875 + size.width * 0.050 + sinkDistance,
             size.width * 0.4186, 1.15, _getRandomFactor(1.3, 1.5),
             cloudColor, cloudAlphas[1],
             7000, 2000
@@ -319,42 +316,42 @@ class CloudPainter extends MaterialWeatherPainter {
         _clouds = [
           _Cloud(
             size.width * 1.0699,
-            size.width * 1.1900 * 0.2286 + size.width * 0.11 * 0.4 * sinkFactor,
+            size.width * 1.1900 * 0.2286 + size.width * 0.11 + sinkDistance,
             size.width * 0.4694 * 0.9/*0.6277*/, 1.10, _getRandomFactor(1.3, 1.8),
             cloudColors[0], cloudAlphas[0],
             7000, 2000
           ),
           _Cloud(
             size.width * 0.4866,
-            size.width * 0.4866 * 0.6064 + size.width * 0.085 * 0.4 * sinkFactor,
+            size.width * 0.4866 * 0.6064 + size.width * 0.085 + sinkDistance,
             size.width * 0.3946 * 0.9/*0.5277*/, 1.10, _getRandomFactor(1.3, 1.8),
             cloudColors[0], cloudAlphas[0],
             7000, 3500
           ),
           _Cloud(
             size.width * 0.0351,
-            size.width * 0.1701 * 1.4327 + size.width * 0.11 * 0.4 * sinkFactor,
+            size.width * 0.1701 * 1.4327 + size.width * 0.11 + sinkDistance,
             size.width * 0.4627 * 0.9/*0.6188*/, 1.10, _getRandomFactor(1.3, 1.8),
             cloudColors[0], cloudAlphas[0],
             7000, 2000
           ),
           _Cloud(
             size.width * 0.8831,
-            size.width * 1.0270 * 0.1671 + size.width * 0.07 * 0.4 * sinkFactor,
+            size.width * 1.0270 * 0.1671 + size.width * 0.07 + sinkDistance,
             size.width * 0.3238 * 0.9/*0.4330*/, 1.15, _getRandomFactor(1.6, 2),
             cloudColors[1], cloudAlphas[1],
             7000, 0
           ),
           _Cloud(
             size.width * 0.4663,
-            size.width * 0.4663 * 0.3520 + size.width * 0.05 * 0.4 * sinkFactor,
+            size.width * 0.4663 * 0.3520 + size.width * 0.05 + sinkDistance,
             size.width * 0.2906 * 0.9/*0.3886*/, 1.15, _getRandomFactor(1.6, 2),
             cloudColors[1], cloudAlphas[1],
             7000, 1500
           ),
           _Cloud(
             size.width * 0.1229,
-            size.width * 0.0234 * 5.7648 + size.width * 0.07 * 0.4 * sinkFactor,
+            size.width * 0.0234 * 5.7648 + size.width * 0.07 + sinkDistance,
             size.width * 0.2972 * 0.9/*0.3975*/, 1.15, _getRandomFactor(1.6, 2),
             cloudColors[1], cloudAlphas[1],
             7000, 0
@@ -380,63 +377,63 @@ class CloudPainter extends MaterialWeatherPainter {
         _clouds = [
           _Cloud(
             size.width * 0.9388,
-            size.width * 0.9388 * 0.6101 + size.width * 0.1500 * 0.35 * sinkFactor,
+            size.width * 0.9388 * 0.6101 + size.width * 0.1500 + sinkDistance,
             size.width * 0.3166, 1.15, _getRandomFactor(1, 1.8),
             cloudColors[0], cloudAlphas[0],
             7000, 2000
           ),
           _Cloud(
             size.width * 0.4833,
-            size.width * 0.4833 * 1.0727 + size.width * 0.1500 * 0.35 * sinkFactor,
+            size.width * 0.4833 * 1.0727 + size.width * 0.1500 + sinkDistance,
             size.width * 0.3166, 1.15, _getRandomFactor(1, 1.8),
             cloudColors[0], cloudAlphas[0],
             7000, 3500
           ),
           _Cloud(
             size.width * 0.0388,
-            size.width * 0.0388 * 14.3333 + size.width * 0.1500 * 0.35 * sinkFactor,
+            size.width * 0.0388 * 14.3333 + size.width * 0.1500 + sinkDistance,
             size.width * 0.3166, 1.15, _getRandomFactor(1, 1.8),
             cloudColors[0], cloudAlphas[0],
             7000, 1700
           ),
           _Cloud(
             size.width * 1.0000,
-            size.width * 1.0000 * 0.3046 + size.width * 0.1500 * 0.35 * sinkFactor,
+            size.width * 1.0000 * 0.3046 + size.width * 0.1500 + sinkDistance,
             size.width * 0.3166, 1.15, _getRandomFactor(1.4, 2.2),
             cloudColors[1], cloudAlphas[1],
             7000, 0
           ),
           _Cloud(
             size.width * 0.5444,
-            size.width * 0.5444 * 0.4880 + size.width * 0.1500 * 0.35 * sinkFactor,
+            size.width * 0.5444 * 0.4880 + size.width * 0.1500 + sinkDistance,
             size.width * 0.3166, 1.15, _getRandomFactor(1.4, 2.2),
             cloudColors[1], cloudAlphas[1],
             7000, 1500
           ),
           _Cloud(
             size.width * 0.1000,
-            size.width * 0.1000 * 3.0462 + size.width * 0.1500 * 0.35 * sinkFactor,
+            size.width * 0.1000 * 3.0462 + size.width * 0.1500 + sinkDistance,
             size.width * 0.3166, 1.15, _getRandomFactor(1.4, 2.2),
             cloudColors[1], cloudAlphas[1],
             7000, 300
           ),
           _Cloud(
             size.width * 0.9250,
-            size.width * 0.9250 * 0.0249 + size.width * 0.1500 * 0.35 * sinkFactor,
+            size.width * 0.9250 * 0.0249 + size.width * 0.1500 + sinkDistance,
             size.width * 0.3166, 1.15, _getRandomFactor(1.8, 2.6),
             cloudColors[2], cloudAlphas[2],
             7000, 0
           ),
           _Cloud(
             size.width * 0.4694,
-            size.width * 0.4694 * 0.0489 + size.width * 0.1500 * 0.35 * sinkFactor,
+            size.width * 0.4694 * 0.0489 + size.width * 0.1500 + sinkDistance,
             size.width * 0.3166, 1.15, _getRandomFactor(1.8, 2.6),
             cloudColors[2], cloudAlphas[2],
             7000, 1200
           ),
           _Cloud(
             size.width * 0.0250,
-            size.width * 0.0250 * 0.6820 + size.width * 0.1500 * 0.35 * sinkFactor,
+            size.width * 0.0250 * 0.6820 + size.width * 0.1500 + sinkDistance,
             size.width * 0.3166, 1.15, _getRandomFactor(1.8, 2.6),
             cloudColors[2], cloudAlphas[2],
             7000, 700
