@@ -42,8 +42,6 @@ abstract class WeatherViewState<T extends StatefulWidget> extends State<T> {
 
   void setWeather(WeatherKind weatherKind, bool daylight);
 
-  void reset();
-
   void onClick();
 
   void onScroll(int offset);
@@ -60,6 +58,8 @@ abstract class WeatherViewState<T extends StatefulWidget> extends State<T> {
   Color getBackgroundColor();
 
   double get headerHeight;
+
+  set drawable(bool drawable);
 
   set gravitySensorEnabled(bool enabled);
 }

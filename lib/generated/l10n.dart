@@ -3044,6 +3044,756 @@ class S {
       args: [],
     );
   }
+
+  /// `weather.com.cn (Only For China)`
+  String get weather_source_cn {
+    return Intl.message(
+      'weather.com.cn (Only For China)',
+      name: 'weather_source_cn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `caiyunapp.com (Only For China)`
+  String get weather_source_caiyun {
+    return Intl.message(
+      'caiyunapp.com (Only For China)',
+      name: 'weather_source_caiyun',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `accuweather.com`
+  String get weather_source_accu {
+    return Intl.message(
+      'accuweather.com',
+      name: 'weather_source_accu',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `OpenWeather`
+  String get weather_source_owm {
+    return Intl.message(
+      'OpenWeather',
+      name: 'weather_source_owm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Météo France`
+  String get weather_source_mf {
+    return Intl.message(
+      'Météo France',
+      name: 'weather_source_mf',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `weather.com.CN`
+  String get weather_source_voice_cn {
+    return Intl.message(
+      'weather.com.CN',
+      name: 'weather_source_voice_cn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CaiYun App.com`
+  String get weather_source_voice_caiyun {
+    return Intl.message(
+      'CaiYun App.com',
+      name: 'weather_source_voice_caiyun',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ACCU weather.com`
+  String get weather_source_voice_accu {
+    return Intl.message(
+      'ACCU weather.com',
+      name: 'weather_source_voice_accu',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Open Weather`
+  String get weather_source_voice_owm {
+    return Intl.message(
+      'Open Weather',
+      name: 'weather_source_voice_owm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Météo France`
+  String get weather_source_voice_mf {
+    return Intl.message(
+      'Météo France',
+      name: 'weather_source_voice_mf',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Automatic`
+  String get dark_mode_auto {
+    return Intl.message(
+      'Automatic',
+      name: 'dark_mode_auto',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Follow system`
+  String get dark_mode_system {
+    return Intl.message(
+      'Follow system',
+      name: 'dark_mode_system',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Always light`
+  String get dark_mode_light {
+    return Intl.message(
+      'Always light',
+      name: 'dark_mode_light',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Always dark`
+  String get dark_mode_dark {
+    return Intl.message(
+      'Always dark',
+      name: 'dark_mode_dark',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Circular sky`
+  String get ui_style_circular {
+    return Intl.message(
+      'Circular sky',
+      name: 'ui_style_circular',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Material animation`
+  String get ui_style_material {
+    return Intl.message(
+      'Material animation',
+      name: 'ui_style_material',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `km/h`
+  String get speed_unit_kph {
+    return Intl.message(
+      'km/h',
+      name: 'speed_unit_kph',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `m/s`
+  String get speed_unit_mps {
+    return Intl.message(
+      'm/s',
+      name: 'speed_unit_mps',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `kn`
+  String get speed_unit_kn {
+    return Intl.message(
+      'kn',
+      name: 'speed_unit_kn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `mph`
+  String get speed_unit_mph {
+    return Intl.message(
+      'mph',
+      name: 'speed_unit_mph',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ft/s`
+  String get speed_unit_ftps {
+    return Intl.message(
+      'ft/s',
+      name: 'speed_unit_ftps',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Kilometers per hour`
+  String get speed_unit_voice_kph {
+    return Intl.message(
+      'Kilometers per hour',
+      name: 'speed_unit_voice_kph',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Meters per second`
+  String get speed_unit_voice_mps {
+    return Intl.message(
+      'Meters per second',
+      name: 'speed_unit_voice_mps',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Knots,`
+  String get speed_unit_voice_kn {
+    return Intl.message(
+      'Knots,',
+      name: 'speed_unit_voice_kn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Miles per hour`
+  String get speed_unit_voice_mph {
+    return Intl.message(
+      'Miles per hour',
+      name: 'speed_unit_voice_mph',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Feet per second`
+  String get speed_unit_voice_ftps {
+    return Intl.message(
+      'Feet per second',
+      name: 'speed_unit_voice_ftps',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `mm`
+  String get precipitation_unit_mm {
+    return Intl.message(
+      'mm',
+      name: 'precipitation_unit_mm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `cm`
+  String get precipitation_unit_cm {
+    return Intl.message(
+      'cm',
+      name: 'precipitation_unit_cm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `inch`
+  String get precipitation_unit_in {
+    return Intl.message(
+      'inch',
+      name: 'precipitation_unit_in',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `L/m²`
+  String get precipitation_unit_lpsqm {
+    return Intl.message(
+      'L/m²',
+      name: 'precipitation_unit_lpsqm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Millimeters`
+  String get precipitation_unit_voice_mm {
+    return Intl.message(
+      'Millimeters',
+      name: 'precipitation_unit_voice_mm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Centimeter`
+  String get precipitation_unit_voice_cm {
+    return Intl.message(
+      'Centimeter',
+      name: 'precipitation_unit_voice_cm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Inches`
+  String get precipitation_unit_voice_in {
+    return Intl.message(
+      'Inches',
+      name: 'precipitation_unit_voice_in',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Liters per square meter`
+  String get precipitation_unit_voice_lpsqm {
+    return Intl.message(
+      'Liters per square meter',
+      name: 'precipitation_unit_voice_lpsqm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `℃`
+  String get temperature_unit_c {
+    return Intl.message(
+      '℃',
+      name: 'temperature_unit_c',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `℉`
+  String get temperature_unit_f {
+    return Intl.message(
+      '℉',
+      name: 'temperature_unit_f',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `K`
+  String get temperature_unit_k {
+    return Intl.message(
+      'K',
+      name: 'temperature_unit_k',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `℃`
+  String get temperature_unit_voice_c {
+    return Intl.message(
+      '℃',
+      name: 'temperature_unit_voice_c',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `℉`
+  String get temperature_unit_voice_f {
+    return Intl.message(
+      '℉',
+      name: 'temperature_unit_voice_f',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `K`
+  String get temperature_unit_voice_k {
+    return Intl.message(
+      'K',
+      name: 'temperature_unit_voice_k',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `°`
+  String get temperature_unit_short_c {
+    return Intl.message(
+      '°',
+      name: 'temperature_unit_short_c',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `°`
+  String get temperature_unit_short_f {
+    return Intl.message(
+      '°',
+      name: 'temperature_unit_short_f',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `K`
+  String get temperature_unit_short_k {
+    return Intl.message(
+      'K',
+      name: 'temperature_unit_short_k',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `km`
+  String get distance_unit_km {
+    return Intl.message(
+      'km',
+      name: 'distance_unit_km',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `m`
+  String get distance_unit_m {
+    return Intl.message(
+      'm',
+      name: 'distance_unit_m',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `mi`
+  String get distance_unit_mi {
+    return Intl.message(
+      'mi',
+      name: 'distance_unit_mi',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `nmi`
+  String get distance_unit_nmi {
+    return Intl.message(
+      'nmi',
+      name: 'distance_unit_nmi',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `ft`
+  String get distance_unit_ft {
+    return Intl.message(
+      'ft',
+      name: 'distance_unit_ft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Kilometers`
+  String get distance_unit_voice_km {
+    return Intl.message(
+      'Kilometers',
+      name: 'distance_unit_voice_km',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Meters`
+  String get distance_unit_voice_m {
+    return Intl.message(
+      'Meters',
+      name: 'distance_unit_voice_m',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Miles`
+  String get distance_unit_voice_mi {
+    return Intl.message(
+      'Miles',
+      name: 'distance_unit_voice_mi',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Nautical miles`
+  String get distance_unit_voice_nmi {
+    return Intl.message(
+      'Nautical miles',
+      name: 'distance_unit_voice_nmi',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Feet`
+  String get distance_unit_voice_ft {
+    return Intl.message(
+      'Feet',
+      name: 'distance_unit_voice_ft',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `mb`
+  String get pressure_unit_mb {
+    return Intl.message(
+      'mb',
+      name: 'pressure_unit_mb',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `kPa`
+  String get pressure_unit_kpa {
+    return Intl.message(
+      'kPa',
+      name: 'pressure_unit_kpa',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `hPa`
+  String get pressure_unit_hpa {
+    return Intl.message(
+      'hPa',
+      name: 'pressure_unit_hpa',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `atm`
+  String get pressure_unit_atm {
+    return Intl.message(
+      'atm',
+      name: 'pressure_unit_atm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `mmHg`
+  String get pressure_unit_mmhg {
+    return Intl.message(
+      'mmHg',
+      name: 'pressure_unit_mmhg',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `inHg`
+  String get pressure_unit_inhg {
+    return Intl.message(
+      'inHg',
+      name: 'pressure_unit_inhg',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `kgf/cm²`
+  String get pressure_unit_kgfpsqcm {
+    return Intl.message(
+      'kgf/cm²',
+      name: 'pressure_unit_kgfpsqcm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Millibars`
+  String get pressure_unit_voice_mb {
+    return Intl.message(
+      'Millibars',
+      name: 'pressure_unit_voice_mb',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `kilo pascals`
+  String get pressure_unit_voice_kpa {
+    return Intl.message(
+      'kilo pascals',
+      name: 'pressure_unit_voice_kpa',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hecto pascals`
+  String get pressure_unit_voice_hpa {
+    return Intl.message(
+      'Hecto pascals',
+      name: 'pressure_unit_voice_hpa',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Atmospheres`
+  String get pressure_unit_voice_atm {
+    return Intl.message(
+      'Atmospheres',
+      name: 'pressure_unit_voice_atm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Millimeters of mercury`
+  String get pressure_unit_voice_mmhg {
+    return Intl.message(
+      'Millimeters of mercury',
+      name: 'pressure_unit_voice_mmhg',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Inches of mercury`
+  String get pressure_unit_voice_inhg {
+    return Intl.message(
+      'Inches of mercury',
+      name: 'pressure_unit_voice_inhg',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Kilogram force per square centimetre`
+  String get pressure_unit_voice_kgfpsqcm {
+    return Intl.message(
+      'Kilogram force per square centimetre',
+      name: 'pressure_unit_voice_kgfpsqcm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `μg/m³`
+  String get air_quality_unit_mugpcum {
+    return Intl.message(
+      'μg/m³',
+      name: 'air_quality_unit_mugpcum',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Micrograms per cubic meter`
+  String get air_quality_unit_voice_mugpcum {
+    return Intl.message(
+      'Micrograms per cubic meter',
+      name: 'air_quality_unit_voice_mugpcum',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `mg/m³`
+  String get air_quality_co_unit_mgpcum {
+    return Intl.message(
+      'mg/m³',
+      name: 'air_quality_co_unit_mgpcum',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Milligrams per cubic meter`
+  String get air_quality_co_unit_voice_mgpcum {
+    return Intl.message(
+      'Milligrams per cubic meter',
+      name: 'air_quality_co_unit_voice_mgpcum',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `h`
+  String get duration_unit_h {
+    return Intl.message(
+      'h',
+      name: 'duration_unit_h',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `hours`
+  String get duration_unit_voice_h {
+    return Intl.message(
+      'hours',
+      name: 'duration_unit_voice_h',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `/m³`
+  String get pollen_unit_ppcm {
+    return Intl.message(
+      '/m³',
+      name: 'pollen_unit_ppcm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Per cubic meter`
+  String get pollen_unit_voice_ppcm {
+    return Intl.message(
+      'Per cubic meter',
+      name: 'pollen_unit_voice_ppcm',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

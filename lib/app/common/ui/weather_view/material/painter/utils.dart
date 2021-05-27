@@ -9,13 +9,25 @@ class IntervalComputer {
   int _lastTime;
   int _interval;
 
+  bool _drawable;
+
   IntervalComputer() {
+    _reset();
+
+    _drawable = true;
+  }
+
+  void _reset() {
     _currentTime = -1;
     _lastTime = -1;
     _interval = 0;
   }
 
   int invalidate() {
+    if (!_drawable) {
+      return 0;
+    }
+
     _currentTime = DateTime.now().millisecondsSinceEpoch;
     _interval = _lastTime == -1 ? 0 : (_currentTime - _lastTime);
     _lastTime = _currentTime;
@@ -24,6 +36,13 @@ class IntervalComputer {
   }
 
   int get interval => _interval;
+
+  set drawable(bool drawable) {
+    _drawable = drawable;
+    if (_drawable) {
+      _reset();
+    }
+  }
 }
 
 double toRadians(double degrees) {

@@ -1,14 +1,24 @@
-class Pair<K, V> {
+import 'package:flutter/cupertino.dart';
 
-  final K key;
-  final V name;
+class Pair<K, N> {
+
+  static Map<K, Pair> getAll<K>(BuildContext context) {
+    throw Exception("You need override this method.");
+  }
 
   const Pair(this.key, this.name);
 
-  static List<Pair> toPairList(List<String> keyList, Map<String, Pair> map) {
+  final K key;
+  final N name;
+
+  static Pair toPair<K>(K key, Map<K, Pair> map) {
+    return map[key];
+  }
+
+  static List<Pair> toPairList<K>(List<K> keyList, Map<K, Pair> map) {
     try {
       List<Pair> list = [];
-      for (String key in keyList) {
+      for (K key in keyList) {
         list.add(map[key]);
       }
       return list;
@@ -17,8 +27,8 @@ class Pair<K, V> {
     }
   }
 
-  static List<String> toNameList(List<Pair> list) {
-    List<String> values = [];
+  static List<N> toNameList<N>(List<Pair> list) {
+    List<N> values = [];
     for (Pair v in list) {
       values.add(v.name);
     }
@@ -41,5 +51,38 @@ class Pair<K, V> {
       return summary.substring(1);
     }
     return summary;
+  }
+}
+
+class VoicePair<K, N, V> extends Pair<K, N> {
+
+  VoicePair(K key, N name, this.voice) : super(key, name);
+
+  final V voice;
+}
+
+typedef ValueConverter<T> = T Function(T valueInDefaultUnit);
+
+class Unit<T> extends VoicePair<String, String, String> {
+
+  Unit(
+      String key,
+      String name,
+      String voice,
+      this.converter
+  ) : super(key, name, voice);
+
+  final ValueConverter<T> converter;
+
+  T getValue(T valueInDefaultUnit) {
+    return converter(valueInDefaultUnit);
+  }
+
+  String getValueWithUnit(T valueInDefaultUnit) {
+    return '${formatValue(getValue(valueInDefaultUnit))}$name';
+  }
+
+  String formatValue(T value) {
+    return value.toString();
   }
 }

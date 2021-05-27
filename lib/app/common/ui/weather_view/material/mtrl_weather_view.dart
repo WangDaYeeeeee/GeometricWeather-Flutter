@@ -243,6 +243,16 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   }
 
   @override
+  set drawable(bool drawable) {
+    setState(() {
+      _cancelSwitchAnimation();
+
+      _painterOut?._setDrawable(drawable);
+      _painterIn?._setDrawable(drawable);
+    });
+  }
+
+  @override
   Color getBackgroundColor() => _gradientIn.colors[0];
 
   @override
@@ -297,19 +307,6 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   }
 
   @override
-  void reset() {
-    setState(() {
-      _cancelSwitchAnimation();
-
-      _painterIn = getCustomPainter(_weatherKindIn, _daylightIn, _paintingAnimController);
-      _gradientIn = getGradient(_weatherKindIn, _daylightIn);
-
-      _painterOut = null;
-      _gradientOut = null;
-    });
-  }
-
-  @override
   WeatherKind get weatherKind => _weatherKindIn;
 }
 
@@ -341,6 +338,10 @@ abstract class MaterialWeatherPainter extends CustomPainter {
   void _setRotation(double rotation2D, double rotation3D) {
     _rotation2D = rotation2D;
     _rotation3D = rotation3D;
+  }
+
+  void _setDrawable(bool drawable) {
+    _intervalComputer.drawable = drawable;
   }
 
   @override

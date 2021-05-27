@@ -120,16 +120,22 @@ class _RootPageState extends State<RootPage>
     // todo: switch location.
   }
 
-  // called when this widget is resumed by a pop action of top widget.
+  @override
+  void didPushNext() {
+    _weatherViewKey.currentState?.drawable = false;
+  }
+
   @override
   void didPopNext() {
-    _weatherViewKey.currentState?.reset();
+    _weatherViewKey.currentState?.drawable = true;
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _weatherViewKey.currentState?.reset();
+      _weatherViewKey.currentState?.drawable = true;
+    } else if (state == AppLifecycleState.paused) {
+      _weatherViewKey.currentState?.drawable = false;
     }
   }
 }
