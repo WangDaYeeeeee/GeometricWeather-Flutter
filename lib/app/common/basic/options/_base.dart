@@ -1,24 +1,22 @@
 import 'package:flutter/cupertino.dart';
 
-class Pair<K, N> {
+typedef LocalizedStringGetter = String Function(BuildContext context);
 
-  static Map<K, Pair> getAll<K>(BuildContext context) {
-    throw Exception("You need override this method.");
-  }
+class Pair {
 
-  const Pair(this.key, this.name);
+  const Pair(this.key, this.nameGetter);
 
-  final K key;
-  final N name;
+  final String key;
+  final LocalizedStringGetter nameGetter;
 
-  static Pair toPair<K>(K key, Map<K, Pair> map) {
+  static Pair toPair(String key, Map<String, Pair> map) {
     return map[key];
   }
 
-  static List<Pair> toPairList<K>(List<K> keyList, Map<K, Pair> map) {
+  static List<Pair> toPairList(List<String> keyList, Map<String, Pair> map) {
     try {
       List<Pair> list = [];
-      for (K key in keyList) {
+      for (String key in keyList) {
         list.add(map[key]);
       }
       return list;
@@ -27,19 +25,19 @@ class Pair<K, N> {
     }
   }
 
-  static List<N> toNameList<N>(List<Pair> list) {
-    List<N> values = [];
+  static List<String> toNameList<N>(BuildContext context, List<Pair> list) {
+    List<String> values = [];
     for (Pair v in list) {
-      values.add(v.name);
+      values.add(v.nameGetter(context));
     }
     return values;
   }
 
-  static String toSummary(List<Pair> list) {
+  static String toSummary(BuildContext context, List<Pair> list) {
     StringBuffer b = new StringBuffer();
     for (Pair item in list) {
       b.write(",");
-      b.write(item.name);
+      b.write(item.nameGetter(context));
     }
 
     if (b.isEmpty) {
@@ -54,21 +52,21 @@ class Pair<K, N> {
   }
 }
 
-class VoicePair<K, N, V> extends Pair<K, N> {
+class VoicePair extends Pair {
 
-  VoicePair(K key, N name, this.voice) : super(key, name);
+  VoicePair(String key, LocalizedStringGetter name, this.voice) : super(key, name);
 
-  final V voice;
+  final LocalizedStringGetter voice;
 }
 
 typedef ValueConverter<T> = T Function(T valueInDefaultUnit);
 
-class Unit<T> extends VoicePair<String, String, String> {
+class Unit<T> extends VoicePair {
 
   Unit(
       String key,
-      String name,
-      String voice,
+      LocalizedStringGetter name,
+      LocalizedStringGetter voice,
       this.converter
   ) : super(key, name, voice);
 
@@ -78,8 +76,8 @@ class Unit<T> extends VoicePair<String, String, String> {
     return converter(valueInDefaultUnit);
   }
 
-  String getValueWithUnit(T valueInDefaultUnit) {
-    return '${formatValue(getValue(valueInDefaultUnit))}$name';
+  String getValueWithUnit(BuildContext context, T valueInDefaultUnit) {
+    return '${formatValue(getValue(valueInDefaultUnit))}${nameGetter(context)})';
   }
 
   String formatValue(T value) {

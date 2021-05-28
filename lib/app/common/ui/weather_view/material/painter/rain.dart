@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/mtrl_weather_view.dart';
-import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/utils.dart';
+import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/_utils.dart';
 
 enum RainType {
   RAIN_DAY,

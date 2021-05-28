@@ -2,41 +2,47 @@ import 'package:flutter/cupertino.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/_base.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 
-class WeatherSource extends VoicePair<String, String, String> {
+class WeatherSource extends VoicePair {
 
-  static Map<String, WeatherSource> getAll(BuildContext context) => {
-    'accu': WeatherSource._(
-        "accu",
-        S.of(context).weather_source_accu,
-        S.of(context).weather_source_voice_accu,
+  static const KEY_ACCU = 'accu';
+  static const KEY_OWM = 'owm';
+  static const KEY_MF = 'mf';
+  static const KEY_CN = 'cn';
+  static const KEY_CAIYUN = 'caiyun';
+
+  static Map<String, WeatherSource> all = {
+    KEY_ACCU: WeatherSource._(
+        KEY_ACCU,
+        (context) => S.of(context).weather_source_accu,
+        (context) => S.of(context).weather_source_voice_accu,
         "accuweather.com",
         Color(0xFFef5823)
     ),
-    'owm': WeatherSource._(
-        "owm",
-        S.of(context).weather_source_owm,
-        S.of(context).weather_source_voice_owm,
+    KEY_OWM: WeatherSource._(
+        KEY_OWM,
+            (context) => S.of(context).weather_source_owm,
+            (context) => S.of(context).weather_source_voice_owm,
         "openweathermap.org",
         Color(0xFFeb6e4b)
     ),
-    'mf': WeatherSource._(
-        "mf",
-        S.of(context).weather_source_mf,
-        S.of(context).weather_source_voice_mf,
+    KEY_MF: WeatherSource._(
+        KEY_MF,
+            (context) => S.of(context).weather_source_mf,
+            (context) => S.of(context).weather_source_voice_mf,
         "meteofrance.com",
         Color(0xFF005892)
     ),
-    'cn': WeatherSource._(
-        "cn",
-        S.of(context).weather_source_cn,
-        S.of(context).weather_source_voice_cn,
+    KEY_CN: WeatherSource._(
+        KEY_CN,
+            (context) => S.of(context).weather_source_cn,
+            (context) => S.of(context).weather_source_voice_cn,
         "weather.com.cn",
         Color(0xFF033566)
     ),
-    'caiyun': WeatherSource._(
-        "caiyun",
-        S.of(context).weather_source_caiyun,
-        S.of(context).weather_source_voice_caiyun,
+    KEY_CAIYUN: WeatherSource._(
+        KEY_CAIYUN,
+            (context) => S.of(context).weather_source_caiyun,
+            (context) => S.of(context).weather_source_voice_caiyun,
         "caiyunapp.com",
         Color(0xFF5ebb8e)
     ),
@@ -44,21 +50,20 @@ class WeatherSource extends VoicePair<String, String, String> {
 
   WeatherSource._(
       String key,
-      String name,
-      String voice,
+      LocalizedStringGetter nameGetter,
+      LocalizedStringGetter voiceGetter,
       this.url,
       this.color
-  ) : super(key, name, voice);
+  ) : super(key, nameGetter, voiceGetter);
 
   final String url;
   final Color color;
 
-  static WeatherSource toWeatherSource(BuildContext context, String key) {
-    return Pair.toPair(key, getAll(context));
+  static WeatherSource toWeatherSource(String key) {
+    return Pair.toPair(key, all);
   }
 
-  static List<WeatherSource> toWeatherSourceList(
-      BuildContext context, List<String> keyList) {
-    return Pair.toPairList(keyList, getAll(context));
+  static List<WeatherSource> toWeatherSourceList(List<String> keyList) {
+    return Pair.toPairList(keyList, all);
   }
 }

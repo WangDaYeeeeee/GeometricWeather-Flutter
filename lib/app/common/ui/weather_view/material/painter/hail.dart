@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/mtrl_weather_view.dart';
-import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/utils.dart';
+import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/_utils.dart';
 
 class _Hail {
 

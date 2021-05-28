@@ -43,15 +43,13 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
 
   double offsetX;
   double progressX;
-  double triggerDistanceX;
+  double triggerDistanceX = 100 / SWIPE_RATIO;
 
   AnimationController resetController;
 
   @override
   void initState() {
     super.initState();
-    triggerDistanceX = 100 / SWIPE_RATIO;
-
     setOffset(0);
   }
 

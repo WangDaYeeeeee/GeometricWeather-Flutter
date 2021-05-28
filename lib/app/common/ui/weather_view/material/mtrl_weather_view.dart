@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_sensors/flutter_sensors.dart';
-import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/utils.dart';
+import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/_utils.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/palette.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 

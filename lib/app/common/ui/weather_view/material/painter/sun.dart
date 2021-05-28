@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
-import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/utils.dart';
+import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/_utils.dart';
 
 import '../mtrl_weather_view.dart';
 

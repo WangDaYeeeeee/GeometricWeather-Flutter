@@ -13,6 +13,13 @@ class ThemeColors {
 
   static const lightDividerColor = Color(0xFFF1F1F1);
   static const darkDividerColor = Color(0xFF363636);
+
+  static const colorLevel1 = Color(0xFF72d572);
+  static const colorLevel2 = Color(0xFFffca28);
+  static const colorLevel3 = Color(0xFFffa726);
+  static const colorLevel4 = Color(0xFFe52f35);
+  static const colorLevel5 = Color(0xFF99004c);
+  static const colorLevel6 = Color(0xFF7e0023);
 }
 
 Color getCupertinoAppbarBackground(BuildContext context) =>

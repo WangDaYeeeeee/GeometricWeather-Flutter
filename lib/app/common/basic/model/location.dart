@@ -1,6 +1,7 @@
-import 'dart:core';
-
+import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/providers.dart';
+import 'package:geometricweather_flutter/app/common/utils/display.dart';
+import 'package:geometricweather_flutter/app/common/utils/text.dart';
 
 class Location {
 
@@ -8,14 +9,14 @@ class Location {
 
   final double latitude;
   final double longitude;
-  final TimeZone timeZone;
+  final String timezone;
 
   final String country;
   final String province;
   final String city;
   final String district;
 
-  Weather weather;
+  final Weather weather;
   final WeatherSource weatherSource;
 
   final bool currentPosition;
@@ -25,205 +26,163 @@ class Location {
   static const NULL_ID = "NULL_ID";
   static const CURRENT_POSITION_ID = "CURRENT_POSITION";
 
-  Location(Location src, WeatherSource weatherSource): this(
-      src.cityId, src.latitude, src.longitude, src.timeZone, src.country, src.province,
-      src.city, src.district, src.weather, weatherSource, src.currentPosition,
-      src.residentPosition, src.china);
-
-  Location(
-      Location src, bool currentPosition, bool residentPosition
-  ): this(src.cityId, src.latitude, src.longitude, src.timeZone, src.country, src.province,
-        src.city, src.district, src.weather, src.weatherSource,
-        currentPosition, residentPosition, src.china);
-
-  Location(Location src,
-      double latitude, double longitude, TimeZone timeZone,
-      String country, String province, String city, String district, bool china
-  ): this(src.cityId, latitude, longitude, timeZone, country, province, city, district,
-        src.weather, src.weatherSource, src.currentPosition, src.residentPosition, china);
-
-  Location(
-      this.cityId, this.latitude, this.longitude, this.timeZone,
+  Location(this.cityId, this.latitude, this.longitude, this.timezone,
       this.country, this.province, this.city, this.district,
-      this.weather, this.weatherSource,
-      this.currentPosition, this.residentPosition, this.china);
+      this.weatherSource, this.currentPosition, this.residentPosition,
+      this.china, [this.weather]);
+  
+  static copyOf(Location src, {
+    String cityId,
+    double latitude,
+    double longitude,
+    String timeZone,
+    String country,
+    String province,
+    String city,
+    String district,
+    WeatherSource weatherSource,
+    bool currentPosition,
+    bool residentPosition,
+    bool china,
+    Weather weather,
+  }) {
+    return new Location(
+        cityId ?? src.cityId,
+        latitude ?? src.latitude,
+        longitude ?? src.longitude,
+        timeZone ?? src.timezone,
+        country ?? src.country,
+        province ?? src.province,
+        city ?? src.city,
+        district ?? src.district,
+        weatherSource ?? src.weatherSource,
+        currentPosition ?? src.currentPosition,
+        residentPosition ?? src.residentPosition,
+        china ?? src.china,
+        weather ?? src.weather
+    );
+  }
 
   static Location buildLocal() {
     return new Location(
-        NULL_ID,
-        0, 0, TimeZone.getDefault(),
+        Location.NULL_ID,
+        0, 0, getDefaultTimeZone(),
         "", "", "", "",
-        null, WeatherSource.,
+        WeatherSource.all[WeatherSource.KEY_ACCU],
         true, false, false
     );
   }
 
-  public static Location buildDefaultLocation() {
+  static Location buildDefaultLocation() {
     return new Location(
         "101924",
-        39.904000f, 116.391000f, TimeZone.getTimeZone("Asia/Shanghai"),
+        39.904000, 116.391000, "Asia/Shanghai",
         "中国", "直辖市", "北京", "",
-        null, WeatherSource.ACCU,
+        WeatherSource.all[WeatherSource.KEY_ACCU],
         false, false, true
     );
   }
 
-  public bool equals(@Nullable Location location) {
-    if (location == null) {
-      return false;
-    } else {
-      return equals(location.getFormattedId());
+  bool operator ==(Object other) {
+    if (other is Location) {
+      if (other == null) {
+        return false;
+      } else {
+        // ignore: unrelated_type_equality_checks
+        return this == other.getFormattedId();
+      }
     }
-  }
 
-  public bool equals(@Nullable String formattedId) {
-    if (TextUtils.isEmpty(formattedId)) {
-      return false;
+    if (other is String) {
+      if (isEmpty(other)) {
+        return false;
+      }
+      if (CURRENT_POSITION_ID == other) {
+        return isCurrentPosition();
+      }
+      try {
+        var keys = other.split("&");
+        return !isCurrentPosition()
+            && cityId == keys[0]
+            && weatherSource.key == keys[1];
+      } catch (e) {
+        return false;
+      }
     }
-    if (CURRENT_POSITION_ID.equals(formattedId)) {
-      return isCurrentPosition();
-    }
-    try {
-      assert formattedId != null;
-      String[] keys = formattedId.split("&");
-      return !isCurrentPosition()
-          && cityId.equals(keys[0])
-          && weatherSource.name().equals(keys[1]);
-    } catch (Exception e) {
+
     return false;
-    }
   }
 
-  public String getFormattedId() {
-    return isCurrentPosition() ? CURRENT_POSITION_ID : (cityId + "&" + weatherSource.name());
+  String getFormattedId() {
+    return isCurrentPosition() ? CURRENT_POSITION_ID : (cityId + "&" + weatherSource.key);
   }
 
-  public bool isCurrentPosition() {
+  bool isCurrentPosition() {
     return currentPosition;
   }
 
-  public bool isResidentPosition() {
+  bool isResidentPosition() {
     return residentPosition;
   }
 
-  public bool isUsable() {
-    return !cityId.equals(NULL_ID);
+  bool isUsable() {
+    return cityId != NULL_ID;
   }
 
-  public bool canUseChineseSource() {
-    return LanguageUtils.isChinese(city) && china;
-  }
-
-  public String getCityId() {
-    return cityId;
-  }
-
-  public double getLatitude() {
-    return latitude;
-  }
-
-  public double getLongitude() {
-    return longitude;
-  }
-
-  public TimeZone getTimeZone() {
-    return timeZone;
-  }
-
-  public String getCountry() {
-    return country;
-  }
-
-  public String getProvince() {
-    return province;
-  }
-
-  public String getCity() {
-    return city;
-  }
-
-  public String getDistrict() {
-    return district;
-  }
-
-  public String getCityName(Context context) {
-    if (!TextUtils.isEmpty(district) && !district.equals("市辖区") && !district.equals("无")) {
-      return district;
-    } else if (!TextUtils.isEmpty(city) && !city.equals("市辖区")) {
-      return city;
-    } else if (!TextUtils.isEmpty(province)) {
-      return province;
-    } else if (currentPosition) {
-      return context.getString(R.string.current_location);
-    } else {
-      return "";
+  @override
+  String toString() {
+    StringBuffer b = new StringBuffer('$country $province');
+    if (province != city && !isEmpty(city)) {
+      b.write(" ");
+      b.write(city);
     }
-  }
-
-  @NonNull
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder(getCountry() + " " + getProvince());
-    if (!getProvince().equals(getCity())
-        && !TextUtils.isEmpty(getCity())) {
-      builder.append(" ").append(getCity());
+    if (city != district && !isEmpty(district)) {
+      b.write(" ");
+      b.write(district);
     }
-    if (!getCity().equals(getDistrict())
-        && !TextUtils.isEmpty(getDistrict())) {
-      builder.append(" ").append(getDistrict());
-    }
-    return builder.toString();
+    return b.toString();
   }
 
-  public bool hasGeocodeInformation() {
-    return !TextUtils.isEmpty(country)
-        || !TextUtils.isEmpty(province)
-        || !TextUtils.isEmpty(city)
-        || !TextUtils.isEmpty(district);
-  }
-
-  @Nullable
-  public Weather getWeather() {
-    return weather;
-  }
-
-  public void setWeather(@Nullable Weather weather) {
-    this.weather = weather;
+  bool hasGeocodeInformation() {
+    return !isEmpty(country)
+        || !isEmpty(province)
+        || !isEmpty(city)
+        || !isEmpty(district);
   }
 
   WeatherSource getWeatherSource() {
     return weatherSource;
   }
 
-  public bool isChina() {
+  bool isChina() {
     return china;
   }
 
-  private static bool isEquals(@Nullable String a, @Nullable String b) {
-    if (TextUtils.isEmpty(a) && TextUtils.isEmpty(b)) {
+  static bool isEquals(String a, String b) {
+    if (isEmpty(a) && isEmpty(b)) {
       return true;
-    } else if (!TextUtils.isEmpty(a) && !TextUtils.isEmpty(b)) {
-      return a.equals(b);
+    } else if (!isEmpty(a) && !isEmpty(b)) {
+      return a == b;
     } else {
       return false;
     }
   }
 
-  public static List<Location> excludeInvalidResidentLocation(Context context, List<Location> list) {
-    Location currentLocation = null;
-    for (Location l : list) {
+  static List<Location> excludeInvalidResidentLocation(List<Location> list) {
+    Location currentLocation;
+    for (Location l in list) {
       if (l.isCurrentPosition()) {
         currentLocation = l;
         break;
       }
     }
 
-    List<Location> result = new ArrayList<>(list.size());
+    List<Location> result = [];
     if (currentLocation == null) {
       result.addAll(list);
     } else {
-      for (Location l : list) {
-        if (!l.isResidentPosition() || !l.isCloseTo(context, currentLocation)) {
+      for (Location l in list) {
+        if (!l.isResidentPosition() || !l.isCloseTo(currentLocation)) {
           result.add(l);
         }
       }
@@ -231,27 +190,18 @@ class Location {
     return result;
   }
 
-  bool _isCloseTo(Context c, Location location) {
-    if (cityId.equals(location.getCityId())) {
+  bool isCloseTo(Location location) {
+    if (cityId == location.cityId) {
       return true;
     }
     if (isEquals(province, location.province)
         && isEquals(city, location.city)) {
       return true;
     }
-    if (isEquals(province, location.province)
-        && getCityName(c).equals(location.getCityName(c))) {
-      return true;
-    }
     return (latitude - location.latitude).abs() < 0.8
         && (longitude - location.longitude).abs() < 0.8;
   }
 
-  bool isDaylight() {
-    if (weather != null ) {
-      return weather.isDaylight(getTimeZone());
-    }
-
-    return DisplayUtils.isDaylight(getTimeZone());
-  }
+  @override
+  int get hashCode => super.hashCode;
 }
