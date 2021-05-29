@@ -1,11 +1,12 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:ui' as ui;
+import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart' as location;
 import 'package:geometricweather_flutter/app/common/basic/model/weather.dart' as weather;
 import 'package:geometricweather_flutter/app/common/basic/options/providers.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/units.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
 import 'package:geometricweather_flutter/app/settings/manager.dart';
-import 'package:geometricweather_flutter/app/weather/converters/common_converter.dart';
+import 'package:geometricweather_flutter/app/weather/converters/_common_converter.dart';
 import 'package:geometricweather_flutter/app/weather/json/accu/air_quality.dart';
 import 'package:geometricweather_flutter/app/weather/json/accu/alert.dart';
 import 'package:geometricweather_flutter/app/weather/json/accu/current.dart';
@@ -141,6 +142,17 @@ String arrayToString(List<String> array) {
   return b.toString();
 }
 
+AirAndPollen getAirAndPollen(
+    List<AirAndPollen> list, String name) {
+  for (AirAndPollen item in list) {
+    if (item.name == name) {
+      return item;
+    }
+  }
+  return null;
+}
+
+
 weather.Weather toWeather(
     BuildContext context,
     location.Location location,
@@ -163,12 +175,12 @@ weather.Weather toWeather(
             currentResult.weatherText,
             getWeatherCode(currentResult.weatherIcon),
             weather.Temperature(
-                currentResult.temperature.metric.value,
-                currentResult.realFeelTemperature.metric.value,
-                currentResult.realFeelTemperatureShade.metric.value,
-                currentResult.apparentTemperature.metric.value,
-                currentResult.windChillTemperature.metric.value,
-                currentResult.wetBulbTemperature.metric.value,
+                currentResult.temperature.metric.value.toInt(),
+                currentResult.realFeelTemperature.metric.value.toInt(),
+                currentResult.realFeelTemperatureShade.metric.value.toInt(),
+                currentResult.apparentTemperature.metric.value.toInt(),
+                currentResult.windChillTemperature.metric.value.toInt(),
+                currentResult.wetBulbTemperature.metric.value.toInt(),
             ),
             weather.Precipitation(
                 currentResult.precip1hr.metric.value.toDouble()
@@ -196,7 +208,7 @@ weather.Weather toWeather(
             currentResult.relativeHumidity.toDouble(),
             currentResult.pressure.metric.value.toDouble(),
             currentResult.visibility.metric.value.toDouble(),
-            currentResult.dewPoint.metric.value,
+            currentResult.dewPoint.metric.value.toInt(),
             currentResult.cloudCover,
             (currentResult.ceiling.metric.value / 1000.0).toDouble(),
             convertUnit(context, dailyResult.headline.text),
@@ -207,11 +219,211 @@ weather.Weather toWeather(
         weather.History(
             DateTime.fromMillisecondsSinceEpoch((currentResult.epochTime - 24 * 60 * 60) * 1000),
             (currentResult.epochTime - 24 * 60 * 60) * 1000,
-            currentResult.temperatureSummary.past24HourRange.maximum.metric.value,
-            currentResult.temperatureSummary.past24HourRange.minimum.metric.value
+            currentResult.temperatureSummary.past24HourRange.maximum.metric.value.toInt(),
+            currentResult.temperatureSummary.past24HourRange.minimum.metric.value.toInt()
         ),
     );
   } catch (e) {
     return null;
   }
+}
+
+weather.AirQuality getDailyAirQuality(BuildContext context, List<AirAndPollen> list) {
+  AirAndPollen aqi = getAirAndPollen(list, "AirQuality");
+  int index = aqi == null ? null : aqi.value;
+  if (index != null && index == 0) {
+    index = null;
+  }
+  return weather.AirQuality(
+      getAqiQuality(context, index),
+      index,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+  );
+}
+
+weather.Pollen getDailyPollen(List<AirAndPollen> list) {
+  AirAndPollen grass = getAirAndPollen(list, "Grass");
+  AirAndPollen mold = getAirAndPollen(list, "Mold");
+  AirAndPollen ragweed = getAirAndPollen(list, "Ragweed");
+  AirAndPollen tree = getAirAndPollen(list, "Tree");
+  return weather.Pollen(
+      grass == null ? null : grass.value,
+      grass == null ? null : grass.categoryValue,
+      grass == null ? null : grass.category,
+      mold == null ? null : mold.value,
+      mold == null ? null : mold.categoryValue,
+      mold == null ? null : mold.category,
+      ragweed == null ? null : ragweed.value,
+      ragweed == null ? null : ragweed.categoryValue,
+      ragweed == null ? null : ragweed.category,
+      tree == null ? null : tree.value,
+      tree == null ? null : tree.categoryValue,
+      tree == null ? null : tree.category
+  );
+}
+
+weather.UV getDailyUV(List<AirAndPollen> list) {
+  AirAndPollen uv = getAirAndPollen(list, "UVIndex");
+  return weather.UV(
+      uv == null ? null : uv.value,
+      uv == null ? null : uv.category,
+      null
+  );
+}
+
+List<weather.Daily> getDailyList(BuildContext context, AccuDailyResult dailyResult) {
+  List<weather.Daily> dailyList = [];
+
+  for (DailyForecasts forecasts in dailyResult.dailyForecasts) {
+    dailyList.add(
+        weather.Daily(
+            DateTime.parse(forecasts.date),
+            forecasts.epochDate * 1000,
+            [weather.HalfDay(
+                convertUnit(context, forecasts.day.longPhrase),
+                forecasts.day.shortPhrase,
+                getWeatherCode(forecasts.day.icon),
+                weather.Temperature(
+                    forecasts.temperature.maximum.value.toInt(),
+                    forecasts.realFeelTemperature.maximum.value.toInt(),
+                    forecasts.realFeelTemperatureShade.maximum.value.toInt(),
+                    null,
+                    null,
+                    null,
+                    forecasts.degreeDaySummary.heating.value.toInt()
+                ),
+                weather.Precipitation(
+                    forecasts.day.totalLiquid.value.toDouble(),
+                    null,
+                    forecasts.day.rain.value.toDouble(),
+                    (forecasts.day.snow.value * 10).toDouble(),
+                    forecasts.day.ice.value.toDouble()
+                ),
+                weather.PrecipitationProbability(
+                    forecasts.day.precipitationProbability.toDouble(),
+                    forecasts.day.thunderstormProbability.toDouble(),
+                    forecasts.day.rainProbability.toDouble(),
+                    forecasts.day.snowProbability.toDouble(),
+                    forecasts.day.iceProbability.toDouble()
+                ),
+                weather.PrecipitationDuration(
+                    forecasts.day.hoursOfPrecipitation.toDouble(),
+                    null,
+                    forecasts.day.hoursOfRain.toDouble(),
+                    forecasts.day.hoursOfSnow.toDouble(),
+                    forecasts.day.hoursOfIce.toDouble()
+                ),
+                weather.Wind(
+                    forecasts.day.wind.direction.localized,
+                    weather.WindDegree(forecasts.day.wind.direction.degrees.toDouble()), 
+                    getWindLevel(context, forecasts.day.windGust.speed.value.toDouble()),
+                    forecasts.day.windGust.speed.value.toDouble()
+                ),
+                forecasts.day.cloudCover
+            ),
+            weather.HalfDay(
+                convertUnit(context, forecasts.night.longPhrase),
+                forecasts.night.shortPhrase,
+                getWeatherCode(forecasts.night.icon),
+                weather.Temperature(
+                    forecasts.temperature.minimum.value.toInt(),
+                    forecasts.realFeelTemperature.minimum.value.toInt(),
+                    forecasts.realFeelTemperatureShade.minimum.value.toInt(),
+                    null,
+                    null,
+                    null,
+                    forecasts.degreeDaySummary.cooling.value.toInt()
+                ),
+                weather.Precipitation(
+                    forecasts.night.totalLiquid.value.toDouble(),
+                    null,
+                    forecasts.night.rain.value.toDouble(),
+                    (forecasts.day.snow.value * 10).toDouble(),
+                    forecasts.night.ice.value.toDouble()
+                ),
+                weather.PrecipitationProbability(
+                    forecasts.night.precipitationProbability.toDouble(),
+                    forecasts.night.thunderstormProbability.toDouble(),
+                    forecasts.night.rainProbability.toDouble(),
+                    forecasts.night.snowProbability.toDouble(),
+                    forecasts.night.iceProbability.toDouble()
+                ),
+                weather.PrecipitationDuration(
+                    forecasts.night.hoursOfPrecipitation.toDouble(),
+                    null,
+                    forecasts.night.hoursOfRain.toDouble(),
+                    forecasts.night.hoursOfSnow.toDouble(),
+                    forecasts.night.hoursOfIce.toDouble()
+                ),
+                weather.Wind(
+                    forecasts.night.wind.direction.localized,
+                    weather.WindDegree(forecasts.night.wind.direction.degrees.toDouble()),
+                    getWindLevel(context, forecasts.night.windGust.speed.value.toDouble()),
+                    forecasts.night.windGust.speed.value.toDouble()
+                ),
+                forecasts.night.cloudCover
+            )],
+            [weather.Astro(DateTime.parse(forecasts.sun.rise), DateTime.parse(forecasts.sun.set)),
+            weather.Astro(DateTime.parse(forecasts.moon.rise), DateTime.parse(forecasts.moon.set))],
+            weather.MoonPhase(
+                getMoonPhaseAngle(forecasts.moon.phase),
+                forecasts.moon.phase
+            ),
+            getDailyAirQuality(context, forecasts.airAndPollen),
+            getDailyPollen(forecasts.airAndPollen),
+            getDailyUV(forecasts.airAndPollen),
+            forecasts.hoursOfSun
+        )
+    );
+  }
+  return dailyList;
+}
+
+List<weather.Hourly> getHourlyList(List<AccuHourlyResult> resultList) {
+  List<weather.Hourly> hourlyList = [];
+  for (AccuHourlyResult result in resultList) {
+    hourlyList.add(
+        weather.Hourly(
+            DateTime.parse(result.dateTime),
+            result.epochDateTime * 1000,
+            result.isDaylight,
+            result.iconPhrase,
+            getWeatherCode(result.weatherIcon),
+            weather.Temperature(
+                toInt(result.temperature.value)
+            ),
+            weather.Precipitation(),
+            weather.PrecipitationProbability(
+                result.precipitationProbability.toDouble()
+            )
+        )
+    );
+  }
+  return hourlyList;
+}
+
+List<weather.Alert> getAlertList(List<AccuAlertResult> resultList) {
+  List<weather.Alert> alertList = [];
+  for (AccuAlertResult result in resultList) {
+    alertList.add(
+        weather.Alert(
+            result.alertID,
+            DateTime.parse(result.area[0].startTime),
+            result.area[0].epochStartTime * 1000,
+            result.description.localized,
+            result.area[0].text,
+            result.typeID,
+            result.priority,
+            ui.Color.fromARGB(255, result.color.red, result.color.green, result.color.blue).value
+        )
+    );
+  }
+  weather.Alert.deduplication(alertList);
+  weather.Alert.descByTime(alertList);
+  return alertList;
 }

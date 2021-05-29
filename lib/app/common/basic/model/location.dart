@@ -98,11 +98,11 @@ class Location {
         return false;
       }
       if (CURRENT_POSITION_ID == other) {
-        return isCurrentPosition();
+        return currentPosition;
       }
       try {
         var keys = other.split("&");
-        return !isCurrentPosition()
+        return !currentPosition
             && cityId == keys[0]
             && weatherSource.key == keys[1];
       } catch (e) {
@@ -114,15 +114,7 @@ class Location {
   }
 
   String getFormattedId() {
-    return isCurrentPosition() ? CURRENT_POSITION_ID : (cityId + "&" + weatherSource.key);
-  }
-
-  bool isCurrentPosition() {
-    return currentPosition;
-  }
-
-  bool isResidentPosition() {
-    return residentPosition;
+    return currentPosition ? CURRENT_POSITION_ID : (cityId + "&" + weatherSource.key);
   }
 
   bool isUsable() {
@@ -171,7 +163,7 @@ class Location {
   static List<Location> excludeInvalidResidentLocation(List<Location> list) {
     Location currentLocation;
     for (Location l in list) {
-      if (l.isCurrentPosition()) {
+      if (l.currentPosition) {
         currentLocation = l;
         break;
       }
@@ -182,7 +174,7 @@ class Location {
       result.addAll(list);
     } else {
       for (Location l in list) {
-        if (!l.isResidentPosition() || !l.isCloseTo(currentLocation)) {
+        if (!l.residentPosition || !l.isCloseTo(currentLocation)) {
           result.add(l);
         }
       }

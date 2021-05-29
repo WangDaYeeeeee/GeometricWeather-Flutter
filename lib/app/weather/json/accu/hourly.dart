@@ -256,7 +256,7 @@ class WindGust {
 }
 
 class Ceiling {
-  int value;
+  double value;
   String unit;
   int unitType;
 

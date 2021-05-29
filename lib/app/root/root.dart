@@ -8,6 +8,8 @@ import 'package:geometricweather_flutter/app/common/ui/swipe_switch_layout.dart'
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/mtrl_weather_view.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
+import 'package:geometricweather_flutter/app/common/utils/logger.dart';
+import 'package:geometricweather_flutter/app/common/utils/polling.dart';
 import 'package:geometricweather_flutter/app/common/utils/theme.dart';
 import 'package:geometricweather_flutter/app/root/app_bar.dart';
 import 'package:geometricweather_flutter/main.dart';
@@ -77,6 +79,21 @@ class _RootPageState extends State<RootPage>
                       height: double.infinity,
                       child: Consumer<LocationListResource>(
                         builder: (context, locationListResource, _) {
+
+                          if (locationListResource.event is ItemRangeInserted
+                              && locationListResource.locationList.length > 0) {
+                            UpdateProgressHandler.requestWeatherUpdate(
+                                context,
+                                locationListResource.locationList[0]
+                            ).listen((event) {
+                              log('result = ${event.status}');
+                              locationListResource.update((list) {
+                                list[0] = event.data;
+                                return ItemChanged(0);
+                              });
+                            });
+                          }
+
                           return locationListResource.locationList.length == 0
                               ? PlatformCircularProgressIndicator()
                               : PlatformText(

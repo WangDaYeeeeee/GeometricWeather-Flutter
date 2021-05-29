@@ -151,9 +151,9 @@ class AdministrativeArea {
 class TimeZone {
   String code;
   String name;
-  int gmtOffset;
+  double gmtOffset;
   bool isDaylightSaving;
-  Null nextOffsetChange;
+  String nextOffsetChange;
 
   TimeZone(
       {this.code,
@@ -233,7 +233,7 @@ class Elevation {
 }
 
 class Metric {
-  int value;
+  double value;
   String unit;
   int unitType;
 

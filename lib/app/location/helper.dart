@@ -1,54 +1,118 @@
+import 'dart:async';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
-import 'package:geometricweather_flutter/app/db/helper.dart';
+import 'package:geometricweather_flutter/app/common/basic/model/resources.dart';
+import 'package:geometricweather_flutter/app/common/utils/logger.dart';
 
 const TIMEOUT_SECONDS = 20;
 
+typedef LocatorStreamCallback = void Function(UpdateResult<Location> result);
+
 class LocationHelper {
 
-  Future<Location> requestLocation(Location location) async {
-    LocationPermission permission;
-
+  static Future<UpdateResult<Location>> _prepare(Location location) async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
+      return UpdateResult(
+          location,
+          UpdateStatus.LOCATOR_DISABLED
+      );
     }
+    log('Location service is enabled.');
 
-    permission = await Geolocator.checkPermission();
+    LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
+
       if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
+        return UpdateResult(
+            location,
+            UpdateStatus.LOCATOR_PERMISSIONS_DENIED
+        );
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    List<Position> positions = await Future.wait<Position>([
-      Geolocator.getCurrentPosition(timeLimit: Duration(seconds: TIMEOUT_SECONDS)),
-      Geolocator.getLastKnownPosition(),
-    ]);
-
-    Location result;
-    if (positions[0] != null) {
-      result = Location.copyOf(location,
-        latitude: positions[0].latitude,
-        longitude: positions[0].longitude
-      );
-    } else if (positions[1] != null) {
-      result = Location.copyOf(location,
-          latitude: positions[1].latitude,
-          longitude: positions[1].longitude
+      return UpdateResult(
+          location,
+          UpdateStatus.LOCATOR_PERMISSIONS_DENIED
       );
     }
+    log('Got all location permissions.');
 
-    if (result != null) {
-      DatabaseHelper.getInstance().writeLocation(result);
-    }
+    return UpdateResult(
+        location,
+        UpdateStatus.LOCATOR_RUNNING
+    );
+  }
 
-    return Future.error('Location failed by unknown reason.');
+  static StreamSubscription _listenLocatorStream(
+      Location location, StreamController<UpdateResult<Location>> controller) {
+
+    return Geolocator.getPositionStream(
+        timeLimit: Duration(seconds: TIMEOUT_SECONDS)
+    ).transform(StreamTransformer<Position, UpdateResult<Location>>.fromHandlers(
+        handleData: (data, sink) {
+          Location loc = Location.copyOf(location,
+              latitude: data.latitude,
+              longitude: data.longitude
+          );
+          sink.add(
+              UpdateResult(
+                  loc,
+                  UpdateStatus.LOCATOR_SUCCEED
+              )
+          );
+        },
+        handleError: (error, stackTrace, sink) {
+          log(error.toString());
+          log(stackTrace.toString());
+          sink.add(
+              UpdateResult(
+                  location,
+                  UpdateStatus.LOCATOR_FAILED
+              )
+          );
+        },
+        handleDone: (sink) {
+          controller.close();
+        }
+    )).take(
+        1
+    ).listen((event) {
+      if (controller.isClosed) {
+        return;
+      }
+      controller.add(event);
+    });
+  }
+
+  static Stream<UpdateResult<Location>> requestLocation(Location location) {
+    StreamController<UpdateResult<Location>> controller;
+    StreamSubscription subscription;
+
+    controller = StreamController(
+      onListen: () {
+        _prepare(location).then((value) {
+          // check is closed.
+          if (controller.isClosed) {
+            return Future.error('Stream was already closed.');
+          }
+
+          // send data.
+          controller.add(value);
+
+          // listen locator and send data.
+          _listenLocatorStream(value.data, controller);
+        });
+      },
+      onCancel: () {
+        subscription?.cancel();
+        controller.close();
+      }
+    );
+
+    return controller.stream;
   }
 }

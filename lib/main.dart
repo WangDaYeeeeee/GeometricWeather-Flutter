@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/resources.dart';
 import 'package:geometricweather_flutter/app/common/utils/logger.dart';
-import 'package:geometricweather_flutter/app/location/helper.dart';
 import 'package:geometricweather_flutter/app/root/root.dart';
 import 'package:provider/provider.dart';
 
@@ -27,15 +25,6 @@ void initialize() async {
       list.addAll(locationList);
       return ItemRangeInserted(0, list.length - 1);
     });
-
-    final local = await LocationHelper().requestLocation(locationList[0]);
-    locationListRes.update((list) {
-      list[0] = local;
-      return ItemChanged(0);
-    });
-
-    var response = await Dio().get('http://www.baidu.com');
-    print(response);
   } catch (e) {
     log(e);
   }

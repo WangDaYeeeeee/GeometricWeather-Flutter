@@ -1,3 +1,4 @@
+import 'package:geometricweather_flutter/app/common/basic/options/providers.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/units.dart';
 
 class SettingsManager {
@@ -13,6 +14,8 @@ class SettingsManager {
   }
 
   SettingsManager._();
+
+  get weatherSource => WeatherSource.all[WeatherSource.KEY_ACCU];
 
   get precipitationUnit => PrecipitationUnit.all[PrecipitationUnit.KEY_MM];
 }

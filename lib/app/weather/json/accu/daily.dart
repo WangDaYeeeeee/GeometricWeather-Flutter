@@ -270,7 +270,7 @@ class Temperature {
 }
 
 class Minimum {
-  int value;
+  double value;
   String unit;
   int unitType;
 
@@ -365,8 +365,8 @@ class Day {
   Minimum ice;
   double hoursOfPrecipitation;
   double hoursOfRain;
-  int hoursOfSnow;
-  int hoursOfIce;
+  double hoursOfSnow;
+  double hoursOfIce;
   int cloudCover;
   String precipitationType;
   String precipitationIntensity;
@@ -560,10 +560,10 @@ class Night {
   Minimum rain;
   Minimum snow;
   Minimum ice;
-  int hoursOfPrecipitation;
-  int hoursOfRain;
-  int hoursOfSnow;
-  int hoursOfIce;
+  double hoursOfPrecipitation;
+  double hoursOfRain;
+  double hoursOfSnow;
+  double hoursOfIce;
   int cloudCover;
   String precipitationType;
   String precipitationIntensity;

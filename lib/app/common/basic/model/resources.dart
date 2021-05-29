@@ -1,6 +1,30 @@
 import 'package:flutter/cupertino.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
 
+// weather update.
+
+enum UpdateStatus {
+  LOCATOR_DISABLED,
+  LOCATOR_PERMISSIONS_DENIED,
+  LOCATOR_RUNNING,
+  LOCATOR_FAILED,
+  LOCATOR_SUCCEED,
+
+  JSON_DECODE_FAILED,
+  REQUEST_FAILED,
+  REQUEST_SUCCEED,
+}
+
+class UpdateResult<T> {
+
+  final T data;
+  final UpdateStatus status;
+
+  UpdateResult(this.data, this.status);
+}
+
+// event.
+
 abstract class Event {}
 
 class DataChanged extends Event {}
@@ -51,6 +75,8 @@ class ItemMoved extends ItemRangeEvent {
   ItemMoved(int itemPositionFrom, int itemPositionTo) : super(
       itemPositionFrom, itemPositionTo);
 }
+
+// location list res.
 
 typedef Updater = Event Function(List<Location> list);
 
