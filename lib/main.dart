@@ -1,71 +1,51 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:geometricweather_flutter/app/common/basic/model/resources.dart';
-import 'package:geometricweather_flutter/app/common/utils/logger.dart';
-import 'package:geometricweather_flutter/app/root/root.dart';
 import 'package:provider/provider.dart';
 
+import 'app/common/basic/widgets.dart';
 import 'app/common/utils/router.dart';
 import 'app/common/utils/system_services.dart';
-import 'app/common/utils/theme.dart';
-import 'app/db/helper.dart';
-import 'app/settings/about.dart';
+import 'app/theme/theme.dart';
+import 'app/main/page_main.dart';
+import 'app/settings/page_about.dart';
 import 'generated/l10n.dart';
 
-final themeProvider = ThemeProvider();
-final locationListRes = LocationListResource([], DataChanged());
-final routeObserver = RouteObserver<PageRoute>();
-
-void initialize() async {
-  try {
-    final locationList = await DatabaseHelper.getInstance().readLocationList();
-    locationListRes.update((list) {
-      list.addAll(locationList);
-      return ItemRangeInserted(0, list.length - 1);
-    });
-  } catch (e) {
-    log(e);
-  }
-}
-
 void main() {
-  // init plugins.
   setupLocator();
   Paint.enableDithering = true;
 
-  // read cache.
-  Timer.run(() {
-    initialize();
+  WidgetsFlutterBinding.ensureInitialized();
+  preloadMainViewModel().then((value) {
+    WidgetsBinding.instance
+      // ignore: invalid_use_of_protected_member
+      ..scheduleAttachRootWidget(GeometricWeather(value))
+      ..scheduleWarmUpFrame();
   });
-
-  runApp(GeometricWeather());
 }
 
 class GeometricWeather extends StatelessWidget {
 
+  GeometricWeather(this._themeProvider, {
+    Key key
+  }): super(key: key);
+
+  final ThemeProvider _themeProvider;
+
   @override
   Widget build(BuildContext context) {
-
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(
-            value: themeProvider
-        ),
-        ChangeNotifierProvider.value(
-            value: locationListRes
-        )
+        ChangeNotifierProvider.value(value: _themeProvider),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
           return MaterialApp(
               title: 'Geometric Weather',
-              theme: themeProvider.lightTheme,
-              darkTheme: themeProvider.darkTheme,
+              theme: ThemeProvider.lightTheme,
+              darkTheme: ThemeProvider.darkTheme,
               themeMode: themeProvider.themeMode,
               routes: {
-                Routers.ROUTER_ID_ROOT: (context) => RootPage(),
+                Routers.ROUTER_ID_ROOT: (context) => MainPage(),
                 Routers.ROUTER_ID_ABOUT: (context) => AboutPage(),
               },
               navigatorObservers: [routeObserver],
@@ -82,3 +62,4 @@ class GeometricWeather extends StatelessWidget {
     );
   }
 }
+

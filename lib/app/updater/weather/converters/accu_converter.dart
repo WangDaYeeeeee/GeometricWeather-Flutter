@@ -5,28 +5,31 @@ import 'package:geometricweather_flutter/app/common/basic/model/weather.dart' as
 import 'package:geometricweather_flutter/app/common/basic/options/providers.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/units.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
-import 'package:geometricweather_flutter/app/settings/manager.dart';
-import 'package:geometricweather_flutter/app/weather/converters/_common_converter.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/air_quality.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/alert.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/current.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/daily.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/hourly.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/location.dart';
+import 'package:geometricweather_flutter/app/settings/interfaces.dart';
+import 'package:geometricweather_flutter/app/updater/weather/converters/_common_converter.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/air_quality.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/alert.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/current.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/daily.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/hourly.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/location.dart';
 
-location.Location toLocation(AccuLocationResult result, [String zipCode]) {
+location.Location toLocation(AccuLocationResult result, [
+  location.Location src,
+  String zipCode
+]) {
   return location.Location(
       result.key,
       result.geoPosition.latitude,
       result.geoPosition.longitude,
-      result.timeZone.code,
+      result.timeZone.name,
       result.country.localizedName,
       result.administrativeArea == null ? "" : result.administrativeArea.localizedName,
       result.localizedName + (zipCode == null ? "" : (" (" + zipCode + ")")),
       "",
       WeatherSource.all[WeatherSource.KEY_ACCU],
-      false,
-      false,
+      src != null ? src.currentPosition : false,
+      src != null ? src.residentPosition : false,
       !isEmpty(result.country.iD)
           && (result.country.iD == "CN"
           || result.country.iD == "cn"
@@ -76,13 +79,13 @@ int toInt(double value) {
   return (value + 0.5).toInt();
 }
 
-String convertUnit(BuildContext context, String str) {
+Future<String> convertUnit(BuildContext context, String str) async {
   if (isEmpty(str)) {
     return str;
   }
 
   // precipitation.
-  PrecipitationUnit precipitationUnit = SettingsManager.getInstance().precipitationUnit;
+  PrecipitationUnit precipitationUnit = (await SettingsManager.getInstance()).precipitationUnit;
 
   // cm.
   str = convertStrUnit(context, str, PrecipitationUnit.all[PrecipitationUnit.KEY_CM], precipitationUnit);
@@ -153,21 +156,25 @@ AirAndPollen getAirAndPollen(
 }
 
 
-weather.Weather toWeather(
+Future<weather.Weather> toWeather(
     BuildContext context,
     location.Location location,
     AccuCurrentResult currentResult,
     AccuDailyResult dailyResult,
     List<AccuHourlyResult> hourlyResultList,
     List<AccuAlertResult> alertResultList,
-    [AccuAirQualityResult aqiResult]) {
+    [AccuAirQualityResult aqiResult]) async {
   try {
     return weather.Weather(
         weather.Base(
             location.cityId,
             DateTime.now().millisecondsSinceEpoch,
-            DateTime.fromMillisecondsSinceEpoch(currentResult.epochTime * 1000),
-            currentResult.epochTime * 1000,
+            DateTime.parse(removeTimezoneOfDateString(
+                currentResult.localObservationDateTime
+            )),
+            DateTime.parse(removeTimezoneOfDateString(
+                currentResult.localObservationDateTime
+            )).millisecondsSinceEpoch,
             DateTime.now(),
             DateTime.now().millisecondsSinceEpoch
         ),
@@ -211,14 +218,22 @@ weather.Weather toWeather(
             currentResult.dewPoint.metric.value.toInt(),
             currentResult.cloudCover,
             (currentResult.ceiling.metric.value / 1000.0).toDouble(),
-            convertUnit(context, dailyResult.headline.text),
+            await convertUnit(context, dailyResult.headline.text),
         ),
-        getDailyList(context, dailyResult),
+        await getDailyList(context, dailyResult),
         getHourlyList(hourlyResultList),
         getAlertList(alertResultList),
         weather.History(
-            DateTime.fromMillisecondsSinceEpoch((currentResult.epochTime - 24 * 60 * 60) * 1000),
-            (currentResult.epochTime - 24 * 60 * 60) * 1000,
+            DateTime.fromMillisecondsSinceEpoch(
+                DateTime.parse(removeTimezoneOfDateString(
+                    currentResult.localObservationDateTime
+                )).millisecondsSinceEpoch - 24 * 60 * 60 * 1000
+            ),
+            DateTime.fromMillisecondsSinceEpoch(
+                DateTime.parse(removeTimezoneOfDateString(
+                    currentResult.localObservationDateTime
+                )).millisecondsSinceEpoch - 24 * 60 * 60 * 1000
+            ).millisecondsSinceEpoch,
             currentResult.temperatureSummary.past24HourRange.maximum.metric.value.toInt(),
             currentResult.temperatureSummary.past24HourRange.minimum.metric.value.toInt()
         ),
@@ -276,16 +291,22 @@ weather.UV getDailyUV(List<AirAndPollen> list) {
   );
 }
 
-List<weather.Daily> getDailyList(BuildContext context, AccuDailyResult dailyResult) {
+Future<List<weather.Daily>> getDailyList(
+    BuildContext context,
+    AccuDailyResult dailyResult) async {
   List<weather.Daily> dailyList = [];
 
   for (DailyForecasts forecasts in dailyResult.dailyForecasts) {
     dailyList.add(
         weather.Daily(
-            DateTime.parse(forecasts.date),
-            forecasts.epochDate * 1000,
+            DateTime.parse(
+                removeTimezoneOfDateString(forecasts.date)
+            ),
+            DateTime.parse(
+                removeTimezoneOfDateString(forecasts.date)
+            ).millisecondsSinceEpoch,
             [weather.HalfDay(
-                convertUnit(context, forecasts.day.longPhrase),
+                await convertUnit(context, forecasts.day.longPhrase),
                 forecasts.day.shortPhrase,
                 getWeatherCode(forecasts.day.icon),
                 weather.Temperature(
@@ -327,7 +348,7 @@ List<weather.Daily> getDailyList(BuildContext context, AccuDailyResult dailyResu
                 forecasts.day.cloudCover
             ),
             weather.HalfDay(
-                convertUnit(context, forecasts.night.longPhrase),
+                await convertUnit(context, forecasts.night.longPhrase),
                 forecasts.night.shortPhrase,
                 getWeatherCode(forecasts.night.icon),
                 weather.Temperature(
@@ -368,8 +389,16 @@ List<weather.Daily> getDailyList(BuildContext context, AccuDailyResult dailyResu
                 ),
                 forecasts.night.cloudCover
             )],
-            [weather.Astro(DateTime.parse(forecasts.sun.rise), DateTime.parse(forecasts.sun.set)),
-            weather.Astro(DateTime.parse(forecasts.moon.rise), DateTime.parse(forecasts.moon.set))],
+            [
+              weather.Astro(
+                  DateTime.parse(removeTimezoneOfDateString(forecasts.sun.rise)),
+                  DateTime.parse(removeTimezoneOfDateString(forecasts.sun.set))
+              ),
+              weather.Astro(
+                  DateTime.parse(removeTimezoneOfDateString(forecasts.moon.rise)),
+                  DateTime.parse(removeTimezoneOfDateString(forecasts.moon.set))
+              )
+            ],
             weather.MoonPhase(
                 getMoonPhaseAngle(forecasts.moon.phase),
                 forecasts.moon.phase
@@ -389,8 +418,12 @@ List<weather.Hourly> getHourlyList(List<AccuHourlyResult> resultList) {
   for (AccuHourlyResult result in resultList) {
     hourlyList.add(
         weather.Hourly(
-            DateTime.parse(result.dateTime),
-            result.epochDateTime * 1000,
+            DateTime.parse(
+                removeTimezoneOfDateString(result.dateTime)
+            ),
+            DateTime.parse(
+                removeTimezoneOfDateString(result.dateTime)
+            ).millisecondsSinceEpoch,
             result.isDaylight,
             result.iconPhrase,
             getWeatherCode(result.weatherIcon),
@@ -413,8 +446,10 @@ List<weather.Alert> getAlertList(List<AccuAlertResult> resultList) {
     alertList.add(
         weather.Alert(
             result.alertID,
-            DateTime.parse(result.area[0].startTime),
-            result.area[0].epochStartTime * 1000,
+            DateTime.parse(removeTimezoneOfDateString(result.area[0].startTime)),
+            DateTime.parse(
+                removeTimezoneOfDateString(result.area[0].startTime)
+            ).millisecondsSinceEpoch,
             result.description.localized,
             result.area[0].text,
             result.typeID,

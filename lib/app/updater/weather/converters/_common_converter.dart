@@ -97,3 +97,7 @@ int getMoonPhaseAngle(String phase) {
 
 bool isDaylight(DateTime sunrise, DateTime sunset, DateTime current) =>
     sunrise.isBefore(current) && current.isBefore(sunset);
+
+String removeTimezoneOfDateString(String date) {
+  return date.substring(0, date.length - 6);
+}

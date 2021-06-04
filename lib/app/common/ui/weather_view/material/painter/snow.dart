@@ -143,20 +143,12 @@ class SnowPainter extends MaterialWeatherPainter {
   }
 }
 
-const snowDayGradient = LinearGradient(
-    colors: [
-      Color(0xFF68baff),
-      Color(0xFF0066ff)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final snowDayGradient = MaterialBackgroundGradiant(
+    Color(0xFF68baff),
+    Color(0xFF0066ff)
 );
 
-const snowNightGradient = LinearGradient(
-    colors: [
-      Color(0xFF1a5b92),
-      Color(0xFF2c4253)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final snowNightGradient = MaterialBackgroundGradiant(
+    Color(0xFF1a5b92),
+    Color(0xFF2c4253)
 );

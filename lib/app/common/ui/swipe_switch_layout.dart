@@ -12,7 +12,7 @@ typedef OnSwipeCallback = void Function(double progress);
 ///  position:
 ///  -1: switch to left item.
 ///   1: switch to right item.
-typedef OnSwitchCallback = void Function(int positionChanging);
+typedef OnSwitchCallback = Future<void> Function(int positionChanging);
 
 const RESET_ANIMATION_DURATION = 800;
 const SWIPE_RATIO = 0.4;
@@ -105,11 +105,16 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
         } else {
           // notify outside.
           if (widget.onSwitch != null) {
-            widget.onSwitch(offsetX > 0 ? -1 : 1);
+            widget.onSwitch(offsetX > 0 ? -1 : 1).then((_) {
+              setState(() {
+                setOffset(0);
+              });
+            });
+          } else {
+            setState(() {
+              setOffset(0);
+            });
           }
-          setState(() {
-            setOffset(0);
-          });
         }
       },
     );

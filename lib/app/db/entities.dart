@@ -20,6 +20,7 @@ class LocationEntity {
   final String city;
   final String district;
 
+  final int weatherCodeIndex;
   final String weatherSourceKey;
 
   final bool currentPosition;
@@ -36,6 +37,7 @@ class LocationEntity {
       this.province,
       this.city,
       this.district,
+      this.weatherCodeIndex,
       this.weatherSourceKey,
       this.currentPosition,
       this.residentPosition,

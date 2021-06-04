@@ -9,7 +9,7 @@ import 'package:geometricweather_flutter/app/db/entities.dart';
 
 LocationEntity locationToEntity(Location location) {
   return LocationEntity(
-      location.getFormattedId(),
+      location.formattedId,
       location.cityId,
       location.latitude,
       location.longitude,
@@ -18,6 +18,7 @@ LocationEntity locationToEntity(Location location) {
       location.province,
       location.city,
       location.district,
+      location.currentWeatherCode.index,
       location.weatherSource.key,
       location.currentPosition,
       location.residentPosition,
@@ -37,18 +38,19 @@ Location entityToLocation(LocationEntity entity) {
   }
 
   return Location(
-      entity.cityId,
-      entity.latitude,
-      entity.longitude,
-      entity.timezone,
-      entity.country,
-      entity.province,
-      entity.city,
-      entity.district,
-      weatherSource,
-      entity.currentPosition,
-      entity.residentPosition,
-      entity.china
+    entity.cityId,
+    entity.latitude,
+    entity.longitude,
+    entity.timezone,
+    entity.country,
+    entity.province,
+    entity.city,
+    entity.district,
+    weatherSource!,
+    entity.currentPosition,
+    entity.residentPosition,
+    entity.china,
+    currentWeatherCode: WeatherCode.values[entity.weatherCodeIndex]
   );
 }
 

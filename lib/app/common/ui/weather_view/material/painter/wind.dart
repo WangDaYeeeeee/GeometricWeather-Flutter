@@ -149,11 +149,7 @@ class WindPainter extends MaterialWeatherPainter {
   }
 }
 
-const windGradient = LinearGradient(
-    colors: [
-      Color(0xFFe99e3c),
-      Color(0xFFff8300)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final windGradient = MaterialBackgroundGradiant(
+    Color(0xFFe99e3c),
+    Color(0xFFff8300)
 );

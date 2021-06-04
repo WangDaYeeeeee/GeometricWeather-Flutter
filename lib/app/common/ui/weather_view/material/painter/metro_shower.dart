@@ -247,11 +247,7 @@ class MeteorShowerPainter extends MaterialWeatherPainter {
   }
 }
 
-const metroShowerGradient = LinearGradient(
-    colors: [
-      Color(0xFF141b2c),
-      Color(0xFF000000)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final metroShowerGradient = MaterialBackgroundGradiant(
+    Color(0xFF141b2c),
+    Color(0xFF000000)
 );

@@ -8,6 +8,64 @@ import 'package:geometricweather_flutter/app/common/utils/system_services.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 import 'package:package_info/package_info.dart';
 
+class _TranslatorItem extends StatelessWidget {
+
+  const _TranslatorItem(
+      this.title,
+      this.subtitle,
+      this.country,
+      this.email,
+      this.textTheme,
+      this.sysServices,
+      { Key key }
+      ): super(key: key);
+
+  final String title;
+  final String subtitle;
+  final String country;
+  final bool email;
+
+  final TextTheme textTheme;
+  final SystemServices sysServices;
+
+  @override
+  Widget build(BuildContext context) {
+    return PlatformInkWell(
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title + ' ' + _getEmojiFlag(country),
+              style: textTheme.subtitle2,
+            ),
+            Text(subtitle,
+              style: textTheme.caption,
+            )
+          ],
+        ),
+      ),
+      onTap: () {
+        if (email) {
+          sysServices.sendEmail(subtitle);
+        } else {
+          sysServices.launchUrl(subtitle);
+        }
+      },
+    );
+  }
+
+  String _getEmojiFlag(String country) {
+    int flagOffset = 0x1F1E6;
+    int asciiOffset = 0x41;
+
+    int firstChar = country.codeUnitAt(0) - asciiOffset + flagOffset;
+    int secondChar = country.codeUnitAt(1) - asciiOffset + flagOffset;
+
+    return String.fromCharCode(firstChar) + String.fromCharCode(secondChar);
+  }
+}
+
 class AboutPage extends StatelessWidget {
 
   AboutPage({Key key}) : super(key: key);
@@ -212,63 +270,5 @@ class AboutPage extends StatelessWidget {
           }
       ),
     );
-  }
-}
-
-class _TranslatorItem extends StatelessWidget {
-  
-  const _TranslatorItem(
-      this.title,
-      this.subtitle,
-      this.country,
-      this.email,
-      this.textTheme,
-      this.sysServices,
-      { Key key }
-  ): super(key: key);
-
-  final String title;
-  final String subtitle;
-  final String country;
-  final bool email;
-
-  final TextTheme textTheme;
-  final SystemServices sysServices;
-  
-  @override
-  Widget build(BuildContext context) {
-    return PlatformInkWell(
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title + ' ' + _getEmojiFlag(country),
-              style: textTheme.subtitle2,
-            ),
-            Text(subtitle,
-              style: textTheme.caption,
-            )
-          ],
-        ),
-      ),
-      onTap: () {
-        if (email) {
-          sysServices.sendEmail(subtitle);
-        } else {
-          sysServices.launchUrl(subtitle);
-        }
-      },
-    );
-  }
-
-  String _getEmojiFlag(String country) {
-    int flagOffset = 0x1F1E6;
-    int asciiOffset = 0x41;
-
-    int firstChar = country.codeUnitAt(0) - asciiOffset + flagOffset;
-    int secondChar = country.codeUnitAt(1) - asciiOffset + flagOffset;
-
-    return String.fromCharCode(firstChar) + String.fromCharCode(secondChar);
   }
 }

@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/weather.utils.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/units.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
-import 'package:geometricweather_flutter/app/common/utils/theme.dart';
+import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -973,10 +973,9 @@ class Alert {
 
   static void deduplication(List<Alert> alertList) {
     for (int i = 0; i < alertList.length; i ++) {
-      String type = alertList[i].type;
       for (int j = alertList.length - 1; j > i; j --) {
-        if (alertList[j].type == type) {
-          alertList.remove(j);
+        if (alertList[j].type == alertList[i].type) {
+          alertList.removeAt(j);
         }
       }
     }
@@ -1030,6 +1029,7 @@ class Weather {
   bool isValid(double hour) {
     int updateTime = base.updateTime;
     int currentTime = DateTime.now().millisecondsSinceEpoch;
+
     return currentTime >= updateTime
         && currentTime - updateTime < hour * 60 * 60 * 1000;
   }

@@ -486,65 +486,37 @@ class CloudPainter extends MaterialWeatherPainter {
   }
 }
 
-const cloudDayGradient = LinearGradient(
-    colors: [
-      Color(0xFF00a5d9),
-      Color(0xFF008cff)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final cloudDayGradient = MaterialBackgroundGradiant(
+    Color(0xFF00a5d9),
+    Color(0xFF008cff)
 );
 
-const cloudNightGradient = LinearGradient(
-    colors: [
-      Color(0xFF222d43),
-      Color(0xFF0e0e2d)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final cloudNightGradient = MaterialBackgroundGradiant(
+    Color(0xFF222d43),
+    Color(0xFF0e0e2d)
 );
 
-const cloudyDayGradient = LinearGradient(
-    colors: [
-      Color(0xFF607988),
-      Color(0xFF2d5879)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final cloudyDayGradient = MaterialBackgroundGradiant(
+    Color(0xFF607988),
+    Color(0xFF2d5879)
 );
 
-const cloudyNightGradient = LinearGradient(
-    colors: [
-      Color(0xFF263238),
-      Color(0xFF080d10)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final cloudyNightGradient = MaterialBackgroundGradiant(
+    Color(0xFF263238),
+    Color(0xFF080d10)
 );
 
-const thunderGradient = LinearGradient(
-    colors: [
-      Color(0xFF231739),
-      Color(0xFF06040a)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final thunderGradient = MaterialBackgroundGradiant(
+    Color(0xFF231739),
+    Color(0xFF06040a)
 );
 
-const fogGradient = LinearGradient(
-    colors: [
-      Color(0xFF4f5d68),
-      Color(0xFF1c232d)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final fogGradient = MaterialBackgroundGradiant(
+    Color(0xFF4f5d68),
+    Color(0xFF1c232d)
 );
 
-const hazeGradient = LinearGradient(
-    colors: [
-      Color(0xFF424242),
-      Color(0xFF0d0606)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final hazeGradient = MaterialBackgroundGradiant(
+    Color(0xFF424242),
+    Color(0xFF0d0606)
 );

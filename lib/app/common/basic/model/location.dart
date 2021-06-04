@@ -1,3 +1,5 @@
+//@dart=2.12
+
 import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/providers.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
@@ -16,7 +18,8 @@ class Location {
   final String city;
   final String district;
 
-  final Weather weather;
+  final Weather? weather;
+  final WeatherCode _currentWeatherCode;
   final WeatherSource weatherSource;
 
   final bool currentPosition;
@@ -26,49 +29,64 @@ class Location {
   static const NULL_ID = "NULL_ID";
   static const CURRENT_POSITION_ID = "CURRENT_POSITION";
 
-  Location(this.cityId, this.latitude, this.longitude, this.timezone,
-      this.country, this.province, this.city, this.district,
-      this.weatherSource, this.currentPosition, this.residentPosition,
-      this.china, [this.weather]);
+  Location(
+      this.cityId,
+      this.latitude,
+      this.longitude,
+      this.timezone,
+      this.country,
+      this.province,
+      this.city,
+      this.district,
+      this.weatherSource,
+      this.currentPosition,
+      this.residentPosition,
+      this.china, {
+        this.weather,
+        WeatherCode? currentWeatherCode,
+  }): this._currentWeatherCode = weather != null
+      ? weather.current.weatherCode
+      : (currentWeatherCode ?? WeatherCode.CLEAR);
   
-  static copyOf(Location src, {
-    String cityId,
-    double latitude,
-    double longitude,
-    String timeZone,
-    String country,
-    String province,
-    String city,
-    String district,
-    WeatherSource weatherSource,
-    bool currentPosition,
-    bool residentPosition,
-    bool china,
-    Weather weather,
+  Location copyOf({
+    String? cityId,
+    double? latitude,
+    double? longitude,
+    String? timeZone,
+    String? country,
+    String? province,
+    String? city,
+    String? district,
+    WeatherSource? weatherSource,
+    bool? currentPosition,
+    bool? residentPosition,
+    bool? china,
+    Weather? weather,
   }) {
     return new Location(
-        cityId ?? src.cityId,
-        latitude ?? src.latitude,
-        longitude ?? src.longitude,
-        timeZone ?? src.timezone,
-        country ?? src.country,
-        province ?? src.province,
-        city ?? src.city,
-        district ?? src.district,
-        weatherSource ?? src.weatherSource,
-        currentPosition ?? src.currentPosition,
-        residentPosition ?? src.residentPosition,
-        china ?? src.china,
-        weather ?? src.weather
+      cityId ?? this.cityId,
+      latitude ?? this.latitude,
+      longitude ?? this.longitude,
+      timeZone ?? this.timezone,
+      country ?? this.country,
+      province ?? this.province,
+      city ?? this.city,
+      district ?? this.district,
+      weatherSource ?? this.weatherSource,
+      currentPosition ?? this.currentPosition,
+      residentPosition ?? this.residentPosition,
+      china ?? this.china,
+      weather: weather ?? this.weather,
+      currentWeatherCode: this.currentWeatherCode,
     );
   }
 
-  static Location buildLocal() {
+  static Future<Location> buildLocal() async {
     return new Location(
         Location.NULL_ID,
-        0, 0, getDefaultTimeZone(),
+        0, 0, await getDefaultTimeZone(),
         "", "", "", "",
-        WeatherSource.all[WeatherSource.KEY_ACCU],
+        WeatherSource.all[WeatherSource.KEY_ACCU]!,
         true, false, false
     );
   }
@@ -78,48 +96,20 @@ class Location {
         "101924",
         39.904000, 116.391000, "Asia/Shanghai",
         "中国", "直辖市", "北京", "",
-        WeatherSource.all[WeatherSource.KEY_ACCU],
+        WeatherSource.all[WeatherSource.KEY_ACCU]!,
         false, false, true
     );
   }
 
   bool operator ==(Object other) {
-    if (other is Location) {
-      if (other == null) {
-        return false;
-      } else {
-        // ignore: unrelated_type_equality_checks
-        return this == other.getFormattedId();
-      }
-    }
-
-    if (other is String) {
-      if (isEmpty(other)) {
-        return false;
-      }
-      if (CURRENT_POSITION_ID == other) {
-        return currentPosition;
-      }
-      try {
-        var keys = other.split("&");
-        return !currentPosition
-            && cityId == keys[0]
-            && weatherSource.key == keys[1];
-      } catch (e) {
-        return false;
-      }
-    }
-
-    return false;
+    return other is Location && formattedId == other.formattedId;
   }
 
-  String getFormattedId() {
-    return currentPosition ? CURRENT_POSITION_ID : (cityId + "&" + weatherSource.key);
-  }
+  String get formattedId => currentPosition
+      ? CURRENT_POSITION_ID
+      : (cityId + "&" + weatherSource.key);
 
-  bool isUsable() {
-    return cityId != NULL_ID;
-  }
+  bool get usable => cityId != NULL_ID;
 
   @override
   String toString() {
@@ -142,13 +132,9 @@ class Location {
         || !isEmpty(district);
   }
 
-  WeatherSource getWeatherSource() {
-    return weatherSource;
-  }
-
-  bool isChina() {
-    return china;
-  }
+  WeatherCode get currentWeatherCode => weather != null
+      ? weather!.current.weatherCode
+      : _currentWeatherCode;
 
   static bool isEquals(String a, String b) {
     if (isEmpty(a) && isEmpty(b)) {
@@ -161,7 +147,7 @@ class Location {
   }
 
   static List<Location> excludeInvalidResidentLocation(List<Location> list) {
-    Location currentLocation;
+    Location? currentLocation;
     for (Location l in list) {
       if (l.currentPosition) {
         currentLocation = l;

@@ -160,20 +160,12 @@ class HailPainter extends MaterialWeatherPainter {
   }
 }
 
-const hailDayGradient = LinearGradient(
-    colors: [
-      Color(0xFF5074c1),
-      Color(0xFF072a7c)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final hailDayGradient = MaterialBackgroundGradiant(
+    Color(0xFF5074c1),
+    Color(0xFF072a7c)
 );
 
-const hailNightGradient = LinearGradient(
-    colors: [
-      Color(0xFF2a3445),
-      Color(0xFF010110)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final hailNightGradient = MaterialBackgroundGradiant(
+    Color(0xFF2a3445),
+    Color(0xFF010110)
 );

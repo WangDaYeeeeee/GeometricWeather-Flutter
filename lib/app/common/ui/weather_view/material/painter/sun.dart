@@ -82,11 +82,7 @@ class SunPainter extends MaterialWeatherPainter  {
   }
 }
 
-const sunGradient = LinearGradient(
-  colors: [
+final sunGradient = MaterialBackgroundGradiant(
     Color(0xFFfdbc4c),
     Color(0xFFff9900)
-  ],
-  begin: AlignmentDirectional.center,
-  end: AlignmentDirectional.bottomCenter
 );

@@ -9,6 +9,14 @@ class Pair {
   final String key;
   final LocalizedStringGetter nameGetter;
 
+  @override
+  bool operator ==(Object other) {
+    return other is Pair && key == other.key;
+  }
+
+  @override
+  int get hashCode => super.hashCode;
+
   static Pair toPair(String key, Map<String, Pair> map) {
     return map[key];
   }
@@ -77,7 +85,7 @@ class Unit<T> extends VoicePair {
   }
 
   String getValueWithUnit(BuildContext context, T valueInDefaultUnit) {
-    return '${formatValue(getValue(valueInDefaultUnit))}${nameGetter(context)})';
+    return '${formatValue(getValue(valueInDefaultUnit))}${nameGetter(context)}';
   }
 
   String formatValue(T value) {

@@ -7,13 +7,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:geometricweather_flutter/app/theme/theme.dart';
 
 import 'package:geometricweather_flutter/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(GeometricWeather());
+    await tester.pumpWidget(
+        GeometricWeather(
+            ThemeProvider.getInstance(ThemeMode.system)
+        )
+    );
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

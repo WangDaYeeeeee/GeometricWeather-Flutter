@@ -8,8 +8,15 @@ import 'package:flutter_sensors/flutter_sensors.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/_utils.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/palette.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
+import 'package:geometricweather_flutter/app/theme/theme.dart';
+import 'package:native_device_orientation/native_device_orientation.dart';
 
 const SWITCH_ANIMATION_DURATION = 350;
+const HEADER_RATIO = 0.65;
+
+enum DeviceOrientation {
+  TOP, LEFT, BOTTOM, RIGHT
+}
 
 class MaterialWeatherView extends WeatherView {
 
@@ -39,15 +46,15 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   WeatherKind _weatherKindIn;
   bool _daylightIn;
   MaterialWeatherPainter _painterIn;
-  Gradient _gradientIn;
+  MaterialBackgroundGradiant _gradientIn;
 
   MaterialWeatherPainter _painterOut;
-  Gradient _gradientOut;
+  MaterialBackgroundGradiant _gradientOut;
 
   double _switchInProgress; // 0 - 1.
-
   AnimationController _switchAnimController;
   Animation<double> _switchAnim;
+
   AnimationController _paintingAnimController;
 
   bool _gravitySensorEnabled;
@@ -57,6 +64,8 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   List<double> accelerometer;
   List<double> userAccelerometer;
   final List<double> accelerometerOfGravity = [0, 0, 0]; // x, y, z.
+
+  DeviceOrientation _deviceOrientation = DeviceOrientation.TOP;
 
   @override
   void initState() {
@@ -96,16 +105,25 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
 
   @override
   void dispose() {
-    super.dispose();
     _unregisterSensors();
     _paintingAnimController.dispose();
     _cancelSwitchAnimation();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant MaterialWeatherView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _headerHeight = MediaQuery.of(context).size.height * HEADER_RATIO;
+
+    setWeather(widget.weatherKind, widget.daylight);
+    gravitySensorEnabled = widget.gravitySensorEnabled;
+    drawable = widget.drawable;
   }
 
   @override
   Widget build(BuildContext context) {
-    // todo: fix it.
-    _headerHeight = max(MediaQuery.of(context).size.height * 0.55, 180.0);
+    _headerHeight = MediaQuery.of(context).size.height * HEADER_RATIO;
 
     if (0 <= _switchInProgress && _switchInProgress < 1) {
       // executing switch animation.
@@ -136,6 +154,29 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   }
 
   void _registerSensors() {
+    _streamSubscriptions.add(
+        NativeDeviceOrientationCommunicator().onOrientationChanged().listen((event) {
+          switch (event) {
+            case NativeDeviceOrientation.unknown:
+            case NativeDeviceOrientation.portraitUp:
+              _deviceOrientation = DeviceOrientation.TOP;
+              break;
+
+            case NativeDeviceOrientation.portraitDown:
+              _deviceOrientation = DeviceOrientation.BOTTOM;
+              break;
+
+            case NativeDeviceOrientation.landscapeLeft:
+              _deviceOrientation = DeviceOrientation.LEFT;
+              break;
+
+            case NativeDeviceOrientation.landscapeRight:
+              _deviceOrientation = DeviceOrientation.RIGHT;
+              break;
+          }
+        })
+    );
+
     SensorManager().sensorUpdates(
       sensorId: Sensors.ACCELEROMETER,
       interval: Sensors.SENSOR_DELAY_FASTEST
@@ -185,6 +226,27 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
           double rotation2D = toDegrees(acos(cos2D)) * (aX >= 0 ? 1 : -1);
           double rotation3D = toDegrees(acos(cos3D)) * (aZ >= 0 ? 1 : -1);
 
+          switch (_deviceOrientation) {
+            case DeviceOrientation.TOP:
+              break;
+
+            case DeviceOrientation.LEFT:
+              rotation2D -= 90;
+              break;
+
+            case DeviceOrientation.RIGHT:
+              rotation2D += 90;
+              break;
+
+            case DeviceOrientation.BOTTOM:
+              if (rotation2D > 0) {
+                rotation2D -= 180;
+              } else {
+                rotation2D += 180;
+              }
+              break;
+          }
+
           if (60 < rotation3D.abs() && rotation3D.abs() < 120) {
             rotation2D *= (rotation3D.abs() - 90).abs() / 30.0;
           }
@@ -209,6 +271,8 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
         vsync: this
     );
 
+    _switchInProgress = 1 - _switchInProgress;
+
     Animation a = CurvedAnimation(
         parent: _switchAnimController,
         curve: Curves.easeInOutCubic
@@ -220,7 +284,7 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
     });
 
     _switchAnim = a;
-    a = Tween(begin: 1 - _switchInProgress, end: 1.0).animate(_switchAnim);
+    a = Tween(begin: _switchInProgress, end: 1.0).animate(_switchAnim);
 
     _switchAnimController.forward();
   }
@@ -245,15 +309,15 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   @override
   set drawable(bool drawable) {
     setState(() {
-      _cancelSwitchAnimation();
-
       _painterOut?._setDrawable(drawable);
       _painterIn?._setDrawable(drawable);
     });
   }
 
   @override
-  Color getBackgroundColor() => _gradientIn.colors[0];
+  Color getBackgroundColor() {
+    return _gradientIn.colors[0];
+  }
 
   @override
   List<Color> getThemeColors(bool lightTheme) {
@@ -270,7 +334,7 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   }
 
   @override
-  double get headerHeight => _headerHeight;
+  double getHeaderHeight(BuildContext context) => _headerHeight;
 
   @override
   void onClick() {
@@ -278,9 +342,11 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   }
 
   @override
-  void onScroll(int offset) {
+  void onScroll(double offset) {
     if (_headerHeight == 0) {
       _painterIn._setScrollRate(0);
+    } else if (offset <= 0) {
+      _painterIn._setScrollRate(0.0);
     } else {
       _painterIn._setScrollRate(1.0 * offset / _headerHeight);
     }
@@ -288,6 +354,11 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
 
   @override
   void setWeather(WeatherKind weatherKind, bool daylight) {
+    if (_weatherKindIn == WeatherKind.NULL && _weatherKindIn == weatherKind) {
+      _daylightIn = daylight;
+      return;
+    }
+
     if (_weatherKindIn != weatherKind || _daylightIn != daylight) {
       setState(() {
         // save current data.
@@ -312,7 +383,7 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
 
 abstract class MaterialWeatherPainter extends CustomPainter {
 
-  static final double _sinkDistance = Platform.isIOS ? kToolbarHeight : 0;
+  static final double _sinkDistance = Platform.isIOS ? cupertinoNavBarHeight : 0;
 
   get sinkDistance => _sinkDistance;
 
@@ -370,6 +441,19 @@ abstract class MaterialWeatherPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return oldDelegate != this;
   }
+}
+
+class MaterialBackgroundGradiant extends LinearGradient {
+
+  MaterialBackgroundGradiant(
+      Color begin,
+      Color end
+  ): super(
+      colors: [begin, end],
+      stops: [0.5, 0.8],
+      begin: AlignmentDirectional.topCenter,
+      end: AlignmentDirectional.bottomCenter
+  );
 }
 
 class _DelayRotationController {

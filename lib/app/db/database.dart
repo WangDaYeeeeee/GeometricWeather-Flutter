@@ -10,8 +10,9 @@ import 'package:geometricweather_flutter/app/db/entities.dart';
 part 'database.g.dart';
 
 const DB_NAME = 'geometricweather.db';
+const DB_VERSION = 2;
 
-@Database(version: 1, entities: [
+@Database(version: DB_VERSION, entities: [
   LocationEntity,
   WeatherEntity
 ])

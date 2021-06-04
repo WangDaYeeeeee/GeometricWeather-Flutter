@@ -1,18 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
-import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
 import 'package:geometricweather_flutter/app/common/utils/logger.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
-import 'package:geometricweather_flutter/app/weather/apis/_basic.dart';
-import 'package:geometricweather_flutter/app/weather/converters/accu_converter.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/air_quality.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/alert.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/current.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/daily.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/hourly.dart';
-import 'package:geometricweather_flutter/app/weather/json/accu/location.dart';
-import 'package:geometricweather_flutter/app/weather/properties.dart';
+import 'package:geometricweather_flutter/app/updater/weather/converters/accu_converter.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/air_quality.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/alert.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/current.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/daily.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/hourly.dart';
+import 'package:geometricweather_flutter/app/updater/weather/json/accu/location.dart';
+
+import '../properties.dart';
+import '_basic.dart';
 
 Dio _dio;
 
@@ -41,7 +41,7 @@ String getLanguage(BuildContext context) {
   StringBuffer b = StringBuffer(locale.languageCode);
   if (!isEmpty(locale.countryCode)) {
     b.write('-');
-    b.write(locale.languageCode);
+    b.write(locale.countryCode);
   }
   return b.toString();
 }
@@ -56,8 +56,8 @@ class AccuApi implements WeatherApi {
     try {
       list = await _requestLocations(context, query, token);
     } on Exception catch (e, stacktrace) {
-      log(e.toString());
-      log(stacktrace.toString());
+      testLog(e.toString());
+      testLog(stacktrace.toString());
       list = [];
     }
 
@@ -84,7 +84,7 @@ class AccuApi implements WeatherApi {
       return (response.data as List<Map>)
           .map((e) => AccuLocationResult.fromJson(e))
           .toList()
-          .map((e) => toLocation(e, zipCode))
+          .map((e) => toLocation(e, null, zipCode))
           .toList();
     } on Exception catch (e, stacktrace) {
       return Future.error(e, stacktrace);
@@ -92,26 +92,16 @@ class AccuApi implements WeatherApi {
   }
 
   @override
-  Future<Weather> requestWeather(
+  Future<WeatherUpdateResult> requestWeather(
       BuildContext context, Location location, CancelToken token) async {
-    try {
-      return await _requestWeather(context, location, token);
-    } on Exception catch (e, stacktrace) {
-      log(e.toString());
-      log(stacktrace.toString());
-      return null;
-    }
-  }
+    bool getGeoPositionFailed = false;
 
-  Future<Weather> _requestWeather(
-      BuildContext context, Location location, CancelToken token) async {
     try {
       Dio dio = ensureDio();
-
       String language = getLanguage(context);
 
       if (location.currentPosition) {
-        log('Requesting location by geo position.');
+        testLog('Requesting location by geo position.');
         Response response = await dio.get('locations/v1/cities/geoposition/search.json',
             queryParameters: {
               'alias': 'Always',
@@ -122,12 +112,14 @@ class AccuApi implements WeatherApi {
             cancelToken: token
         );
 
+        getGeoPositionFailed = response.data == null;
         if (response.data != null) {
-          log('Decoding json to location.');
+          testLog('Decoding json to location.');
           AccuLocationResult result = AccuLocationResult.fromJson(response.data);
-          location = toLocation(result);
-        } else if (!location.isUsable()) {
-          return null;
+          location = toLocation(result, location);
+        } else if (!location.usable) {
+          testLog('Location request failed.');
+          return WeatherUpdateResult(location, true, false, false);
         }
       }
 
@@ -152,7 +144,7 @@ class AccuApi implements WeatherApi {
         'metric': true,
       };
 
-      log('Requesting weather data.');
+      testLog('Requesting weather data.');
       List<Response> responses = await Future.wait([
         dio.get('currentconditions/v1/${location.cityId}.json',
             queryParameters: currentParams,
@@ -176,33 +168,41 @@ class AccuApi implements WeatherApi {
         )
       ]);
 
-      log('Converting request result to weather entity.');
+      testLog('Converting request result to weather entity.');
       AccuAirQualityResult aqi;
       try {
         aqi = responses[3].data == null
             ? null
             : AccuAirQualityResult.fromJson(responses[3].data);
       } on Exception catch (e, stacktrace) {
-        log(e.toString());
-        log(stacktrace.toString());
+        testLog(e.toString());
+        testLog(stacktrace.toString());
         aqi = null;
       }
 
-      return toWeather(
-          context,
-          location,
-          AccuCurrentResult.fromJson(responses[0].data[0]),
-          AccuDailyResult.fromJson(responses[1].data),
-          (responses[2].data as List)
-              .map((e) => AccuHourlyResult.fromJson(e))
-              .toList(),
-          (responses[4].data as List)
-              .map((e) => AccuAlertResult.fromJson(e))
-              .toList(),
-          aqi
+      location = location.copyOf(
+          weather: await toWeather(
+              context,
+              location,
+              AccuCurrentResult.fromJson(responses[0].data[0]),
+              AccuDailyResult.fromJson(responses[1].data),
+              (responses[2].data as List)
+                  .map((e) => AccuHourlyResult.fromJson(e))
+                  .toList(),
+              (responses[4].data as List)
+                  .map((e) => AccuAlertResult.fromJson(e))
+                  .toList(),
+              aqi
+          )
       );
+
+      testLog('All requests and converts succeed.');
+      return WeatherUpdateResult(location, getGeoPositionFailed, false, false);
     } on Exception catch (e, stacktrace) {
-      return Future.error(e, stacktrace);
+      testLog('Requests end with an error.');
+      testLog(e.toString());
+      testLog(stacktrace.toString());
+      return WeatherUpdateResult(location, getGeoPositionFailed, true, false);
     }
   }
 }

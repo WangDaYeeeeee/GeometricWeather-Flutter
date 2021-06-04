@@ -1,96 +1,86 @@
-import 'package:flutter/cupertino.dart';
-import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
+//@dart=2.12
 
-// weather update.
-
-enum UpdateStatus {
-  LOCATOR_DISABLED,
-  LOCATOR_PERMISSIONS_DENIED,
-  LOCATOR_RUNNING,
-  LOCATOR_FAILED,
-  LOCATOR_SUCCEED,
-
-  JSON_DECODE_FAILED,
-  REQUEST_FAILED,
-  REQUEST_SUCCEED,
+enum ResourceStatus {
+  SUCCESS, ERROR, LOADING
 }
 
-class UpdateResult<T> {
+class Resource<T> {
 
-  final T data;
-  final UpdateStatus status;
+  final T? data;
+  final ResourceStatus status;
 
-  UpdateResult(this.data, this.status);
-}
+  Resource(this.data, this.status);
 
-// event.
-
-abstract class Event {}
-
-class DataChanged extends Event {}
-
-abstract class ItemEvent extends Event {
-
-  ItemEvent(this.itemPosition);
-
-  final int itemPosition;
-}
-
-class ItemInserted extends ItemEvent {
-  ItemInserted(int itemPosition) : super(itemPosition);
-}
-
-class ItemRemoved extends ItemEvent {
-  ItemRemoved(int itemPosition) : super(itemPosition);
-}
-
-class ItemChanged extends ItemEvent {
-  ItemChanged(int itemPosition) : super(itemPosition);
-}
-
-abstract class ItemRangeEvent extends Event {
-
-  ItemRangeEvent(this.itemPositionFrom, this.itemPositionTo);
-
-  final int itemPositionFrom;
-  final int itemPositionTo;
-}
-
-class ItemRangeInserted extends ItemRangeEvent {
-  ItemRangeInserted(int itemPositionFrom, int itemPositionTo) : super(
-      itemPositionFrom, itemPositionTo);
-}
-
-class ItemRangeRemoved extends ItemRangeEvent {
-  ItemRangeRemoved(int itemPositionFrom, int itemPositionTo) : super(
-      itemPositionFrom, itemPositionTo);
-}
-
-class ItemRangeUpdated extends ItemRangeEvent {
-  ItemRangeUpdated(int itemPositionFrom, int itemPositionTo) : super(
-      itemPositionFrom, itemPositionTo);
-}
-
-class ItemMoved extends ItemRangeEvent {
-  ItemMoved(int itemPositionFrom, int itemPositionTo) : super(
-      itemPositionFrom, itemPositionTo);
-}
-
-// location list res.
-
-typedef Updater = Event Function(List<Location> list);
-
-class LocationListResource with ChangeNotifier {
-
-  final List<Location> locationList;
-  Event _event;
-
-  LocationListResource(this.locationList, this._event);
-
-  void update(Updater updater) {
-    _event = updater(locationList);
-    notifyListeners();
+  static Resource<T> success<T>(T data) {
+    return new Resource(data, ResourceStatus.SUCCESS);
   }
 
-  Event get event => _event;
+  static Resource<T> error<T>(T data) {
+    return new Resource(data, ResourceStatus.ERROR);
+  }
+
+  static Resource<T> loading<T>(T data) {
+    return new Resource(data, ResourceStatus.LOADING);
+  }
+}
+
+abstract class ListEvent {}
+
+class DataSetChanged implements ListEvent {
+  const DataSetChanged();
+}
+
+class ItemInserted implements ListEvent {
+
+  final int index;
+
+  const ItemInserted(this.index);
+}
+
+class ItemChanged implements ListEvent {
+
+  final int index;
+
+  const ItemChanged(this.index);
+}
+
+class ItemRemoved implements ListEvent {
+
+  final int index;
+
+  const ItemRemoved(this.index);
+}
+
+class ItemMoved implements ListEvent {
+
+  final int from;
+  final int to;
+
+  const ItemMoved(this.from, this.to);
+}
+
+class ListResource<T> {
+
+  final List<T> dataList;
+  final ListEvent event;
+  
+  ListResource(this.dataList, [this.event = const DataSetChanged()]);
+
+  static ListResource<T> insertItem<T>(ListResource<T> current, T item, int index) {
+    List<T> list = current.dataList;
+    list.insert(index, item);
+    return ListResource(list, new ItemInserted(index));
+  }
+
+  static ListResource<T> changeItem<T>(ListResource<T> current, T item, int index) {
+    List<T> list = current.dataList;
+    list[index] = item;
+    return ListResource(list, new ItemChanged(index));
+  }
+
+  static ListResource<T> removeItem<T>(ListResource<T> current, int index) {
+    List<T> list = current.dataList;
+    list.remove(index);
+    return ListResource(list, new ItemRemoved(index));
+  }
 }

@@ -84,7 +84,7 @@ class _$GeoDatabase extends GeoDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `LocationEntity` (`formattedId` TEXT NOT NULL, `cityId` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `timezone` TEXT NOT NULL, `country` TEXT NOT NULL, `province` TEXT NOT NULL, `city` TEXT NOT NULL, `district` TEXT NOT NULL, `weatherSourceKey` TEXT NOT NULL, `currentPosition` INTEGER NOT NULL, `residentPosition` INTEGER NOT NULL, `china` INTEGER NOT NULL, PRIMARY KEY (`formattedId`))');
+            'CREATE TABLE IF NOT EXISTS `LocationEntity` (`formattedId` TEXT NOT NULL, `cityId` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `timezone` TEXT NOT NULL, `country` TEXT NOT NULL, `province` TEXT NOT NULL, `city` TEXT NOT NULL, `district` TEXT NOT NULL, `weatherCodeIndex` INTEGER NOT NULL, `weatherSourceKey` TEXT NOT NULL, `currentPosition` INTEGER NOT NULL, `residentPosition` INTEGER NOT NULL, `china` INTEGER NOT NULL, PRIMARY KEY (`formattedId`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `WeatherEntity` (`formattedId` TEXT NOT NULL, `json` TEXT NOT NULL, PRIMARY KEY (`formattedId`))');
 
@@ -121,6 +121,7 @@ class _$LocationDao extends LocationDao {
                   'province': item.province,
                   'city': item.city,
                   'district': item.district,
+                  'weatherCodeIndex': item.weatherCodeIndex,
                   'weatherSourceKey': item.weatherSourceKey,
                   'currentPosition': item.currentPosition ? 1 : 0,
                   'residentPosition': item.residentPosition ? 1 : 0,
@@ -140,6 +141,7 @@ class _$LocationDao extends LocationDao {
                   'province': item.province,
                   'city': item.city,
                   'district': item.district,
+                  'weatherCodeIndex': item.weatherCodeIndex,
                   'weatherSourceKey': item.weatherSourceKey,
                   'currentPosition': item.currentPosition ? 1 : 0,
                   'residentPosition': item.residentPosition ? 1 : 0,
@@ -159,6 +161,7 @@ class _$LocationDao extends LocationDao {
                   'province': item.province,
                   'city': item.city,
                   'district': item.district,
+                  'weatherCodeIndex': item.weatherCodeIndex,
                   'weatherSourceKey': item.weatherSourceKey,
                   'currentPosition': item.currentPosition ? 1 : 0,
                   'residentPosition': item.residentPosition ? 1 : 0,
@@ -191,6 +194,7 @@ class _$LocationDao extends LocationDao {
             row['province'] as String,
             row['city'] as String,
             row['district'] as String,
+            row['weatherCodeIndex'] as int,
             row['weatherSourceKey'] as String,
             (row['currentPosition'] as int) != 0,
             (row['residentPosition'] as int) != 0,
@@ -211,6 +215,7 @@ class _$LocationDao extends LocationDao {
             row['province'] as String,
             row['city'] as String,
             row['district'] as String,
+            row['weatherCodeIndex'] as int,
             row['weatherSourceKey'] as String,
             (row['currentPosition'] as int) != 0,
             (row['residentPosition'] as int) != 0,

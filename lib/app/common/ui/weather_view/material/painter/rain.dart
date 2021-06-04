@@ -278,47 +278,27 @@ class RainPainter extends MaterialWeatherPainter {
   }
 }
 
-const rainDayGradient = LinearGradient(
-    colors: [
-      Color(0xFF4097e7),
-      Color(0xFF0061ff)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final rainDayGradient = MaterialBackgroundGradiant(
+    Color(0xFF4097e7),
+    Color(0xFF0061ff)
 );
 
-const rainNightGradient = LinearGradient(
-    colors: [
-      Color(0xFF264e8f),
-      Color(0xFF252f60)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final rainNightGradient = MaterialBackgroundGradiant(
+    Color(0xFF264e8f),
+    Color(0xFF252f60)
 );
 
-const sleetDayGradient = LinearGradient(
-    colors: [
-      Color(0xFF68baff),
-      Color(0xFF0071ff)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final sleetDayGradient = MaterialBackgroundGradiant(
+    Color(0xFF68baff),
+    Color(0xFF0071ff)
 );
 
-const sleetNightGradient = LinearGradient(
-    colors: [
-      Color(0xFF1a5b92),
-      Color(0xFF263f56)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final sleetNightGradient = MaterialBackgroundGradiant(
+    Color(0xFF1a5b92),
+    Color(0xFF263f56)
 );
 
-const thunderstormGradient = LinearGradient(
-    colors: [
-      Color(0xFF2b1d45),
-      Color(0xFF1a0c26)
-    ],
-    begin: AlignmentDirectional.center,
-    end: AlignmentDirectional.bottomCenter
+final thunderstormGradient = MaterialBackgroundGradiant(
+    Color(0xFF2b1d45),
+    Color(0xFF1a0c26)
 );

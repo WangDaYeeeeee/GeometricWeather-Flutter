@@ -16,10 +16,10 @@ MaterialWeatherPainter getCustomPainter(
     Listenable repaint) {
 
   switch(weatherKind) {
+    case WeatherKind.NULL:
     case WeatherKind.CLEAR:
       return daylight ? SunPainter(repaint) : MeteorShowerPainter(repaint);
 
-    case WeatherKind.NULL:
     case WeatherKind.CLOUD:
       return CloudPainter(
           daylight ? CloudType.CLOUD_DAY : CloudType.CLOUD_NIGHT, repaint);
@@ -59,13 +59,12 @@ MaterialWeatherPainter getCustomPainter(
   return SunPainter(repaint);
 }
 
-Gradient getGradient(WeatherKind weatherKind, bool daylight) {
+MaterialBackgroundGradiant getGradient(WeatherKind weatherKind, bool daylight) {
   switch(weatherKind) {
-
+    case WeatherKind.NULL:
     case WeatherKind.CLEAR:
       return daylight ? sunGradient : metroShowerGradient;
 
-    case WeatherKind.NULL:
     case WeatherKind.CLOUD:
       return daylight ? cloudDayGradient : cloudNightGradient;
 

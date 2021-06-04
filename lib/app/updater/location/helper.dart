@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
-import 'package:geometricweather_flutter/app/common/basic/model/resources.dart';
 import 'package:geometricweather_flutter/app/common/utils/logger.dart';
+
+import '../models.dart';
 
 const TIMEOUT_SECONDS = 20;
 
@@ -16,10 +17,11 @@ class LocationHelper {
     if (!serviceEnabled) {
       return UpdateResult(
           location,
+          location.usable,
           UpdateStatus.LOCATOR_DISABLED
       );
     }
-    log('Location service is enabled.');
+    testLog('Location service is enabled.');
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -28,6 +30,7 @@ class LocationHelper {
       if (permission == LocationPermission.denied) {
         return UpdateResult(
             location,
+            location.usable,
             UpdateStatus.LOCATOR_PERMISSIONS_DENIED
         );
       }
@@ -36,13 +39,15 @@ class LocationHelper {
     if (permission == LocationPermission.deniedForever) {
       return UpdateResult(
           location,
+          location.usable,
           UpdateStatus.LOCATOR_PERMISSIONS_DENIED
       );
     }
-    log('Got all location permissions.');
+    testLog('Got all location permissions.');
 
     return UpdateResult(
         location,
+        true,
         UpdateStatus.LOCATOR_RUNNING
     );
   }
@@ -54,23 +59,25 @@ class LocationHelper {
         timeLimit: Duration(seconds: TIMEOUT_SECONDS)
     ).transform(StreamTransformer<Position, UpdateResult<Location>>.fromHandlers(
         handleData: (data, sink) {
-          Location loc = Location.copyOf(location,
+          location = location.copyOf(
               latitude: data.latitude,
               longitude: data.longitude
           );
           sink.add(
               UpdateResult(
-                  loc,
+                  location,
+                  true,
                   UpdateStatus.LOCATOR_SUCCEED
               )
           );
         },
         handleError: (error, stackTrace, sink) {
-          log(error.toString());
-          log(stackTrace.toString());
+          testLog(error.toString());
+          testLog(stackTrace.toString());
           sink.add(
               UpdateResult(
                   location,
+                  location.usable,
                   UpdateStatus.LOCATOR_FAILED
               )
           );
@@ -97,7 +104,7 @@ class LocationHelper {
         _prepare(location).then((value) {
           // check is closed.
           if (controller.isClosed) {
-            return Future.error('Stream was already closed.');
+            return;
           }
 
           // send data.
