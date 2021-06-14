@@ -20,6 +20,8 @@ class Location {
 
   final Weather? weather;
   final WeatherCode _currentWeatherCode;
+  final DateTime? currentSunriseDate;
+  final DateTime? currentSunsetDate;
   final WeatherSource weatherSource;
 
   final bool currentPosition;
@@ -44,9 +46,17 @@ class Location {
       this.china, {
         this.weather,
         WeatherCode? currentWeatherCode,
+        DateTime? sunriseDate,
+        DateTime? sunsetDate,
   }): this._currentWeatherCode = weather != null
       ? weather.current.weatherCode
-      : (currentWeatherCode ?? WeatherCode.CLEAR);
+      : (currentWeatherCode ?? WeatherCode.CLEAR),
+  this.currentSunriseDate = weather != null && weather.dailyForecast.isNotEmpty 
+      ? weather.dailyForecast[0].sun().riseDate
+      : sunriseDate,
+  this.currentSunsetDate = weather != null && weather.dailyForecast.isNotEmpty
+      ? weather.dailyForecast[0].sun().setDate
+      : sunsetDate;
   
   Location copyOf({
     String? cityId,
@@ -77,7 +87,9 @@ class Location {
       residentPosition ?? this.residentPosition,
       china ?? this.china,
       weather: weather ?? this.weather,
-      currentWeatherCode: this.currentWeatherCode,
+      currentWeatherCode: weather?.current.weatherCode ?? this.currentWeatherCode,
+      sunriseDate: weather?.dailyForecast[0].sun().riseDate ?? this.currentSunriseDate,
+      sunsetDate: weather?.dailyForecast[0].sun().setDate ?? this.currentSunsetDate,
     );
   }
 
@@ -97,10 +109,11 @@ class Location {
         39.904000, 116.391000, "Asia/Shanghai",
         "中国", "直辖市", "北京", "",
         WeatherSource.all[WeatherSource.KEY_ACCU]!,
-        false, false, true
+        true, false, true
     );
   }
 
+  @override
   bool operator ==(Object other) {
     return other is Location && formattedId == other.formattedId;
   }
@@ -114,11 +127,11 @@ class Location {
   @override
   String toString() {
     StringBuffer b = new StringBuffer('$country $province');
-    if (province != city && !isEmpty(city)) {
+    if (province != city && !isEmptyString(city)) {
       b.write(" ");
       b.write(city);
     }
-    if (city != district && !isEmpty(district)) {
+    if (city != district && !isEmptyString(district)) {
       b.write(" ");
       b.write(district);
     }
@@ -126,10 +139,10 @@ class Location {
   }
 
   bool hasGeocodeInformation() {
-    return !isEmpty(country)
-        || !isEmpty(province)
-        || !isEmpty(city)
-        || !isEmpty(district);
+    return !isEmptyString(country)
+        || !isEmptyString(province)
+        || !isEmptyString(city)
+        || !isEmptyString(district);
   }
 
   WeatherCode get currentWeatherCode => weather != null
@@ -137,9 +150,9 @@ class Location {
       : _currentWeatherCode;
 
   static bool isEquals(String a, String b) {
-    if (isEmpty(a) && isEmpty(b)) {
+    if (isEmptyString(a) && isEmptyString(b)) {
       return true;
-    } else if (!isEmpty(a) && !isEmpty(b)) {
+    } else if (!isEmptyString(a) && !isEmptyString(b)) {
       return a == b;
     } else {
       return false;
@@ -178,6 +191,17 @@ class Location {
     }
     return (latitude - location.latitude).abs() < 0.8
         && (longitude - location.longitude).abs() < 0.8;
+  }
+  
+  bool isDaylight(int hours, int minutes) {
+    int currentTime = hours * 60 + minutes;
+    int sunriseTime = currentSunriseDate == null 
+        ? 6 * 60 
+        : currentSunriseDate!.hour * 60 + currentSunriseDate!.minute;
+    int sunsetTime = currentSunsetDate == null
+        ? 18 * 60
+        : currentSunsetDate!.hour * 60 + currentSunsetDate!.minute;
+    return sunriseTime <= currentTime && currentTime < sunsetTime;
   }
 
   @override

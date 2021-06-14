@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 
 import 'app/common/basic/widgets.dart';
@@ -10,15 +11,21 @@ import 'app/main/page_main.dart';
 import 'app/settings/page_about.dart';
 import 'generated/l10n.dart';
 
+String versionName;
+
 void main() {
   setupLocator();
   Paint.enableDithering = true;
 
   WidgetsFlutterBinding.ensureInitialized();
-  preloadMainViewModel().then((value) {
+  Future.wait([
+    preloadMainViewModel(),
+    PackageInfo.fromPlatform(),
+  ]).then((value) {
+    versionName = (value[1] as PackageInfo).version;
     WidgetsBinding.instance
       // ignore: invalid_use_of_protected_member
-      ..scheduleAttachRootWidget(GeometricWeather(value))
+      ..scheduleAttachRootWidget(GeometricWeather(value[0] as ThemeProvider))
       ..scheduleWarmUpFrame();
   });
 }

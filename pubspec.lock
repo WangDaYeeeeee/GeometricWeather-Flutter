@@ -336,6 +336,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  ink_page_indicator:
+    dependency: "direct main"
+    description:
+      name: ink_page_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
   intl:
     dependency: "direct main"
     description:

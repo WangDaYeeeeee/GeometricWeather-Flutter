@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
+import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/appearance.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
@@ -20,7 +21,7 @@ class ThemeManager {
 
   bool _daytime;
   DarkMode _darkMode;
-  GlobalKey<WeatherViewState> _weatherViewKey;
+  WeatherViewThemeDelegate _themeDelegate;
 
   ThemeProvider _themeProvider;
 
@@ -53,12 +54,12 @@ class ThemeManager {
     return this;
   }
 
-  void registerWeatherView(GlobalKey<WeatherViewState> weatherViewKey) {
-    _weatherViewKey = weatherViewKey;
+  void registerWeatherViewThemeDelegate(WeatherViewThemeDelegate themeDelegate) {
+    _themeDelegate = themeDelegate;
   }
 
-  void unregisterWeatherView() {
-    _weatherViewKey = null;
+  void unregisterWeatherViewThemeDelegate() {
+    _themeDelegate = null;
   }
 
   static ThemeMode getThemeMode(DarkMode darkMode, bool daytime) {
@@ -91,13 +92,29 @@ class ThemeManager {
 
   ThemeProvider get themeProvider => _themeProvider;
 
-  List<Color> getWeatherThemeColors(BuildContext context) =>
-      _weatherViewKey?.currentState?.getThemeColors(isLightTheme(context)) ?? [
-        Colors.transparent,
-        Colors.transparent,
-        Colors.transparent
-      ];
+  List<Color> getWeatherThemeColors(
+      BuildContext context,
+      WeatherCode weatherCode,
+      bool daytime,
+      bool lightTheme) => _themeDelegate?.getThemeColors(
+      context,
+      weatherCodeToWeatherKind(weatherCode),
+      daytime,
+      lightTheme
+  ) ?? [
+    ThemeColors.primaryColor,
+    ThemeColors.primaryColor,
+    ThemeColors.primaryColor,
+  ];
 
-  Color get weatherBackgroundColor =>
-      _weatherViewKey?.currentState?.getBackgroundColor() ?? Colors.transparent;
+  Color getWeatherBackgroundColor(
+      BuildContext context,
+      WeatherCode weatherCode,
+      bool daytime,
+      bool lightTheme) => _themeDelegate?.getBackgroundColor(
+      context,
+      weatherCodeToWeatherKind(weatherCode),
+      daytime,
+      lightTheme
+  ) ?? ThemeColors.primaryColor;
 }

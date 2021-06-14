@@ -12,9 +12,7 @@ abstract class ResourceProvider {
   }
 
   String get providerId;
-
   String get providerName;
-
   ImageProvider get providerIcon;
 
   @override

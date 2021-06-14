@@ -4,9 +4,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/app_bar.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
+import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/common/utils/system_services.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
-import 'package:package_info/package_info.dart';
+import 'package:geometricweather_flutter/main.dart';
 
 class _TranslatorItem extends StatelessWidget {
 
@@ -17,8 +18,7 @@ class _TranslatorItem extends StatelessWidget {
       this.email,
       this.textTheme,
       this.sysServices,
-      { Key key }
-      ): super(key: key);
+      { Key key }): super(key: key);
 
   final String title;
   final String subtitle;
@@ -89,19 +89,8 @@ class AboutPage extends StatelessWidget {
             Text(S.of(context).geometric_weather,
               style: textTheme.headline6,
             ),
-            FutureBuilder<PackageInfo>(
-                future: PackageInfo.fromPlatform(),
-                builder: (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done && !snapshot.hasError) {
-                    return Text(snapshot.data.version,
-                      style: textTheme.subtitle2,
-                    );
-                  } else {
-                    return Text('...',
-                      style: textTheme.subtitle2,
-                    );
-                  }
-                }
+            Text(versionName,
+              style: textTheme.subtitle2,
             ),
             Padding(padding: EdgeInsets.only(bottom: 20.0))
           ]
@@ -263,11 +252,17 @@ class AboutPage extends StatelessWidget {
         ),
         title: GeoPlatformAppBarTitle(context, S.of(context).action_about),
       ),
-      body: ListView.builder(
-          itemCount: itemList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return itemList[index];
-          }
+      body: Container(
+        alignment: AlignmentDirectional.topCenter,
+        child: getTabletAdaptiveWidthBox(
+          context,
+          ListView.builder(
+              itemCount: itemList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return itemList[index];
+              }
+          ),
+        ),
       ),
     );
   }

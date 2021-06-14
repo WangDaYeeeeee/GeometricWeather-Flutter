@@ -38,6 +38,10 @@ class IntervalComputer {
   int get interval => _interval;
 
   set drawable(bool drawable) {
+    if (_drawable == drawable) {
+      return;
+    }
+
     _drawable = drawable;
     if (_drawable) {
       _reset();

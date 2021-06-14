@@ -39,7 +39,7 @@ String getLanguage(BuildContext context) {
   Locale locale = Localizations.localeOf(context);
 
   StringBuffer b = StringBuffer(locale.languageCode);
-  if (!isEmpty(locale.countryCode)) {
+  if (!isEmptyString(locale.countryCode)) {
     b.write('-');
     b.write(locale.countryCode);
   }

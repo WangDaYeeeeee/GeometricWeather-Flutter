@@ -1225,20 +1225,20 @@ class S {
     );
   }
 
-  /// `ABOUT APP`
+  /// `About app`
   String get about_app {
     return Intl.message(
-      'ABOUT APP',
+      'About app',
       name: 'about_app',
       desc: '',
       args: [],
     );
   }
 
-  /// `introduce`
+  /// `Introduce`
   String get introduce {
     return Intl.message(
-      'introduce',
+      'Introduce',
       name: 'introduce',
       desc: '',
       args: [],

@@ -114,12 +114,10 @@ Stream<UpdateResult<Location>> requestWeatherUpdate(
         controller.add(event);
 
         // request weather.
-        if (event.status == UpdateStatus.LOCATOR_SUCCEED) {
+        if (event.status == UpdateStatus.LOCATOR_SUCCEED
+            || (event.status == UpdateStatus.LOCATOR_FAILED && location.usable)) {
           disposable = _requestWeather(context, location, controller);
           DatabaseHelper.getInstance().writeLocation(location);
-        } else if (event.status == UpdateStatus.LOCATOR_FAILED
-            && location.usable) {
-          disposable = _requestWeather(context, location, controller);
         }
       });
     },

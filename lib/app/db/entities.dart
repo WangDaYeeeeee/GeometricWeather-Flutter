@@ -21,6 +21,8 @@ class LocationEntity {
   final String district;
 
   final int weatherCodeIndex;
+  final int sunriseTimestamp;
+  final int sunsetTimestamp;
   final String weatherSourceKey;
 
   final bool currentPosition;
@@ -38,6 +40,8 @@ class LocationEntity {
       this.city,
       this.district,
       this.weatherCodeIndex,
+      this.sunriseTimestamp,
+      this.sunsetTimestamp,
       this.weatherSourceKey,
       this.currentPosition,
       this.residentPosition,

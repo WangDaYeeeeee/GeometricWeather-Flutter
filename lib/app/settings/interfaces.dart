@@ -117,5 +117,7 @@ class SettingsManager {
 
   PrecipitationUnit get precipitationUnit => PrecipitationUnit.all[PrecipitationUnit.KEY_MM];
 
+  ProbabilityUnit get probabilityUnit => ProbabilityUnit.all[ProbabilityUnit.KEY_PERCENT];
+
   String get resourceProviderId => DefaultResourceProvider.PROVIDER_ID;
 }

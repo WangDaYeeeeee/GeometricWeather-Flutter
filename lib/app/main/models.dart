@@ -38,9 +38,9 @@ enum LocationEvent {
   UPDATE_FROM_BACKGROUND,
 }
 
-class CurrentLocationResource extends Resource<Location> {
+class MainEvent extends Resource<Location> {
 
-  CurrentLocationResource(
+  MainEvent(
       Location? data,
       ResourceStatus status,
       this.defaultLocation,
@@ -52,30 +52,30 @@ class CurrentLocationResource extends Resource<Location> {
   final InitializationStage initStage;
   final LocationEvent locationEvent;
 
-  static CurrentLocationResource success(
+  static MainEvent success(
       Location data,
       bool defaultLocation,
       InitializationStage stage,
       LocationEvent event) {
-    return new CurrentLocationResource(
+    return new MainEvent(
         data, ResourceStatus.SUCCESS, defaultLocation, stage, event);
   }
 
-  static CurrentLocationResource error(
+  static MainEvent error(
       Location data,
       bool defaultLocation,
       InitializationStage stage,
       LocationEvent event) {
-    return new CurrentLocationResource(
+    return new MainEvent(
         data, ResourceStatus.ERROR, defaultLocation, stage, event);
   }
 
-  static CurrentLocationResource loading(
+  static MainEvent loading(
       Location data,
       bool defaultLocation,
       InitializationStage stage,
       LocationEvent event) {
-    return new CurrentLocationResource(
+    return new MainEvent(
         data, ResourceStatus.LOADING, defaultLocation, stage, event);
   }
 }

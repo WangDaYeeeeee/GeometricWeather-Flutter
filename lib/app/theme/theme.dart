@@ -17,7 +17,7 @@ class ThemeColors {
   static const primaryAccentColor = Color(0xFF212121);
 
   static const lightBackgroundColor = Color(0xFFFAFAFA);
-  static const darkBackgroundColor = Color(0xFF101010);
+  static const darkBackgroundColor = Color(0xFF212121);
 
   static const lightDividerColor = Color(0xFFF1F1F1);
   static const darkDividerColor = Color(0xFF363636);
@@ -52,21 +52,23 @@ class ThemeProvider with ChangeNotifier {
   ThemeMode _themeMode;
 
   static final ThemeData lightTheme = ThemeData(
-      brightness: Brightness.light,
-      primarySwatch: Colors.grey,
-      primaryColor: Platform.isIOS
-          ? ThemeColors.lightDividerColor
-          : ThemeColors.primaryColor,
-      primaryColorBrightness: Platform.isIOS
-          ? Brightness.light
-          : Brightness.dark,
-      primaryColorDark: Platform.isIOS
-          ? ThemeColors.lightDividerColor
-          : ThemeColors.primaryDarkColor,
-      accentColor: ThemeColors.primaryAccentColor,
-      accentColorBrightness: Brightness.dark,
-      backgroundColor: ThemeColors.lightBackgroundColor,
-      dividerColor: ThemeColors.lightDividerColor
+    brightness: Brightness.light,
+    primarySwatch: Colors.grey,
+    primaryColor: Platform.isIOS
+        ? ThemeColors.lightDividerColor
+        : ThemeColors.primaryColor,
+    primaryColorBrightness: Platform.isIOS
+        ? Brightness.light
+        : Brightness.dark,
+    primaryColorDark: Platform.isIOS
+        ? ThemeColors.lightDividerColor
+        : ThemeColors.primaryDarkColor,
+    accentColor: ThemeColors.primaryAccentColor,
+    accentColorBrightness: Brightness.dark,
+    backgroundColor: ThemeColors.lightBackgroundColor,
+    canvasColor: ThemeColors.lightBackgroundColor,
+    cardColor: ThemeColors.lightBackgroundColor,
+    dividerColor: ThemeColors.lightDividerColor,
   );
   static final ThemeData darkTheme = ThemeData(
       brightness: Brightness.dark,
@@ -81,6 +83,8 @@ class ThemeProvider with ChangeNotifier {
       accentColor: ThemeColors.primaryAccentColor,
       accentColorBrightness: Brightness.dark,
       backgroundColor: ThemeColors.darkBackgroundColor,
+      canvasColor: ThemeColors.darkBackgroundColor,
+      cardColor: ThemeColors.darkBackgroundColor,
       dividerColor: ThemeColors.darkDividerColor
   );
 

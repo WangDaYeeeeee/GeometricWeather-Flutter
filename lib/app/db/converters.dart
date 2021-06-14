@@ -19,6 +19,8 @@ LocationEntity locationToEntity(Location location) {
       location.city,
       location.district,
       location.currentWeatherCode.index,
+      location.currentSunriseDate?.millisecondsSinceEpoch ?? -1,
+      location.currentSunsetDate?.millisecondsSinceEpoch ?? -1,
       location.weatherSource.key,
       location.currentPosition,
       location.residentPosition,
@@ -50,7 +52,13 @@ Location entityToLocation(LocationEntity entity) {
     entity.currentPosition,
     entity.residentPosition,
     entity.china,
-    currentWeatherCode: WeatherCode.values[entity.weatherCodeIndex]
+    currentWeatherCode: WeatherCode.values[entity.weatherCodeIndex],
+    sunriseDate: entity.sunriseTimestamp < 0
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(entity.sunriseTimestamp),
+    sunsetDate: entity.sunsetTimestamp < 0
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(entity.sunsetTimestamp),
   );
 }
 

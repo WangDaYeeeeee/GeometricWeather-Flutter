@@ -95,7 +95,8 @@ class MainRepository {
 class MainViewModel extends ViewModel {
 
   // live data.
-  final LiveData<CurrentLocationResource> currentLocation;
+  final LiveData<Location> currentLocation;
+  final LiveData<MainEvent> event;
   final LiveData<Indicator> indicator;
   final LiveData<SelectableLocationListResource> listResource;
 
@@ -115,7 +116,9 @@ class MainViewModel extends ViewModel {
       this._validList,
       this._settingsManager,
   ): currentLocation = LiveData(
-      CurrentLocationResource(
+      _validList[0]
+  ), event = LiveData(
+      MainEvent(
           _validList[0],
           ResourceStatus.SUCCESS,
           true,
@@ -126,7 +129,31 @@ class MainViewModel extends ViewModel {
       Indicator(_validList.length, 0)
   ), listResource = LiveData(
       SelectableLocationListResource(_validList)
-  ), _themeManager = ThemeManager.getInstance(_settingsManager.darkMode);
+  ), _themeManager = ThemeManager.getInstance(_settingsManager.darkMode) {
+    event.addListener(() {
+      Location? location = event.value.data;
+      if (location == null) {
+        return;
+      }
+
+      if (location != currentLocation.value) {
+        currentLocation.value = location;
+        return;
+      }
+
+      if (location.weather == null) {
+        if (currentLocation.value.weather != null) {
+          currentLocation.value = location;
+        }
+        return;
+      }
+
+      if (location.weather != currentLocation.value.weather) {
+        currentLocation.value = location;
+        return;
+      }
+    });
+  }
 
   static Future<MainViewModel> getInstance() async {
     
@@ -145,14 +172,11 @@ class MainViewModel extends ViewModel {
   }
 
   void init([String? formattedId]) {
-    // set value directly, don't use `_setLiveDataWithVerification` method,
-    // current location value might contains a null location.
-    currentLocation.value = CurrentLocationResource(
-        currentLocation.value.data,
-        ResourceStatus.LOADING,
-        currentLocation.value.defaultLocation,
-        InitializationStage.INITIALIZING,
-        LocationEvent.INITIALIZE_RUNNING
+    _setLiveDataWithVerification(
+      location: currentLocation.value,
+      defaultLocation: event.value.defaultLocation,
+      initStage: InitializationStage.INITIALIZING,
+      locationEvent: LocationEvent.INITIALIZE_RUNNING,
     );
 
     formattedId = formattedId ?? _formattedId;
@@ -181,8 +205,9 @@ class MainViewModel extends ViewModel {
     _streamSubscription = null;
   }
 
-  void checkWhetherToChangeTheme(BuildContext context) {
-    Location? location = currentLocation.value.data;
+  void checkToUpdate() {
+    MainEvent ev = event.value;
+    Location? location = ev.data;
     if (location == null) {
       return;
     }
@@ -191,6 +216,13 @@ class MainViewModel extends ViewModel {
         darkMode: _settingsManager.darkMode,
         location: location
     );
+
+    if (ev.initStage == InitializationStage.INITIALIZATION_DONE
+        && !updating
+        && _needUpdate(location)) {
+      event.value = MainEvent.loading(
+          location, ev.defaultLocation, ev.initStage, LocationEvent.UPDATE_BEGIN);
+    }
   }
 
   void updateLocationFromBackground(Location location) {
@@ -264,7 +296,7 @@ class MainViewModel extends ViewModel {
   }
 
   void updateWeather(BuildContext context) {
-    Location? location = currentLocation.value.data;
+    Location? location = event.value.data;
     if (location == null) {
       return;
     }
@@ -279,7 +311,7 @@ class MainViewModel extends ViewModel {
 
     _setLiveDataWithVerification(
       location: location,
-      defaultLocation: currentLocation.value.defaultLocation,
+      defaultLocation: event.value.defaultLocation,
       locationEvent: LocationEvent.UPDATE_BEGIN,
     );
 
@@ -466,7 +498,7 @@ class MainViewModel extends ViewModel {
   }
 
   Location deleteLocation(int position) {
-    String currentFormattedId = currentLocation.value.data?.formattedId
+    String currentFormattedId = event.value.data?.formattedId
         ?? Location.NULL_ID;
 
     List<Location> totalList = List.from(_totalList);
@@ -505,9 +537,9 @@ class MainViewModel extends ViewModel {
       List<Location> totalList,
       List<Location> validList,
       int validIndex) {
+
     _totalList = totalList;
     _validList = validList;
-
     _formattedId = validList[validIndex].formattedId;
   }
 
@@ -529,12 +561,12 @@ class MainViewModel extends ViewModel {
     if (location != null
         && defaultLocation != null
         && locationEvent != null) {
-      initStage = initStage ?? currentLocation.value.initStage;
+      initStage = initStage ?? event.value.initStage;
       forceSetCurrentRunning = forceSetCurrentRunning ?? false;
 
       switch (locationEvent) {
         case LocationEvent.INITIALIZE_RUNNING:
-          currentLocation.value = CurrentLocationResource.loading(
+          event.value = MainEvent.loading(
               location, defaultLocation, initStage, locationEvent);
           break;
 
@@ -542,21 +574,21 @@ class MainViewModel extends ViewModel {
         case LocationEvent.SET_LOCATION:
           if (initStage == InitializationStage.INITIALIZATION_DONE
               && _needUpdate(location)) {
-            currentLocation.value = CurrentLocationResource.loading(
+            event.value = MainEvent.loading(
                 location, defaultLocation, initStage, locationEvent);
           } else {
             _streamSubscription?.cancel();
             _streamSubscription = null;
 
-            currentLocation.value = CurrentLocationResource.success(
+            event.value = MainEvent.success(
                 location, defaultLocation, initStage, locationEvent);
           }
           break;
 
         case LocationEvent.ADJUST_LIST_CHANGED:
-          currentLocation.value = CurrentLocationResource(
+          event.value = MainEvent(
               location,
-              currentLocation.value.status,
+              event.value.status,
               defaultLocation,
               initStage,
               locationEvent
@@ -565,12 +597,12 @@ class MainViewModel extends ViewModel {
 
         case LocationEvent.UPDATE_BEGIN:
         case LocationEvent.UPDATE_RUNNING:
-          currentLocation.value = CurrentLocationResource.loading(
+        event.value = MainEvent.loading(
               location, defaultLocation, initStage, locationEvent);
           break;
 
         case LocationEvent.UPDATE_SUCCEED:
-          currentLocation.value = CurrentLocationResource.success(
+          event.value = MainEvent.success(
               location, defaultLocation, initStage, locationEvent);
           break;
 
@@ -579,7 +611,7 @@ class MainViewModel extends ViewModel {
         case LocationEvent.LOCATOR_FAILED:
         case LocationEvent.GET_GEO_POSITION_FAILED:
         case LocationEvent.GET_WEATHER_FAILED:
-          currentLocation.value = CurrentLocationResource(
+        event.value = MainEvent(
               location,
               forceSetCurrentRunning
                   ? ResourceStatus.LOADING
@@ -594,7 +626,7 @@ class MainViewModel extends ViewModel {
           _streamSubscription?.cancel();
           _streamSubscription = null;
 
-          currentLocation.value = CurrentLocationResource.success(
+          event.value = MainEvent.success(
               location, defaultLocation, initStage, locationEvent);
           break;
       }
@@ -617,7 +649,7 @@ class MainViewModel extends ViewModel {
       || !location.weather!.isValid(1.5);
 
   static int indexLocation(List<Location> locationList, String? formattedId) {
-    if (isEmpty(formattedId)) {
+    if (isEmptyString(formattedId)) {
       return 0;
     }
     for (int i = 0; i < locationList.length; i ++) {
@@ -636,7 +668,7 @@ class MainViewModel extends ViewModel {
   }
 
   String getCurrentFormattedId() {
-    Location? location = currentLocation.value.data;
+    Location? location = event.value.data;
     if (location != null) {
       return location.formattedId;
     } else if (_formattedId != null) {

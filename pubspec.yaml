@@ -44,6 +44,7 @@ dependencies:
   flutter_native_timezone: ^1.1.0
   native_device_orientation: ^1.0.0
   flutter_staggered_animations: ^1.0.0
+  ink_page_indicator: ^0.2.1
 
 dev_dependencies:
   flutter_test:

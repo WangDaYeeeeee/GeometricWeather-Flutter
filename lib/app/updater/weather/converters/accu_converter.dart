@@ -30,7 +30,7 @@ location.Location toLocation(AccuLocationResult result, [
       WeatherSource.all[WeatherSource.KEY_ACCU],
       src != null ? src.currentPosition : false,
       src != null ? src.residentPosition : false,
-      !isEmpty(result.country.iD)
+      !isEmptyString(result.country.iD)
           && (result.country.iD == "CN"
           || result.country.iD == "cn"
           || result.country.iD == "HK"
@@ -80,7 +80,7 @@ int toInt(double value) {
 }
 
 Future<String> convertUnit(BuildContext context, String str) async {
-  if (isEmpty(str)) {
+  if (isEmptyString(str)) {
     return str;
   }
 

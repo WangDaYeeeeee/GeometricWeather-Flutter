@@ -399,11 +399,11 @@ class UV {
       b.write(index);
     }
     if (level != null) {
-      b.write(isEmpty(b.toString()) ? "" : " ");
+      b.write(isEmptyString(b.toString()) ? "" : " ");
       b.write(level);
     }
     if (description != null) {
-      b.write(isEmpty(b.toString()) ? "" : "\n");
+      b.write(isEmptyString(b.toString()) ? "" : "\n");
       b.write(description);
     }
     return b.toString();
@@ -415,7 +415,7 @@ class UV {
       b.write(index);
     }
     if (level != null) {
-      b.write(isEmpty(b.toString()) ? "" : " ");
+      b.write(isEmptyString(b.toString()) ? "" : " ");
       b.write(level);
     }
     return b.toString();
@@ -761,7 +761,7 @@ class MoonPhase {
   }
 
   MoonPhaseCode getMoonPhaseCode() {
-    if (isEmpty(description)) {
+    if (isEmptyString(description)) {
       return MoonPhaseCode.NEW;
     }
 
@@ -936,9 +936,12 @@ class Hourly {
       this.precipitationProbability);
 
   String getHour(bool twelveHour, String ofClock) {
-    int hour = DateTime.now().hour;
+    int hour = date.hour;
     if (twelveHour) {
-      hour = hour + 1 - 12;
+      hour = hour % 12;
+      if (hour == 0) {
+        hour = 12;
+      }
     }
 
     return '$hour$ofClock';
@@ -1026,6 +1029,14 @@ class Weather {
       this.alertList,
       [ this.yesterday ]);
 
+  @override
+  bool operator ==(Object other) {
+    return other is Weather && base.timeStamp != other.base.timeStamp;
+  }
+
+  @override
+  int get hashCode => super.hashCode;
+
   bool isValid(double hour) {
     int updateTime = base.updateTime;
     int currentTime = DateTime.now().millisecondsSinceEpoch;
@@ -1037,4 +1048,5 @@ class Weather {
   factory Weather.fromJson(Map<String, dynamic> json) => _$WeatherFromJson(json);
 
   Map<String, dynamic> toJson() => _$WeatherToJson(this);
+
 }

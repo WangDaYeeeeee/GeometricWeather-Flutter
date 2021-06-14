@@ -165,7 +165,7 @@ class ProbabilityUnit extends Unit<double> {
 
   @override
   String formatValue(double value) {
-    return value.toStringAsFixed(1);
+    return value.toStringAsFixed(0);
   }
 }
 

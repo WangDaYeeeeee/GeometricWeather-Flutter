@@ -76,8 +76,8 @@ class LocationHelper {
           testLog(stackTrace.toString());
           sink.add(
               UpdateResult(
-                  location,
-                  location.usable,
+                  location.usable ? location : Location.buildDefaultLocation(),
+                  true, // always usable.
                   UpdateStatus.LOCATOR_FAILED
               )
           );
@@ -111,7 +111,7 @@ class LocationHelper {
           controller.add(value);
 
           // listen locator and send data.
-          _listenLocatorStream(value.data, controller);
+          subscription = _listenLocatorStream(value.data, controller);
         });
       },
       onCancel: () {

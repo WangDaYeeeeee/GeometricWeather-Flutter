@@ -4,7 +4,7 @@ class AccuCurrentResult {
   String weatherText;
   int weatherIcon;
   bool hasPrecipitation;
-  Null precipitationType;
+  String precipitationType;
   LocalSource localSource;
   bool isDayTime;
   Temperature temperature;

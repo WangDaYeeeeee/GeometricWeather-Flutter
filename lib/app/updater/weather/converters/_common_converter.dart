@@ -52,7 +52,7 @@ String getAqiQuality(BuildContext context, int index) {
 }
 
 int getMoonPhaseAngle(String phase) {
-  if (isEmpty(phase)) {
+  if (isEmptyString(phase)) {
     return null;
   }
   switch (phase.toLowerCase()) {

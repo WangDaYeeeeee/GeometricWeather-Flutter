@@ -6,37 +6,78 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geometricweather_flutter/app/common/utils/router.dart';
 import 'package:geometricweather_flutter/app/theme/manager.dart';
-import 'package:geometricweather_flutter/app/theme/providers/providers.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 
-double appBarHeight;
+class MainAppBar extends StatefulWidget {
 
-Widget getAppBar(
-    BuildContext context,
-    String title,
-    ThemeManager themeManager,
-    double scrollOffset,
-    double headerHeight) {
-  if (appBarHeight == null) {
-    appBarHeight = getAppBarHeight(context);
+  MainAppBar(Key key, this.themeManager, {
+    this.title,
+    this.scrollOffset,
+    this.headerHeight,
+  }): super(key: key);
+
+  final ThemeManager themeManager;
+  final double headerHeight;
+
+  final String title;
+  final double scrollOffset;
+
+  @override
+  State<StatefulWidget> createState() {
+    return MainAppBarState();
+  }
+}
+
+class MainAppBarState extends State<MainAppBar> {
+
+  String _title;
+  double _scrollOffset;
+  double _headerHeight;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _title = widget.title;
+    _scrollOffset = widget.scrollOffset;
+    _headerHeight = widget.headerHeight;
   }
 
-  return Transform.translate(
-    offset: Offset(
+  @override
+  void didUpdateWidget(covariant MainAppBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    update(widget.title, widget.scrollOffset, widget.headerHeight);
+  }
+
+  void update(String title, double scrollOffset, double headerHeight) {
+    setState(() {
+      _title = title;
+      _scrollOffset = scrollOffset;
+      _headerHeight = headerHeight;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appBarHeight = getAppBarHeight(context);
+
+    return Transform.translate(
+      offset: Offset(
         0.0,
         Platform.isIOS ? 0 : (
-            scrollOffset > headerHeight - appBarHeight - 162.0
-                ? (headerHeight - appBarHeight - 162.0 - scrollOffset)
+            _scrollOffset > _headerHeight - appBarHeight - 162.0
+                ? (_headerHeight - appBarHeight - 162.0 - _scrollOffset)
                 : 0
         ),
-    ),
-    child: _getAppBar(
-        context,
-        title,
-        themeManager,
-        scrollOffset > headerHeight
-    ),
-  );
+      ),
+      child: _getAppBar(
+          context,
+          _title,
+          widget.themeManager,
+          _scrollOffset > _headerHeight
+      ),
+    );
+  }
 }
 
 Widget _getAppBar(
@@ -54,9 +95,9 @@ Widget _getAppBar(
       child: PlatformAppBar(
         leading: _getSettingsIcon(context, themeManager, headerHidden),
         title: Text(title,
-          style: headerHidden
-              ? TextStyle(color: themeManager.isLightTheme(context) ? Colors.black : Colors.white)
-              : TextStyle(color: Colors.white)
+            style: headerHidden
+                ? TextStyle(color: themeManager.isLightTheme(context) ? Colors.black : Colors.white)
+                : TextStyle(color: Colors.white)
         ),
         trailingActions: [ _getManagementIcon(context, themeManager, headerHidden) ],
         backgroundColor: Colors.transparent,
@@ -134,69 +175,4 @@ class _PlatformAppBarIconButton extends PlatformIconButton {
       ),
       onPressed: onPressed
   );
-}
-
-class InitializationAnimation extends StatefulWidget {
-
-  @override
-  State<StatefulWidget> createState() {
-    return _InitializationAnimationState();
-  }
-}
-
-class _InitializationAnimationState extends State<InitializationAnimation>
-    with TickerProviderStateMixin {
-
-  AnimationController _rotationAnimController;
-  Animation<double> _rotationAnimation;
-  ResourceProvider _resProvider;
-
-  static const int ANIM_CYCLE_DURATION = 5000;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _rotationAnimController?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_rotationAnimController == null) {
-      _rotationAnimController = AnimationController(
-        duration: const Duration(milliseconds: ANIM_CYCLE_DURATION),
-        vsync: this,
-      );
-
-      _rotationAnimation = Tween(begin: 0.0, end: 5.0).animate(
-          CurvedAnimation(
-              parent: _rotationAnimController,
-              curve: Curves.easeInOutBack
-          )
-      );
-      _rotationAnimation.addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          _rotationAnimController.forward(from: 0.0);
-        }
-      });
-      _rotationAnimController.forward(from: 0.0);
-
-      _resProvider = ResourceProvider(context, DefaultResourceProvider.PROVIDER_ID);
-    }
-
-    return Center(
-      child: RotationTransition(
-        child: Image(
-          image: _resProvider.getSunDrawable(),
-          width: 128.0,
-          height: 128.0,
-        ),
-        turns: _rotationAnimation,
-      ),
-    );
-  }
 }

@@ -94,18 +94,29 @@ abstract class WeatherViewState<T extends StatefulWidget> extends State<T> {
 
   WeatherKind get weatherKind;
 
-  /// @return colors[] {
-  ///     theme color,
-  ///     color of daytime chart line,
-  ///     color of nighttime chart line
-  /// }
-  List<Color> getThemeColors(bool lightTheme);
-
-  Color getBackgroundColor();
-
   double getHeaderHeight(BuildContext context);
 
   set drawable(bool drawable);
 
   set gravitySensorEnabled(bool enabled);
+}
+
+abstract class WeatherViewThemeDelegate {
+
+  /// @return colors[] {
+  ///     theme color,
+  ///     color of daytime chart line,
+  ///     color of nighttime chart line
+  /// }
+  List<Color> getThemeColors(
+      BuildContext context,
+      WeatherKind weatherKind,
+      bool daytime,
+      bool lightTheme);
+
+  Color getBackgroundColor(
+      BuildContext context,
+      WeatherKind weatherKind,
+      bool daytime,
+      bool lightTheme);
 }
