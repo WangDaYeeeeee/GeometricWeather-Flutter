@@ -124,10 +124,7 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
 
   @override
   Widget build(BuildContext context) {
-    _headerHeight = max(
-        MediaQuery.of(context).size.height * HEADER_RATIO,
-        MIN_HEADER_HEIGHT
-    );
+    _headerHeight = MaterialWeatherViewThemeDelegate._getHeaderHeight(context);
     _painterIn?._setAdaptiveWidth(getTabletAdaptiveWidth(context));
     _painterOut?._setAdaptiveWidth(getTabletAdaptiveWidth(context));
 
@@ -148,13 +145,13 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   Widget _innerBuild(Gradient gradient, CustomPainter painter) {
     return DecoratedBox(
       decoration: BoxDecoration(
-          gradient: gradient
+        gradient: gradient
       ),
       child: RepaintBoundary(
-          child: CustomPaint(
-            size: Size.infinite,
-            painter: painter
-          )
+        child: CustomPaint(
+          size: Size.infinite,
+          painter: painter
+        )
       ),
     );
   }
@@ -315,12 +312,6 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   }
 
   @override
-  double getHeaderHeight(BuildContext context) => max(
-      MediaQuery.of(context).size.height * HEADER_RATIO,
-      MIN_HEADER_HEIGHT
-  );
-
-  @override
   void onClick() {
     // do nothing.
   }
@@ -418,6 +409,7 @@ abstract class MaterialWeatherPainter extends CustomPainter {
       _rotationControllers[0].updateRotation(_rotation2D, interval);
       _rotationControllers[1].updateRotation(_rotation3D, interval);
 
+      canvas.clipRect(Rect.fromLTWH(0.0, 0.0, size.width, size.height));
       canvas.translate((size.width - _adaptiveSize.width) / 2.0, 0.0);
       paintWithInterval(
           canvas,
@@ -560,4 +552,12 @@ class MaterialWeatherViewThemeDelegate implements WeatherViewThemeDelegate {
         min(1, hsv.value + 0.25)
     ).toColor();
   }
+
+  @override
+  double getHeaderHeight(BuildContext context) => _getHeaderHeight(context);
+
+  static double _getHeaderHeight(BuildContext context) => max(
+      MediaQuery.of(context).size.height * HEADER_RATIO,
+      MIN_HEADER_HEIGHT
+  );
 }

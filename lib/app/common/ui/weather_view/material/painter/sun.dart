@@ -5,7 +5,7 @@ import 'package:geometricweather_flutter/app/common/ui/weather_view/material/pai
 
 import '../mtrl_weather_view.dart';
 
-class SunPainter extends MaterialWeatherPainter  {
+class SunPainter extends MaterialWeatherPainter {
 
   static const SUN_COLOR = Color(0xFFfd5411);
 

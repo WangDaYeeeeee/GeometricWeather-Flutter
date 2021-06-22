@@ -117,4 +117,7 @@ class ThemeManager {
       daytime,
       lightTheme
   ) ?? ThemeColors.primaryColor;
+
+  double getHeaderHeight(BuildContext context) =>
+      _themeDelegate?.getHeaderHeight(context) ?? 0.0;
 }

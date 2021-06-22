@@ -17,6 +17,11 @@ typedef OnSwitchCallback = Future<void> Function(int positionChanging);
 const RESET_ANIMATION_DURATION = 800;
 const SWIPE_RATIO = 0.4;
 
+enum _DragState {
+  idle,
+  dragging,
+}
+
 class SwipeSwitchLayout extends StatefulWidget {
 
   final Widget child;
@@ -45,10 +50,9 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
   double progressX;
   double triggerDistanceX = 100;
 
-  // true  : dragging.
-  // false : idle.
-  // null  : pending because listening the scroll start event.
-  bool dragging = false;
+  bool onSwitchRunning = false;
+
+  _DragState state = _DragState.idle;
 
   AnimationController resetController;
 
@@ -87,51 +91,45 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
                 },
               ),
               onNotification: (OverscrollIndicatorNotification notification) {
-                if (dragging != null) {
-                  dragging = null;
+                if (state == _DragState.dragging) {
+                  notification.disallowGlow();
                   return true;
                 }
                 return false;
               },
             ),
             onNotification: (ScrollNotification notification) {
-              if (dragging != null && !dragging) {
-                // idle.
-                if (notification is ScrollStartNotification
-                    && notification.dragDetails != null) {
-                  dragging = null;
-                  return false;
+              if (notification is ScrollStartNotification) {
+                // reset drag state when scroll start.
+                state = _DragState.idle;
+              } else if (notification is ScrollUpdateNotification) {
+                if (_shouldStartDragging(notification)) {
+                  _onDragStart();
                 }
-              }
 
-              if (dragging != null && !dragging) {
-                return false;
-              }
-
-              if (notification is ScrollUpdateNotification) {
-                if (dragging == null) {
-                  dragging = notification.metrics.axis == Axis.horizontal
-                      && (notification.metrics.atEdge || notification.metrics.outOfRange);
-                }
-                if (dragging) {
+                if (state == _DragState.dragging) {
                   if (notification.dragDetails != null
                       && (notification.metrics.atEdge || notification.metrics.outOfRange)) {
                     _onDragUpdate(-notification.scrollDelta);
                   } else {
-                    _onDragEnd(forceCancel: true);
+                    // if drag details is nonnull,
+                    // it means user canceled the nested scrolling by reversed scroll.
+                    _onDragEnd(
+                      forceCancel: notification.dragDetails != null
+                    );
                   }
                   return true;
                 }
               } else if (notification is OverscrollNotification) {
-                if (dragging == null) {
-                  dragging = notification.metrics.axis == Axis.horizontal
-                      && (notification.metrics.atEdge || notification.metrics.outOfRange);
+                if (_shouldStartDragging(notification)) {
+                  _onDragStart();
                 }
-                if (dragging) {
+
+                if (state == _DragState.dragging) {
                   if (notification.dragDetails != null) {
                     _onDragUpdate(-notification.overscroll);
                   } else {
-                    _onDragEnd(forceCancel: true);
+                    _onDragEnd();
                   }
                   return true;
                 }
@@ -158,10 +156,24 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
     );
   }
 
+  bool _shouldStartDragging(ScrollNotification notification) {
+    bool validDrag = (
+        notification is ScrollUpdateNotification
+            && notification.dragDetails != null
+    ) || (
+        notification is OverscrollNotification
+            && notification.dragDetails != null
+    );
+    return state == _DragState.idle
+        && validDrag
+        && notification.metrics.axis == Axis.horizontal
+        && (notification.metrics.atEdge || notification.metrics.outOfRange);
+  }
+
   void _onDragStart() {
     cancelResetAnimation();
 
-    dragging = true;
+    state = _DragState.dragging;
     setState(() {
       // do not reset offsetX as 0, we might just stop a reset animation.
       setOffset(offsetX);
@@ -181,19 +193,21 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
   void _onDragEnd({
     bool forceCancel = false
   }) {
-    dragging = false;
+    state = _DragState.idle;
 
     if (forceCancel || offsetX.abs() < getTriggerDistance()) {
       startResetAnimation();
     } else {
       // notify outside.
-      if (widget.onSwitch != null) {
+      if (widget.onSwitch != null && !onSwitchRunning) {
+        onSwitchRunning = true;
         widget.onSwitch(offsetX > 0 ? -1 : 1).then((_) {
           setState(() {
             setOffset(0);
           });
         });
       } else {
+        onSwitchRunning = false;
         setState(() {
           setOffset(0);
         });

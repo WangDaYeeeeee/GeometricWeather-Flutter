@@ -323,7 +323,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "speed_unit_voice_kph" : MessageLookupByLibrary.simpleMessage("Kilometers per hour"),
     "speed_unit_voice_mph" : MessageLookupByLibrary.simpleMessage("Miles per hour"),
     "speed_unit_voice_mps" : MessageLookupByLibrary.simpleMessage("Meters per second"),
-    "sunrise_sunset" : MessageLookupByLibrary.simpleMessage("Sun &amp; moon"),
+    "sunrise_sunset" : MessageLookupByLibrary.simpleMessage("Sun & moon"),
     "temperature" : MessageLookupByLibrary.simpleMessage("Temperature"),
     "temperature_unit_c" : MessageLookupByLibrary.simpleMessage("℃"),
     "temperature_unit_f" : MessageLookupByLibrary.simpleMessage("℉"),

@@ -1125,10 +1125,10 @@ class S {
     );
   }
 
-  /// `Sun &amp; moon`
+  /// `Sun & moon`
   String get sunrise_sunset {
     return Intl.message(
-      'Sun &amp; moon',
+      'Sun & moon',
       name: 'sunrise_sunset',
       desc: '',
       args: [],

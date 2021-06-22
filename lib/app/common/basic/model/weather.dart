@@ -1031,7 +1031,7 @@ class Weather {
 
   @override
   bool operator ==(Object other) {
-    return other is Weather && base.timeStamp != other.base.timeStamp;
+    return other is Weather && base.timeStamp == other.base.timeStamp;
   }
 
   @override

@@ -99,5 +99,15 @@ bool isDaylight(DateTime sunrise, DateTime sunset, DateTime current) =>
     sunrise.isBefore(current) && current.isBefore(sunset);
 
 String removeTimezoneOfDateString(String date) {
+  if (isEmptyString(date)) {
+    return date;
+  }
   return date.substring(0, date.length - 6);
+}
+
+DateTime parseNullableDateString(String formattedString) {
+  if (isEmptyString(formattedString)) {
+    return null;
+  }
+  return DateTime.parse(formattedString);
 }

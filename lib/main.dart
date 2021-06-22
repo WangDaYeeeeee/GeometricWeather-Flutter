@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +13,7 @@ import 'app/settings/page_about.dart';
 import 'generated/l10n.dart';
 
 String versionName;
+String currentTimezone;
 
 void main() {
   setupLocator();
@@ -21,8 +23,10 @@ void main() {
   Future.wait([
     preloadMainViewModel(),
     PackageInfo.fromPlatform(),
+    FlutterNativeTimezone.getLocalTimezone(),
   ]).then((value) {
     versionName = (value[1] as PackageInfo).version;
+    currentTimezone = value[2] as String;
     WidgetsBinding.instance
       // ignore: invalid_use_of_protected_member
       ..scheduleAttachRootWidget(GeometricWeather(value[0] as ThemeProvider))

@@ -145,9 +145,8 @@ class Location {
         || !isEmptyString(district);
   }
 
-  WeatherCode get currentWeatherCode => weather != null
-      ? weather!.current.weatherCode
-      : _currentWeatherCode;
+  WeatherCode get currentWeatherCode => weather?.current.weatherCode
+      ?? _currentWeatherCode;
 
   static bool isEquals(String a, String b) {
     if (isEmptyString(a) && isEmptyString(b)) {

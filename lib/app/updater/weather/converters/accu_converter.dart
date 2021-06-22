@@ -4,6 +4,7 @@ import 'package:geometricweather_flutter/app/common/basic/model/location.dart' a
 import 'package:geometricweather_flutter/app/common/basic/model/weather.dart' as weather;
 import 'package:geometricweather_flutter/app/common/basic/options/providers.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/units.dart';
+import 'package:geometricweather_flutter/app/common/utils/logger.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
 import 'package:geometricweather_flutter/app/settings/interfaces.dart';
 import 'package:geometricweather_flutter/app/updater/weather/converters/_common_converter.dart';
@@ -169,10 +170,10 @@ Future<weather.Weather> toWeather(
         weather.Base(
             location.cityId,
             DateTime.now().millisecondsSinceEpoch,
-            DateTime.parse(removeTimezoneOfDateString(
+            parseNullableDateString(removeTimezoneOfDateString(
                 currentResult.localObservationDateTime
             )),
-            DateTime.parse(removeTimezoneOfDateString(
+            parseNullableDateString(removeTimezoneOfDateString(
                 currentResult.localObservationDateTime
             )).millisecondsSinceEpoch,
             DateTime.now(),
@@ -225,12 +226,12 @@ Future<weather.Weather> toWeather(
         getAlertList(alertResultList),
         weather.History(
             DateTime.fromMillisecondsSinceEpoch(
-                DateTime.parse(removeTimezoneOfDateString(
+                parseNullableDateString(removeTimezoneOfDateString(
                     currentResult.localObservationDateTime
                 )).millisecondsSinceEpoch - 24 * 60 * 60 * 1000
             ),
             DateTime.fromMillisecondsSinceEpoch(
-                DateTime.parse(removeTimezoneOfDateString(
+                parseNullableDateString(removeTimezoneOfDateString(
                     currentResult.localObservationDateTime
                 )).millisecondsSinceEpoch - 24 * 60 * 60 * 1000
             ).millisecondsSinceEpoch,
@@ -238,7 +239,9 @@ Future<weather.Weather> toWeather(
             currentResult.temperatureSummary.past24HourRange.minimum.metric.value.toInt()
         ),
     );
-  } catch (e) {
+  } on Exception catch (e, stacktrace) {
+    testLog(e.toString());
+    testLog(stacktrace.toString());
     return null;
   }
 }
@@ -299,10 +302,10 @@ Future<List<weather.Daily>> getDailyList(
   for (DailyForecasts forecasts in dailyResult.dailyForecasts) {
     dailyList.add(
         weather.Daily(
-            DateTime.parse(
+            parseNullableDateString(
                 removeTimezoneOfDateString(forecasts.date)
             ),
-            DateTime.parse(
+            parseNullableDateString(
                 removeTimezoneOfDateString(forecasts.date)
             ).millisecondsSinceEpoch,
             [weather.HalfDay(
@@ -391,12 +394,12 @@ Future<List<weather.Daily>> getDailyList(
             )],
             [
               weather.Astro(
-                  DateTime.parse(removeTimezoneOfDateString(forecasts.sun.rise)),
-                  DateTime.parse(removeTimezoneOfDateString(forecasts.sun.set))
+                  parseNullableDateString(removeTimezoneOfDateString(forecasts.sun.rise)),
+                  parseNullableDateString(removeTimezoneOfDateString(forecasts.sun.set))
               ),
               weather.Astro(
-                  DateTime.parse(removeTimezoneOfDateString(forecasts.moon.rise)),
-                  DateTime.parse(removeTimezoneOfDateString(forecasts.moon.set))
+                  parseNullableDateString(removeTimezoneOfDateString(forecasts.moon.rise)),
+                  parseNullableDateString(removeTimezoneOfDateString(forecasts.moon.set))
               )
             ],
             weather.MoonPhase(
@@ -418,10 +421,10 @@ List<weather.Hourly> getHourlyList(List<AccuHourlyResult> resultList) {
   for (AccuHourlyResult result in resultList) {
     hourlyList.add(
         weather.Hourly(
-            DateTime.parse(
+            parseNullableDateString(
                 removeTimezoneOfDateString(result.dateTime)
             ),
-            DateTime.parse(
+            parseNullableDateString(
                 removeTimezoneOfDateString(result.dateTime)
             ).millisecondsSinceEpoch,
             result.isDaylight,
@@ -446,8 +449,8 @@ List<weather.Alert> getAlertList(List<AccuAlertResult> resultList) {
     alertList.add(
         weather.Alert(
             result.alertID,
-            DateTime.parse(removeTimezoneOfDateString(result.area[0].startTime)),
-            DateTime.parse(
+            parseNullableDateString(removeTimezoneOfDateString(result.area[0].startTime)),
+            parseNullableDateString(
                 removeTimezoneOfDateString(result.area[0].startTime)
             ).millisecondsSinceEpoch,
             result.description.localized,

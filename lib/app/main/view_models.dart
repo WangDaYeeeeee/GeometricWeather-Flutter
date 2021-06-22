@@ -109,7 +109,7 @@ class MainViewModel extends ViewModel {
 
   // async control.
   final MainRepository _repository = MainRepository();
-  StreamSubscription? _streamSubscription;
+  StreamSubscription? _updateDescription;
 
   MainViewModel._(
       this._totalList,
@@ -201,8 +201,7 @@ class MainViewModel extends ViewModel {
 
   @override
   void dispose(BuildContext context) {
-    _streamSubscription?.cancel();
-    _streamSubscription = null;
+    cancelUpdate();
   }
 
   void checkToUpdate() {
@@ -289,7 +288,7 @@ class MainViewModel extends ViewModel {
     _setLiveDataWithVerification(
         location: current,
         defaultLocation: defaultLocation,
-        locationEvent: LocationEvent.SET_LOCATION,
+        locationEvent: LocationEvent.SWITCH_LOCATION,
         indicatorValue: indicator,
         listEvent: DataSetChanged()
     );
@@ -300,9 +299,6 @@ class MainViewModel extends ViewModel {
     if (location == null) {
       return;
     }
-
-    _streamSubscription?.cancel();
-    _streamSubscription = null;
 
     _themeManager.update(
         darkMode: _settingsManager.darkMode,
@@ -315,7 +311,7 @@ class MainViewModel extends ViewModel {
       locationEvent: LocationEvent.UPDATE_BEGIN,
     );
 
-    _streamSubscription = _repository.update(context, location).listen((event) {
+    _updateDescription = _repository.update(context, location).listen((event) {
       List<Location> totalList = List.from(_totalList);
       for (int i = 0; i < totalList.length; i ++) {
         if (totalList[i] == event.data) {
@@ -371,7 +367,7 @@ class MainViewModel extends ViewModel {
           location: event.data
       );
 
-      _streamSubscription = null;
+      _updateDescription = null;
 
       _setLiveDataWithVerification(
           location: event.data,
@@ -384,7 +380,12 @@ class MainViewModel extends ViewModel {
     });
   }
 
-  bool get updating => _streamSubscription != null;
+  void cancelUpdate() {
+    _updateDescription?.cancel();
+    _updateDescription = null;
+  }
+
+  bool get updating => _updateDescription != null;
 
   void addLocation(Location location, [int? position]) {
     position = position ?? _totalList.length;
@@ -572,13 +573,17 @@ class MainViewModel extends ViewModel {
 
         case LocationEvent.INITIALIZE_DONE:
         case LocationEvent.SET_LOCATION:
+        case LocationEvent.SWITCH_LOCATION:
+          if (locationEvent == LocationEvent.SWITCH_LOCATION) {
+            // update current location value manually. (force update)
+            currentLocation.value = location;
+          }
           if (initStage == InitializationStage.INITIALIZATION_DONE
               && _needUpdate(location)) {
             event.value = MainEvent.loading(
                 location, defaultLocation, initStage, locationEvent);
           } else {
-            _streamSubscription?.cancel();
-            _streamSubscription = null;
+            cancelUpdate();
 
             event.value = MainEvent.success(
                 location, defaultLocation, initStage, locationEvent);
@@ -623,8 +628,7 @@ class MainViewModel extends ViewModel {
           break;
 
         case LocationEvent.UPDATE_FROM_BACKGROUND:
-          _streamSubscription?.cancel();
-          _streamSubscription = null;
+          cancelUpdate();
 
           event.value = MainEvent.success(
               location, defaultLocation, initStage, locationEvent);

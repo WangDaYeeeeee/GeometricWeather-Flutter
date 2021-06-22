@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
+import 'package:geometricweather_flutter/app/common/ui/anim_list/flow_anim_list.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 import 'package:geometricweather_flutter/app/settings/interfaces.dart';
 import 'package:geometricweather_flutter/app/theme/manager.dart';
@@ -15,6 +15,7 @@ import '_base.dart';
 ItemGenerator header = (
     BuildContext context,
     int index,
+    bool initVisible,
     GlobalKey<WeatherViewState> weatherViewKey,
     SettingsManager settingsManager,
     ThemeManager themeManager,
@@ -23,10 +24,10 @@ ItemGenerator header = (
 
   TextTheme textTheme = Theme.of(context).textTheme;
 
-  return getAnimatedContainer(
+  return ItemWrapper(
     SizedBox(
       width: double.infinity,
-      height: weatherViewKey.currentState?.getHeaderHeight(context) ?? 0,
+      height: themeManager.getHeaderHeight(context) ?? 0,
       child: Stack(
         children: [
           Positioned(
@@ -69,6 +70,6 @@ ItemGenerator header = (
         ],
       ),
     ),
-    index,
+    null,
   );
 };

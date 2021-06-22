@@ -55,10 +55,21 @@ bool isToday(DateTime date, String timezone) {
       && date.day == timezoneDate.day;
 }
 
+int getCurrentTimeInMinute(String timezone) {
+  tz.initializeTimeZones();
+  var timezoneDate = tz.TZDateTime.now(tz.getLocation(timezone));
+  return timezoneDate.hour * 60 + timezoneDate.minute;
+}
+
+DateTime getCurrentDateTime(String timezone) {
+  tz.initializeTimeZones();
+  return tz.TZDateTime.now(tz.getLocation(timezone));
+}
+
 bool isTwelveHourFormat(BuildContext context) {
   TimeOfDay timeOfDay = TimeOfDay.fromDateTime(DateTime.now());
   String res = timeOfDay.format(context);
-  return res.contains(RegExp(r'[A-Z]'));
+  return RegExp(r'^-?[:0-9]+').hasMatch(res);
 }
 
 String getLocationName(BuildContext context, Location location) {

@@ -278,6 +278,7 @@ class NestedRefreshIndicatorState extends State<NestedRefreshIndicator>
     return ((notification is ScrollStartNotification && notification.dragDetails != null)
         || (notification is ScrollUpdateNotification && notification.dragDetails != null))
         && notification.metrics.extentBefore == 0.0
+        && notification.metrics.axis == Axis.vertical
         && _mode == null
         && _start();
   }
@@ -329,9 +330,11 @@ class NestedRefreshIndicatorState extends State<NestedRefreshIndicator>
   }
 
   bool _handleGlowNotification(OverscrollIndicatorNotification notification) {
-    if (notification.depth != 0 || !notification.leading)
+    if (notification.depth != 0 || !notification.leading) {
       return false;
-    if (_mode == null) {
+    }
+    if (_mode == _RefreshIndicatorMode.drag) {
+      notification.disallowGlow();
       return true;
     }
     return false;

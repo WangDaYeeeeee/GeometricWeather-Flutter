@@ -94,8 +94,6 @@ abstract class WeatherViewState<T extends StatefulWidget> extends State<T> {
 
   WeatherKind get weatherKind;
 
-  double getHeaderHeight(BuildContext context);
-
   set drawable(bool drawable);
 
   set gravitySensorEnabled(bool enabled);
@@ -119,4 +117,6 @@ abstract class WeatherViewThemeDelegate {
       WeatherKind weatherKind,
       bool daytime,
       bool lightTheme);
+
+  double getHeaderHeight(BuildContext context);
 }

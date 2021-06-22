@@ -119,5 +119,11 @@ class SettingsManager {
 
   ProbabilityUnit get probabilityUnit => ProbabilityUnit.all[ProbabilityUnit.KEY_PERCENT];
 
+  SpeedUnit get speedUnit => SpeedUnit.all[SpeedUnit.KEY_KPH];
+
+  PressureUnit get pressureUnit => PressureUnit.all[PressureUnit.KEY_MB];
+
+  DistanceUnit get distanceUnit => DistanceUnit.all[DistanceUnit.KEY_KM];
+
   String get resourceProviderId => DefaultResourceProvider.PROVIDER_ID;
 }

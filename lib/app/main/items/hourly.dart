@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
+import 'package:geometricweather_flutter/app/common/ui/anim_list/flow_anim_list.dart';
 import 'package:geometricweather_flutter/app/common/ui/trend/_base.dart';
 import 'package:geometricweather_flutter/app/common/ui/trend/background.dart';
 import 'package:geometricweather_flutter/app/common/ui/trend/charts.dart';
@@ -21,6 +22,7 @@ import '_base.dart';
 ItemGenerator hourly = (
     BuildContext context,
     int index,
+    bool initVisible,
     GlobalKey<WeatherViewState> weatherViewKey,
     SettingsManager settingsManager,
     ThemeManager themeManager,
@@ -63,12 +65,7 @@ ItemGenerator hourly = (
       ),
       child: Text(S.of(context).hourly_overview,
         style: theme.textTheme.subtitle2?.copyWith(
-          color: themeManager.getWeatherThemeColors(
-            context,
-            weather.current.weatherCode,
-            themeManager.daytime,
-            theme.brightness == Brightness.light,
-          )[0],
+          color: colors[0],
         ),
       ),
     ),
@@ -80,6 +77,7 @@ ItemGenerator hourly = (
           TrendScrollBar(
             ListView.builder(
               scrollDirection: Axis.horizontal,
+              itemExtent: itemWidth,
               itemCount: weather.hourlyForecast.length,
               itemBuilder: (context, index) {
                 return _getHourlyItem(
@@ -169,14 +167,14 @@ ItemGenerator hourly = (
     );
   }
 
-  return getAnimatedContainer(
+  return ItemWrapper(
     getCard(
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: ensureTimeBar(widgets, index, context, weather),
+        children: ensureTimeBar(widgets, index, context, weather, timezone),
       ),
     ),
-    index,
+    null,
   );
 };
 

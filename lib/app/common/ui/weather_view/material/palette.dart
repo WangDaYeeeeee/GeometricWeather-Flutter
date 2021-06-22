@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/cloud.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/hail.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/metro_shower.dart';
+import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/null.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/rain.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/snow.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/painter/sun.dart';
@@ -17,6 +18,8 @@ MaterialWeatherPainter getCustomPainter(
 
   switch(weatherKind) {
     case WeatherKind.NULL:
+      return NullPainter(repaint);
+
     case WeatherKind.CLEAR:
       return daylight ? SunPainter(repaint) : MeteorShowerPainter(repaint);
 
@@ -62,6 +65,8 @@ MaterialWeatherPainter getCustomPainter(
 MaterialBackgroundGradiant getGradient(WeatherKind weatherKind, bool daylight) {
   switch(weatherKind) {
     case WeatherKind.NULL:
+      return nullGradient;
+
     case WeatherKind.CLEAR:
       return daylight ? sunGradient : metroShowerGradient;
 
