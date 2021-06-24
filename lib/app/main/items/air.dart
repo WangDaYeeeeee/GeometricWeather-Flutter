@@ -10,6 +10,7 @@ import 'package:geometricweather_flutter/app/common/ui/anim_list/flow_anim_list.
 import 'package:geometricweather_flutter/app/common/ui/progress/arc_progress.dart';
 import 'package:geometricweather_flutter/app/common/ui/progress/linear_progress.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
+import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/settings/interfaces.dart';
 import 'package:geometricweather_flutter/app/theme/manager.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
@@ -81,6 +82,7 @@ ItemGenerator airQuality = (
                       beginColor: ThemeColors.colorLevel1,
                       endColor: weather.current.airQuality.getAqiColor(),
                       theme: theme,
+                      textDirection: getCurrentTextDirection(context),
                     ),
                   ),
                 )

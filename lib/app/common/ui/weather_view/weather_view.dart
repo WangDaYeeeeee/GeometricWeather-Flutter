@@ -119,4 +119,10 @@ abstract class WeatherViewThemeDelegate {
       bool lightTheme);
 
   double getHeaderHeight(BuildContext context);
+
+  BoxDecoration getExtendedBackground(
+      BuildContext context,
+      WeatherKind weatherKind,
+      bool daytime,
+      bool lightTheme);
 }

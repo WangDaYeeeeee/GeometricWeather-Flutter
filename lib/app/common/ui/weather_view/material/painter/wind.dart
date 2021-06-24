@@ -117,7 +117,13 @@ class WindPainter extends MaterialWeatherPainter {
 
       for (Wind w in _winds) {
         _paint.color = w.color.withAlpha(((1 - scrollRate) * 255).toInt());
-        canvas.drawRect(w.rect, _paint);
+        canvas.drawRRect(
+            RRect.fromRectAndRadius(
+                w.rect,
+                Radius.circular(min(w.rect.width, w.rect.height) / 2.0)
+            ),
+            _paint
+        );
       }
     }
   }

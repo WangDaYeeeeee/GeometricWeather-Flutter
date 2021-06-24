@@ -295,6 +295,11 @@ class MainViewModel extends ViewModel {
   }
 
   void updateWeather(BuildContext context) {
+    if (event.value.initStage != InitializationStage.INITIALIZATION_DONE
+        || updating) {
+      return;
+    }
+
     Location? location = event.value.data;
     if (location == null) {
       return;
@@ -367,7 +372,9 @@ class MainViewModel extends ViewModel {
           location: event.data
       );
 
-      _updateDescription = null;
+      if (!event.running) {
+        _updateDescription = null;
+      }
 
       _setLiveDataWithVerification(
           location: event.data,

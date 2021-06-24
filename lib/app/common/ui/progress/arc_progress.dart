@@ -5,7 +5,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:geometricweather_flutter/app/common/utils/display.dart';
 
 const DEFAULT_STROKE_WIDTH = 8.0;
 const INNER_MARGIN = 2.0;
@@ -26,6 +25,7 @@ class ArcProgressView extends StatefulWidget {
     this.beginColor = Colors.grey,
     this.endColor = Colors.black,
     required this.theme,
+    required this.textDirection,
   }): assert(0.0 <= progress && progress <= 1.0),
         super(key: key);
 
@@ -40,6 +40,7 @@ class ArcProgressView extends StatefulWidget {
   final Color endColor;
 
   final ThemeData theme;
+  final TextDirection textDirection;
 
   @override
   State<StatefulWidget> createState() {
@@ -110,7 +111,7 @@ class ArcProgressViewState extends State<ArcProgressView>
       ),
       widget.description,
       widget.theme.textTheme.caption,
-      getCurrentTextDirection(context),
+      widget.textDirection,
     );
   }
 
@@ -137,7 +138,7 @@ class ArcProgressViewState extends State<ArcProgressView>
         ),
         widget.description,
         widget.theme.textTheme.caption,
-        getCurrentTextDirection(context),
+        widget.textDirection,
       );
     });
   }
@@ -230,16 +231,8 @@ class _ProgressPainter extends CustomPainter {
             width: min(size.width, size.height) - 2 * INNER_MARGIN - _strokeWidth,
             height: min(size.width, size.height) - 2 * INNER_MARGIN - _strokeWidth,
           ),
-          _toRadians(
-              180.0 - (_progressAnim.value - 1.0 / 6.0) * 270.0 - _strokeWidth / (
-                  min(size.width, size.height) - 2 * INNER_MARGIN - _strokeWidth
-              )
-          ),
-          _toRadians(
-              (_progressAnim.value - 1.0 / 6.0) * 270.0 * 2.0 + 2 * _strokeWidth / (
-                  min(size.width, size.height) - 2 * INNER_MARGIN - _strokeWidth
-              )
-          ),
+          _toRadians(180 - (_progressAnim.value - 1.0 / 6.0) * 270),
+          _toRadians((_progressAnim.value - 1.0 / 6.0) * 270 * 2),
           false,
           _paint
       );

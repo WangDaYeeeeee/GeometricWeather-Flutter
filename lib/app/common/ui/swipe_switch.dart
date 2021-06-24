@@ -127,7 +127,7 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
 
                 if (state == _DragState.dragging) {
                   if (notification.dragDetails != null) {
-                    _onDragUpdate(-notification.overscroll);
+                    _onDragUpdate(- 0.5 * notification.overscroll);
                   } else {
                     _onDragEnd();
                   }

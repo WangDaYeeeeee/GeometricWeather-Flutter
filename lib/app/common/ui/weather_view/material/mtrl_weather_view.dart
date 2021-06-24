@@ -379,8 +379,11 @@ abstract class MaterialWeatherPainter extends CustomPainter {
   double _rotation2D = 0;
   double _rotation3D = 0;
 
+  bool _drawable = true;
+
   void _setScrollRate(double scrollRate) {
     _scrollRate = scrollRate;
+    _intervalComputer.drawable = _drawable && _scrollRate < 1;
   }
 
   void _setRotation(double rotation2D, double rotation3D) {
@@ -389,7 +392,8 @@ abstract class MaterialWeatherPainter extends CustomPainter {
   }
 
   void _setDrawable(bool drawable) {
-    _intervalComputer.drawable = drawable;
+    _drawable = drawable;
+    _intervalComputer.drawable = _drawable && _scrollRate < 1;
   }
 
   void _setAdaptiveWidth(double adaptiveWidth) {
@@ -559,5 +563,14 @@ class MaterialWeatherViewThemeDelegate implements WeatherViewThemeDelegate {
   static double _getHeaderHeight(BuildContext context) => max(
       MediaQuery.of(context).size.height * HEADER_RATIO,
       MIN_HEADER_HEIGHT
+  );
+
+  @override
+  BoxDecoration getExtendedBackground(
+      BuildContext context,
+      WeatherKind weatherKind,
+      bool daytime,
+      bool lightTheme) => BoxDecoration(
+    gradient: getGradient(weatherKind, daytime),
   );
 }

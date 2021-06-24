@@ -67,9 +67,7 @@ DateTime getCurrentDateTime(String timezone) {
 }
 
 bool isTwelveHourFormat(BuildContext context) {
-  TimeOfDay timeOfDay = TimeOfDay.fromDateTime(DateTime.now());
-  String res = timeOfDay.format(context);
-  return RegExp(r'^-?[:0-9]+').hasMatch(res);
+  return !MediaQuery.of(context).alwaysUse24HourFormat;
 }
 
 String getLocationName(BuildContext context, Location location) {

@@ -60,8 +60,8 @@ class LocationHelper {
     ).transform(StreamTransformer<Position, UpdateResult<Location>>.fromHandlers(
         handleData: (data, sink) {
           location = location.copyOf(
-              latitude: data.latitude, // 39.904000,
-              longitude: data.longitude, // 116.391000,
+              latitude: 39.904000, // data.latitude, //
+              longitude: 116.391000, // data.longitude, //
           );
           sink.add(
               UpdateResult(

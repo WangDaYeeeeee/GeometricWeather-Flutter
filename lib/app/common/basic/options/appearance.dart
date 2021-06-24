@@ -66,7 +66,7 @@ class CardDisplay extends Pair {
 
   final ValidChecker _validChecker;
 
-  bool isValid(Weather weather) => _validChecker(weather);
+  bool isValid(Weather weather) => weather != null && _validChecker(weather);
 
   static CardDisplay toCardDisplay(String key) {
     return Pair.toPair(key, all);

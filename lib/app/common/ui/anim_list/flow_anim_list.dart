@@ -299,7 +299,7 @@ class _AnimatedItemState extends State<_AnimatedItem>
           curve: Interval(
             1.0 * delay / (delay + duration),
             1.0,
-            curve: Curves.easeOutSine,
+            curve: Curves.ease,
           ),
         )
     );

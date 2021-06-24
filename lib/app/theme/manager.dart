@@ -120,4 +120,15 @@ class ThemeManager {
 
   double getHeaderHeight(BuildContext context) =>
       _themeDelegate?.getHeaderHeight(context) ?? 0.0;
+
+  BoxDecoration getExtendedBackground(
+      BuildContext context,
+      WeatherKind weatherKind,
+      bool daytime,
+      bool lightTheme) => _themeDelegate?.getExtendedBackground(
+      context,
+      weatherKind,
+      daytime,
+      lightTheme
+  ) ?? BoxDecoration(color: Colors.transparent);
 }

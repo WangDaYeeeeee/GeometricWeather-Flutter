@@ -166,7 +166,10 @@ class RainPainter extends MaterialWeatherPainter {
     _ensureElements(size);
 
     for (_Rain r in _rains) {
-      r.move(intervalInMilli, _lastRotation3D == INITIAL_ROTATION_3D ? 0 : rotation3D - _lastRotation3D);
+      r.move(
+          intervalInMilli,
+          _lastRotation3D == INITIAL_ROTATION_3D ? 0 : rotation3D - _lastRotation3D
+      );
     }
     if (_thunder != null) {
       _thunder.shine(intervalInMilli);
@@ -181,7 +184,13 @@ class RainPainter extends MaterialWeatherPainter {
 
       for (_Rain r in _rains) {
         _paint.color = r.color.withAlpha(((1 - scrollRate) * 255).toInt());
-        canvas.drawRect(r.rect, _paint);
+        canvas.drawRRect(
+            RRect.fromRectAndRadius(
+                r.rect,
+                Radius.circular(min(r.rect.width, r.rect.height) / 2.0)
+            ),
+            _paint
+        );
       }
       if (_thunder != null) {
         canvas.drawColor(

@@ -28,6 +28,8 @@ class ThemeColors {
   static const colorLevel4 = Color(0xFFe52f35);
   static const colorLevel5 = Color(0xFF99004c);
   static const colorLevel6 = Color(0xFF7e0023);
+
+  static const colorAlert = Color(0xFFfcc96b);
 }
 
 Color getCupertinoAppbarBackground(BuildContext context) =>
