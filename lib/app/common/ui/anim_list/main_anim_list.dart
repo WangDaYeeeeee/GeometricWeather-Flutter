@@ -37,9 +37,9 @@ enum _ItemState {
   visible,
 }
 
-class FlowAnimatedListView extends StatefulWidget {
+class MainAnimatedListView extends StatefulWidget {
 
-  FlowAnimatedListView({
+  MainAnimatedListView({
     Key? key,
     required this.builder,
     required this.itemCount,
@@ -59,11 +59,11 @@ class FlowAnimatedListView extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _FlowAnimatedListViewState();
+    return _MainAnimatedListViewState();
   }
 }
 
-class _FlowAnimatedListViewState extends State<FlowAnimatedListView> {
+class _MainAnimatedListViewState extends State<MainAnimatedListView> {
 
   final animationMap = Map<int, AnimationController>();
   int lastAnimateIndex = -1;
@@ -76,7 +76,7 @@ class _FlowAnimatedListViewState extends State<FlowAnimatedListView> {
   }
 
   @override
-  void didUpdateWidget(covariant FlowAnimatedListView oldWidget) {
+  void didUpdateWidget(covariant MainAnimatedListView oldWidget) {
     super.didUpdateWidget(oldWidget);
     setState(() {
       // re-execute those uncompleted item animations.

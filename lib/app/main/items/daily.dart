@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
-import 'package:geometricweather_flutter/app/common/ui/anim_list/flow_anim_list.dart';
+import 'package:geometricweather_flutter/app/common/ui/anim_list/main_anim_list.dart';
 import 'package:geometricweather_flutter/app/common/ui/trend/_base.dart';
 import 'package:geometricweather_flutter/app/common/ui/trend/background.dart';
 import 'package:geometricweather_flutter/app/common/ui/trend/charts.dart';
@@ -14,11 +14,11 @@ import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
 import 'package:geometricweather_flutter/app/settings/interfaces.dart';
-import 'package:geometricweather_flutter/app/theme/manager.dart';
 import 'package:geometricweather_flutter/app/theme/providers/providers.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 
+import '../view_models.dart';
 import '_base.dart';
 
 ItemGenerator daily = (
@@ -26,8 +26,7 @@ ItemGenerator daily = (
     int index,
     bool initVisible,
     GlobalKey<WeatherViewState> weatherViewKey,
-    SettingsManager settingsManager,
-    ThemeManager themeManager,
+    MainViewModel viewModel,
     Weather weather,
     String timezone) {
 
@@ -47,14 +46,14 @@ ItemGenerator daily = (
   double itemWidth = getTrendItemWidth(context, littleMargin);
 
   ResourceProvider resProvider = ResourceProvider(
-      context, settingsManager.resourceProviderId);
+      context, viewModel.settingsManager.resourceProviderId);
 
   final theme = Theme.of(context);
 
-  final colors = themeManager.getWeatherThemeColors(
+  final colors = viewModel.themeManager.getWeatherThemeColors(
     context,
     weather.current.weatherCode,
-    themeManager.daytime,
+    viewModel.themeManager.daytime,
     theme.brightness == Brightness.light,
   );
 
@@ -91,7 +90,7 @@ ItemGenerator daily = (
                     colors,
                     itemWidth,
                     resProvider,
-                    settingsManager,
+                    viewModel.settingsManager,
                     maxTemperature ?? 1,
                     minTemperature ?? 0
                 );
@@ -131,7 +130,7 @@ ItemGenerator daily = (
                       weather.yesterday!.nighttimeTemperature.toDouble(),
                     ],
                     highHorizontalStartDescriptions: weather.yesterday == null ? null : [
-                      settingsManager.temperatureUnit.getValueWithShortUnit(
+                      viewModel.settingsManager.temperatureUnit.getValueWithShortUnit(
                           context,
                           weather.yesterday!.daytimeTemperature
                       ),
@@ -140,7 +139,7 @@ ItemGenerator daily = (
                       S.of(context).yesterday,
                     ],
                     lowHorizontalStartDescriptions: weather.yesterday == null ? null : [
-                      settingsManager.temperatureUnit.getValueWithShortUnit(
+                      viewModel.settingsManager.temperatureUnit.getValueWithShortUnit(
                           context,
                           weather.yesterday!.nighttimeTemperature
                       ),

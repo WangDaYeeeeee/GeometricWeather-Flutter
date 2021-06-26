@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/appearance.dart';
-import 'package:geometricweather_flutter/app/common/ui/anim_list/flow_anim_list.dart';
+import 'package:geometricweather_flutter/app/common/ui/anim_list/main_anim_list.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/main/items/_time_bar.dart';
@@ -13,8 +13,8 @@ import 'package:geometricweather_flutter/app/main/items/allergen.dart';
 import 'package:geometricweather_flutter/app/main/items/details.dart';
 import 'package:geometricweather_flutter/app/main/items/hourly.dart';
 import 'package:geometricweather_flutter/app/main/items/sun_moon.dart';
-import 'package:geometricweather_flutter/app/settings/interfaces.dart';
-import 'package:geometricweather_flutter/app/theme/manager.dart';
+import 'package:geometricweather_flutter/app/main/page_main.dart';
+import 'package:geometricweather_flutter/app/main/view_models.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:intl/intl.dart';
 
@@ -26,8 +26,7 @@ typedef ItemGenerator = ItemWrapper Function(
     int index,
     bool initVisible,
     GlobalKey<WeatherViewState> weatherViewKey,
-    SettingsManager settingsManager,
-    ThemeManager themeManager,
+    MainViewModel viewModel,
     Weather weather,
     String timezone);
 
@@ -63,10 +62,14 @@ List<Widget> ensureTimeBar(
 
   columnItems.insert(
       0,
-      weather.alertList.length == 0 ? TimeBar(weather, timezone) : Column(
+      weather.alertList.length == 0 ? TimeBar(
+          initHolder.viewModel,
+          weather,
+          timezone
+      ) : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TimeBar(weather, timezone),
+          TimeBar(initHolder.viewModel, weather, timezone),
           Padding(
             padding: EdgeInsets.fromLTRB(normalMargin, 0.0, normalMargin, normalMargin),
             child: Text(b.toString(),
@@ -98,26 +101,18 @@ Widget getList(
     BuildContext context,
     ScrollController scrollController,
     GlobalKey<WeatherViewState> weatherViewKey,
-    SettingsManager settingsManager,
-    ThemeManager themeManager,
+    MainViewModel viewModel,
     Weather weather,
     String timezone,
-    bool executeAnimation,
-    VoidCallback executeAnimationCallback) {
+    bool executeAnimation) {
 
-  // also execute animation when screen direction changed.
-  bool isLand = isLandscape(context);
-  if (isLand != landscape) {
-    landscape = isLand;
-    executeAnimation = true;
-  }
   if (executeAnimation) {
-    // change key of list view to execute animation.
     listKey = UniqueKey();
-    executeAnimationCallback?.call();
   }
 
-  final cardDisplayList = List<CardDisplay>.from(settingsManager.cardDisplayList);
+  final cardDisplayList = List<CardDisplay>.from(
+      viewModel.settingsManager.cardDisplayList
+  );
   // at least show header.
   int itemCount = 1;
   for (int i = cardDisplayList.length - 1; i >= 0; i --) {
@@ -130,7 +125,7 @@ Widget getList(
 
   return getTabletAdaptiveWidthBox(
     context,
-    FlowAnimatedListView(
+    MainAnimatedListView(
       key: listKey,
       builder: (BuildContext context, int index, bool initVisible) {
         if (index != 0) {
@@ -139,8 +134,7 @@ Widget getList(
               index,
               initVisible,
               weatherViewKey,
-              settingsManager,
-              themeManager,
+              viewModel,
               weather,
               timezone
           );
@@ -150,8 +144,7 @@ Widget getList(
             0,
             initVisible,
             weatherViewKey,
-            settingsManager,
-            themeManager,
+            viewModel,
             weather,
             timezone
         );

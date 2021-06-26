@@ -17,7 +17,7 @@ import 'package:geometricweather_flutter/app/updater/models.dart';
 import '../updater/helper.dart';
 import 'models.dart';
 
-class MainRepository {
+class _MainRepository {
 
   static Future<List<Location>> getLocationList(List<Location> oldList) async {
     final list = await DatabaseHelper.getInstance().readLocationList();
@@ -87,9 +87,8 @@ class MainRepository {
     DatabaseHelper.getInstance().deleteWeather(location.formattedId)
   ]);
 
-  Stream<UpdateResult<Location>> update(
-      BuildContext context,
-      Location location) => requestWeatherUpdate(context, location);
+  Stream<UpdateResult<Location>> update(Location location) =>
+      requestWeatherUpdate(location);
 }
 
 class MainViewModel extends ViewModel {
@@ -108,8 +107,9 @@ class MainViewModel extends ViewModel {
   final ThemeManager _themeManager;
 
   // async control.
-  final MainRepository _repository = MainRepository();
+  final _MainRepository _repository = _MainRepository();
   StreamSubscription? _updateDescription;
+  bool _updating = false;
 
   MainViewModel._(
       this._totalList,
@@ -129,36 +129,14 @@ class MainViewModel extends ViewModel {
       Indicator(_validList.length, 0)
   ), listResource = LiveData(
       SelectableLocationListResource(_validList)
-  ), _themeManager = ThemeManager.getInstance(_settingsManager.darkMode) {
-    event.addListener(() {
-      Location? location = event.value.data;
-      if (location == null) {
-        return;
-      }
-
-      if (location != currentLocation.value) {
-        currentLocation.value = location;
-        return;
-      }
-
-      if (location.weather == null) {
-        if (currentLocation.value.weather != null) {
-          currentLocation.value = location;
-        }
-        return;
-      }
-
-      if (location.weather != currentLocation.value.weather) {
-        currentLocation.value = location;
-        return;
-      }
-    });
-  }
+  ), _themeManager = ThemeManager.getInstance(
+      _settingsManager.darkMode
+  );
 
   static Future<MainViewModel> getInstance() async {
     
     final results = await Future.wait([
-      MainRepository.getLocationList(List.empty()),
+      _MainRepository.getLocationList(List.empty()),
       SettingsManager.getInstance()
     ]);
 
@@ -216,12 +194,16 @@ class MainViewModel extends ViewModel {
         location: location
     );
 
-    if (ev.initStage == InitializationStage.INITIALIZATION_DONE
-        && !updating
-        && _needUpdate(location)) {
-      event.value = MainEvent.loading(
-          location, ev.defaultLocation, ev.initStage, LocationEvent.UPDATE_BEGIN);
+    if (_updating) {
+      return;
     }
+
+    _setLiveDataWithVerification(
+      location: location,
+      defaultLocation: ev.defaultLocation,
+      initStage: ev.initStage,
+      locationEvent: LocationEvent.SET_LOCATION,
+    );
   }
 
   void updateLocationFromBackground(Location location) {
@@ -294,11 +276,13 @@ class MainViewModel extends ViewModel {
     );
   }
 
-  void updateWeather(BuildContext context) {
+  void updateWeather() {
     if (event.value.initStage != InitializationStage.INITIALIZATION_DONE
-        || updating) {
+        || _updating) {
       return;
     }
+
+    _updating = true;
 
     Location? location = event.value.data;
     if (location == null) {
@@ -316,7 +300,7 @@ class MainViewModel extends ViewModel {
       locationEvent: LocationEvent.UPDATE_BEGIN,
     );
 
-    _updateDescription = _repository.update(context, location).listen((event) {
+    _updateDescription = _repository.update(location).listen((event) {
       List<Location> totalList = List.from(_totalList);
       for (int i = 0; i < totalList.length; i ++) {
         if (totalList[i] == event.data) {
@@ -345,10 +329,6 @@ class MainViewModel extends ViewModel {
           locationEvent = LocationEvent.LOCATOR_FAILED;
           break;
 
-        case UpdateStatus.LOCATOR_RUNNING:
-          locationEvent = LocationEvent.UPDATE_RUNNING;
-          break;
-
         case UpdateStatus.LOCATOR_SUCCEED:
           locationEvent = LocationEvent.UPDATE_RUNNING;
           break;
@@ -374,6 +354,7 @@ class MainViewModel extends ViewModel {
 
       if (!event.running) {
         _updateDescription = null;
+        _updating = false;
       }
 
       _setLiveDataWithVerification(
@@ -390,9 +371,10 @@ class MainViewModel extends ViewModel {
   void cancelUpdate() {
     _updateDescription?.cancel();
     _updateDescription = null;
+    _updating = false;
   }
 
-  bool get updating => _updateDescription != null;
+  bool get updating => _updating;
 
   void addLocation(Location location, [int? position]) {
     position = position ?? _totalList.length;
@@ -421,31 +403,16 @@ class MainViewModel extends ViewModel {
 
   void moveLocation(int from, int to) {
     List<Location> totalList = List.from(_totalList);
-    var temp = totalList[from];
-    totalList[from] = totalList[to];
-    totalList[to] = temp;
+    totalList.insert(to, totalList.removeAt(from));
 
-    List<Location> validList = Location.excludeInvalidResidentLocation(totalList);
-    int validIndex = indexLocation(validList, _formattedId);
+    final validList = Location.excludeInvalidResidentLocation(totalList);
+    final validIndex = indexLocation(validList, _formattedId);
 
     setInnerData(totalList, validList, validIndex);
 
     _setLiveDataWithVerification(
         indicatorValue: Indicator(validList.length, validIndex),
         listEvent: ItemMoved(from, to)
-    );
-  }
-
-  void moveLocationFinish() {
-    final totalList = List<Location>.from(_totalList);
-    final validList = Location.excludeInvalidResidentLocation(totalList);
-    int validIndex = indexLocation(validList, _formattedId);
-
-    setInnerData(totalList, validList, validIndex);
-
-    _setLiveDataWithVerification(
-        indicatorValue: Indicator(validList.length, validIndex),
-        listEvent: DataSetChanged()
     );
 
     _repository.writeLocationList(totalList);
@@ -572,6 +539,18 @@ class MainViewModel extends ViewModel {
       initStage = initStage ?? event.value.initStage;
       forceSetCurrentRunning = forceSetCurrentRunning ?? false;
 
+      if (location != currentLocation.value) {
+        currentLocation.value = location;
+      } else if (location.weather == null) {
+        if (currentLocation.value.weather != null) {
+          currentLocation.value = location;
+        }
+      } else if (location.weather != currentLocation.value.weather) {
+        currentLocation.value = location;
+      } else if (locationEvent == LocationEvent.SWITCH_LOCATION) {
+        currentLocation.value = location;
+      }
+
       switch (locationEvent) {
         case LocationEvent.INITIALIZE_RUNNING:
           event.value = MainEvent.loading(
@@ -581,17 +560,14 @@ class MainViewModel extends ViewModel {
         case LocationEvent.INITIALIZE_DONE:
         case LocationEvent.SET_LOCATION:
         case LocationEvent.SWITCH_LOCATION:
-          if (locationEvent == LocationEvent.SWITCH_LOCATION) {
-            // update current location value manually. (force update)
-            currentLocation.value = location;
-          }
+          cancelUpdate();
+
           if (initStage == InitializationStage.INITIALIZATION_DONE
               && _needUpdate(location)) {
             event.value = MainEvent.loading(
                 location, defaultLocation, initStage, locationEvent);
+            updateWeather();
           } else {
-            cancelUpdate();
-
             event.value = MainEvent.success(
                 location, defaultLocation, initStage, locationEvent);
           }

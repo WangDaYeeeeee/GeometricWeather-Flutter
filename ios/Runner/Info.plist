@@ -26,6 +26,8 @@
 	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string></string>
 	<key>NSMotionUsageDescription</key>
 	<string>A reason to get the permission</string>
 	<key>UIBackgroundModes</key>

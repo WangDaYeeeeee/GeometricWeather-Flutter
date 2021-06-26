@@ -12,12 +12,12 @@ typedef LocatorStreamCallback = void Function(UpdateResult<Location> result);
 
 class LocationHelper {
 
-  static Future<UpdateResult<Location>> _prepare(Location location) async {
+  static Future<UpdateResult<Location>> requestLocation(Location location) async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return UpdateResult(
-          location,
-          location.usable,
+          location.usable ? location : Location.buildDefaultLocation(),
+          true,
           UpdateStatus.LOCATOR_DISABLED
       );
     }
@@ -29,8 +29,8 @@ class LocationHelper {
 
       if (permission == LocationPermission.denied) {
         return UpdateResult(
-            location,
-            location.usable,
+            location.usable ? location : Location.buildDefaultLocation(),
+            true,
             UpdateStatus.LOCATOR_PERMISSIONS_DENIED
         );
       }
@@ -38,88 +38,36 @@ class LocationHelper {
 
     if (permission == LocationPermission.deniedForever) {
       return UpdateResult(
-          location,
-          location.usable,
+          location.usable ? location : Location.buildDefaultLocation(),
+          true,
           UpdateStatus.LOCATOR_PERMISSIONS_DENIED
       );
     }
     testLog('Got all location permissions.');
 
-    return UpdateResult(
-        location,
-        true,
-        UpdateStatus.LOCATOR_RUNNING
-    );
-  }
-
-  static StreamSubscription _listenLocatorStream(
-      Location location, StreamController<UpdateResult<Location>> controller) {
-
-    return Geolocator.getPositionStream(
+    try {
+      final data = await Geolocator.getCurrentPosition(
+        forceAndroidLocationManager: true,
         timeLimit: Duration(seconds: TIMEOUT_SECONDS)
-    ).transform(StreamTransformer<Position, UpdateResult<Location>>.fromHandlers(
-        handleData: (data, sink) {
-          location = location.copyOf(
-              latitude: 39.904000, // data.latitude, //
-              longitude: 116.391000, // data.longitude, //
-          );
-          sink.add(
-              UpdateResult(
-                  location,
-                  true,
-                  UpdateStatus.LOCATOR_SUCCEED
-              )
-          );
-        },
-        handleError: (error, stackTrace, sink) {
-          testLog(error.toString());
-          testLog(stackTrace.toString());
-          sink.add(
-              UpdateResult(
-                  location.usable ? location : Location.buildDefaultLocation(),
-                  true, // always usable.
-                  UpdateStatus.LOCATOR_FAILED
-              )
-          );
-        },
-        handleDone: (sink) {
-          controller.close();
-        }
-    )).take(
-        1
-    ).listen((event) {
-      if (controller.isClosed) {
-        return;
-      }
-      controller.add(event);
-    });
-  }
+      );
+      testLog('Got current location.');
+      return UpdateResult(
+          location.copyOf(
+            latitude: data.latitude,
+            longitude: data.longitude,
+          ),
+          true,
+          UpdateStatus.LOCATOR_SUCCEED
+      );
+    } on Exception catch (e, stacktrace) {
+      testLog(e.toString());
+      testLog(stacktrace.toString());
 
-  static Stream<UpdateResult<Location>> requestLocation(Location location) {
-    StreamController<UpdateResult<Location>> controller;
-    StreamSubscription subscription;
-
-    controller = StreamController(
-      onListen: () {
-        _prepare(location).then((value) {
-          // check is closed.
-          if (controller.isClosed) {
-            return;
-          }
-
-          // send data.
-          controller.add(value);
-
-          // listen locator and send data.
-          subscription = _listenLocatorStream(value.data, controller);
-        });
-      },
-      onCancel: () {
-        subscription?.cancel();
-        controller.close();
-      }
-    );
-
-    return controller.stream;
+      return UpdateResult(
+        location.usable ? location : Location.buildDefaultLocation(),
+        true,
+        UpdateStatus.LOCATOR_FAILED,
+      );
+    }
   }
 }

@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  Runner
+
+  Created by 王大爷 on 2021/6/25.
+  
+*/
+
+"CFBundleName" = "Geometric Weather";
+"CFBundleDisplayName" = "Weather";

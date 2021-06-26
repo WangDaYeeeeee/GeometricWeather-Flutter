@@ -48,23 +48,20 @@ class GeoPlatformAppBar extends PlatformAppBar {
     Widget leading,
     List<Widget> trailingActions,
     bool automaticallyImplyLeading,
-    Object heroTag,
   }) : super(
     key: key,
     widgetKey: widgetKey,
     title: title,
-    backgroundColor: backgroundColor,
     leading: leading,
     trailingActions: trailingActions,
     automaticallyImplyLeading: automaticallyImplyLeading,
     material: (_,  __) => MaterialAppBarData(
       brightness: Brightness.dark,
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: backgroundColor ?? Theme.of(context).primaryColor,
     ),
     cupertino: (_, __) => CupertinoNavigationBarData(
       brightness: Theme.of(context).brightness,
-      backgroundColor: getCupertinoAppbarBackground(context),
-      heroTag: heroTag,
+      backgroundColor: backgroundColor ?? getCupertinoAppBarBackground(context),
     )
   );
 }

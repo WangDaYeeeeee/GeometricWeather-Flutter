@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
 import 'package:geometricweather_flutter/app/common/utils/logger.dart';
 import 'package:geometricweather_flutter/app/db/helper.dart';
@@ -12,11 +11,10 @@ import 'models.dart';
 typedef UpdateValidator = Location Function();
 
 Disposable _requestWeather(
-    BuildContext context,
     Location location,
     StreamController<UpdateResult<Location>> controller) {
 
-  final disposableFuture = WeatherHelper().requestWeather(context, location);
+  final disposableFuture = WeatherHelper().requestWeather(location);
 
   disposableFuture.future.then((value) async {
     // check is closed.
@@ -86,24 +84,21 @@ Disposable _requestWeather(
   return disposableFuture.disposable;
 }
 
-Stream<UpdateResult<Location>> requestWeatherUpdate(
-    BuildContext context,
-    Location location) {
+Stream<UpdateResult<Location>> requestWeatherUpdate(Location location) {
 
   StreamController<UpdateResult<Location>> controller;
-  StreamSubscription subscription;
   Disposable disposable;
 
   controller = StreamController(
     onListen: () {
       if (!location.currentPosition) {
         // just request weather.
-        disposable = _requestWeather(context, location, controller);
+        disposable = _requestWeather(location, controller);
         return;
       }
 
       // get location at first.
-      subscription = LocationHelper.requestLocation(location).listen((event) {
+      LocationHelper.requestLocation(location).then((event) {
         // check is closed.
         if (controller.isClosed) {
           return;
@@ -114,14 +109,12 @@ Stream<UpdateResult<Location>> requestWeatherUpdate(
         controller.add(event);
 
         // request weather.
-        if (event.status == UpdateStatus.LOCATOR_SUCCEED
-            || (event.status == UpdateStatus.LOCATOR_FAILED && location.usable)) {
-          disposable = _requestWeather(context, location, controller);
+        if (location.usable) {
+          disposable = _requestWeather(location, controller);
         }
       });
     },
     onCancel: () {
-      subscription?.cancel();
       disposable?.dispose();
       controller.close();
     },

@@ -1,8 +1,8 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
 import 'package:geometricweather_flutter/app/common/utils/logger.dart';
-import 'package:geometricweather_flutter/app/common/utils/text.dart';
 import 'package:geometricweather_flutter/app/updater/weather/converters/accu_converter.dart';
 import 'package:geometricweather_flutter/app/updater/weather/json/accu/air_quality.dart';
 import 'package:geometricweather_flutter/app/updater/weather/json/accu/alert.dart';
@@ -35,26 +35,19 @@ Dio ensureDio() {
   return _dio;
 }
 
-String getLanguage(BuildContext context) {
-  Locale locale = Localizations.localeOf(context);
-
-  StringBuffer b = StringBuffer(locale.languageCode);
-  if (!isEmptyString(locale.countryCode)) {
-    b.write('-');
-    b.write(locale.countryCode);
-  }
-  return b.toString();
+String getLanguage() {
+  return Platform.localeName.replaceAll('_', '-');
 }
 
 class AccuApi implements WeatherApi {
 
   @override
   Future<List<Location>> requestLocations(
-      BuildContext context, String query, CancelToken token) async {
+      String query, CancelToken token) async {
     List<Location> list;
 
     try {
-      list = await _requestLocations(context, query, token);
+      list = await _requestLocations(query, token);
     } on Exception catch (e, stacktrace) {
       testLog(e.toString());
       testLog(stacktrace.toString());
@@ -65,7 +58,7 @@ class AccuApi implements WeatherApi {
   }
 
   Future<List<Location>> _requestLocations(
-      BuildContext context, String query, CancelToken token) async {
+      String query, CancelToken token) async {
     try {
       Dio dio = ensureDio();
 
@@ -74,15 +67,15 @@ class AccuApi implements WeatherApi {
             'alias': 'Always',
             'apikey': ACCU_WEATHER_KEY,
             'q': query,
-            'language': getLanguage(context)
+            'language': getLanguage()
           },
           cancelToken: token
       );
 
       String zipCode = RegExp("[a-zA-Z0-9]*").hasMatch(query) ? query : null;
 
-      return (response.data as List<Map>)
-          .map((e) => AccuLocationResult.fromJson(e))
+      return (response.data as List)
+          .map((e) => AccuLocationResult.fromJson(e as Map))
           .toList()
           .map((e) => toLocation(e, null, zipCode))
           .toList();
@@ -93,12 +86,12 @@ class AccuApi implements WeatherApi {
 
   @override
   Future<WeatherUpdateResult> requestWeather(
-      BuildContext context, Location location, CancelToken token) async {
+      Location location, CancelToken token) async {
     bool getGeoPositionFailed = false;
 
     try {
       Dio dio = ensureDio();
-      String language = getLanguage(context);
+      String language = getLanguage();
 
       if (location.currentPosition) {
         testLog('Requesting location by geo position.');
@@ -182,7 +175,6 @@ class AccuApi implements WeatherApi {
 
       location = location.copyOf(
           weather: await toWeather(
-              context,
               location,
               AccuCurrentResult.fromJson(responses[0].data[0]),
               AccuDailyResult.fromJson(responses[1].data),

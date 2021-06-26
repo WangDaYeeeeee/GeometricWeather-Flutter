@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:geometricweather_flutter/app/main/page_management.dart';
+import 'package:geometricweather_flutter/app/search/page_search.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 
 import 'app/common/basic/widgets.dart';
 import 'app/common/utils/router.dart';
 import 'app/common/utils/system_services.dart';
+import 'app/settings/page_about.dart';
 import 'app/theme/theme.dart';
 import 'app/main/page_main.dart';
-import 'app/settings/page_about.dart';
 import 'generated/l10n.dart';
 
 String versionName;
@@ -51,22 +53,24 @@ class GeometricWeather extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
           return MaterialApp(
-              title: 'Geometric Weather',
-              theme: ThemeProvider.lightTheme,
-              darkTheme: ThemeProvider.darkTheme,
-              themeMode: themeProvider.themeMode,
-              routes: {
-                Routers.ROUTER_ID_ROOT: (context) => MainPage(),
-                Routers.ROUTER_ID_ABOUT: (context) => AboutPage(),
-              },
-              navigatorObservers: [routeObserver],
-              localizationsDelegates: [
-                S.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate
-              ],
-              supportedLocales: S.delegate.supportedLocales
+            title: 'Geometric Weather',
+            theme: ThemeProvider.lightTheme,
+            darkTheme: ThemeProvider.darkTheme,
+            themeMode: themeProvider.themeMode,
+            routes: {
+              Routers.ROUTER_ID_ROOT: (context) => MainPage(),
+              Routers.ROUTER_ID_MANAGEMENT: (context) => ManagementPage(),
+              Routers.ROUTER_ID_SEARCH: (context) => SearchPage(),
+              Routers.ROUTER_ID_ABOUT: (context) => AboutPage(),
+            },
+            navigatorObservers: [routeObserver],
+            localizationsDelegates: [
+              S.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate
+            ],
+            supportedLocales: S.delegate.supportedLocales,
           );
         },
       ),

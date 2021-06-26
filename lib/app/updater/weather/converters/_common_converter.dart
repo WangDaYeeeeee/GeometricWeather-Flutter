@@ -33,6 +33,36 @@ String getWindLevel(BuildContext context, double speed) {
   }
 }
 
+String getWindLevelWithoutContext(double speed) {
+  if (speed <= Wind.WIND_SPEED_0) {
+    return S.current.wind_0;
+  } else if (speed <= Wind.WIND_SPEED_1) {
+    return S.current.wind_1;
+  } else if (speed <= Wind.WIND_SPEED_2) {
+    return S.current.wind_2;
+  } else if (speed <= Wind.WIND_SPEED_3) {
+    return S.current.wind_3;
+  } else if (speed <= Wind.WIND_SPEED_4) {
+    return S.current.wind_4;
+  } else if (speed <= Wind.WIND_SPEED_5) {
+    return S.current.wind_5;
+  } else if (speed <= Wind.WIND_SPEED_6) {
+    return S.current.wind_6;
+  } else if (speed <= Wind.WIND_SPEED_7) {
+    return S.current.wind_7;
+  } else if (speed <= Wind.WIND_SPEED_8) {
+    return S.current.wind_8;
+  } else if (speed <= Wind.WIND_SPEED_9) {
+    return S.current.wind_9;
+  } else if (speed <= Wind.WIND_SPEED_10) {
+    return S.current.wind_10;
+  } else if (speed <= Wind.WIND_SPEED_11) {
+    return S.current.wind_11;
+  } else {
+    return S.current.wind_12;
+  }
+}
+
 String getAqiQuality(BuildContext context, int index) {
   if (index == null || index < 0) {
     return '';
@@ -48,6 +78,24 @@ String getAqiQuality(BuildContext context, int index) {
     return S.of(context).aqi_5;
   } else {
     return S.of(context).aqi_6;
+  }
+}
+
+String getAqiQualityWithoutContext(int index) {
+  if (index == null || index < 0) {
+    return '';
+  } if (index <= AirQuality.AQI_INDEX_1) {
+    return S.current.aqi_1;
+  } else if (index <= AirQuality.AQI_INDEX_2) {
+    return S.current.aqi_2;
+  } else if (index <= AirQuality.AQI_INDEX_3) {
+    return S.current.aqi_3;
+  } else if (index <= AirQuality.AQI_INDEX_4) {
+    return S.current.aqi_4;
+  } else if (index <= AirQuality.AQI_INDEX_5) {
+    return S.current.aqi_5;
+  } else {
+    return S.current.aqi_6;
   }
 }
 

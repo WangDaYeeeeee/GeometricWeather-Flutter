@@ -18,9 +18,7 @@ class WeatherUpdateResult {
 
 abstract class WeatherApi {
 
-  Future<WeatherUpdateResult> requestWeather(
-      BuildContext context, Location location, CancelToken token);
+  Future<WeatherUpdateResult> requestWeather(Location location, CancelToken token);
 
-  Future<List<Location>> requestLocations(
-      BuildContext context, String query, CancelToken token);
+  Future<List<Location>> requestLocations(String query, CancelToken token);
 }

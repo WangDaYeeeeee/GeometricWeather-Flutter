@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ import 'package:provider/provider.dart';
 
 import 'models.dart';
 
-final _InitializationHolder _initHolder = _InitializationHolder();
+final _InitializationHolder initHolder = _InitializationHolder();
 class _InitializationHolder {
 
   MainViewModel viewModel;
@@ -47,7 +48,7 @@ class _InitializationHolder {
     viewModel.init();
   }
 }
-Future<ThemeProvider> preloadMainViewModel() => _initHolder.getViewModelInstance();
+Future<ThemeProvider> preloadMainViewModel() => initHolder.getViewModelInstance();
 
 const SWITCH_DURATION = 350;
 
@@ -68,98 +69,72 @@ class MainPage extends GeoStatefulWidget {
 class _MainPageState extends GeoState<MainPage>
     with TickerProviderStateMixin {
 
+  // global key.
   GlobalKey<SnackBarContainerState> _snackBarContainerKey = GlobalKey();
   GlobalKey<WeatherViewState> _weatherViewKey = GlobalKey();
   GlobalKey<NestedRefreshIndicatorState> _refreshIndicatorKey = GlobalKey();
   GlobalKey<MainAppBarState> _appBarKey = GlobalKey();
 
+  // ui controller.
   ScrollController _scrollController = new ScrollController();
 
+  // cache value of ui update.
   String _currentLocationFormattedId;
   WeatherSource _currentWeatherSource;
   bool _currentLightTheme;
   int _currentWeatherTimeStamp;
+  bool _currentLandscape;
+  Widget _listCache;
 
-  LiveData<_MainListState> _listState = LiveData(null);
-  bool _swipeRefreshing = false;
+  LocationEvent _lastLocationEvent;
+
+  bool _lightTheme;
 
   int _switchPreviewOffset = 0;
-
   double _scrollOffset = 0;
   double _headerHeight;
+  final _pageValue = ValueNotifier(0.0);
 
-  VoidCallback _onEventChanged;
+  // ui status.
+  LiveData<_MainListState> _listState = LiveData(_MainListState.noCache);
+  bool _swipeRefreshing = false;
+
+  // callback.
+  VoidCallback _onScrollChanged;
 
   @override
   void initState() {
     super.initState();
-    _initHolder.checkToInitialize();
-    _ensureListState();
+    initHolder.checkToInitialize();
 
-    _initHolder.viewModel.themeManager.registerWeatherViewThemeDelegate(
+    initHolder.viewModel.themeManager.registerWeatherViewThemeDelegate(
         MaterialWeatherViewThemeDelegate()
     );
-    _initHolder.viewModel.event.addListener(_onEventChanged = () {
-      // list state.
-      _ensureListState();
 
-      // refresh.
-      _swipeRefreshing = _initHolder.viewModel.event.value.status == ResourceStatus.LOADING
-          && _initHolder.viewModel.event.value.initStage == InitializationStage.INITIALIZATION_DONE;
-      if (_swipeRefreshing) {
-        _refreshIndicatorKey.currentState?.show();
-      }
-
-      // feedback.
-      switch (_initHolder.viewModel.event.value.locationEvent) {
-        case LocationEvent.GET_GEO_POSITION_FAILED:
-        case LocationEvent.LOCATOR_FAILED:
-        case LocationEvent.LOCATOR_DISABLED:
-          _snackBarContainerKey.currentState?.show(
-              S.of(context).feedback_location_failed,
+    if (_onScrollChanged == null) {
+      _scrollController.addListener(_onScrollChanged = () {
+        _scrollOffset = _scrollController.offset;
+        _weatherViewKey.currentState?.onScroll(_scrollOffset);
+        if (_lightTheme != null) {
+          _appBarKey.currentState?.update(
+              _getAppBarTitle(),
+              _scrollOffset,
+              _headerHeight ?? _getHeaderHeight(),
+              _lightTheme,
           );
-          break;
-
-        case LocationEvent.LOCATOR_PERMISSION_DENIED:
-          _snackBarContainerKey.currentState?.show(
-            S.of(context).feedback_request_location_permission_failed,
-          );
-          break;
-
-        case LocationEvent.GET_WEATHER_FAILED:
-          _snackBarContainerKey.currentState?.show(
-            S.of(context).feedback_get_weather_failed,
-          );
-          break;
-
-        case LocationEvent.UPDATE_FROM_BACKGROUND:
-          _snackBarContainerKey.currentState?.show(
-            S.of(context).feedback_updated_in_background,
-          );
-          break;
-
-        default:
-          break;
-      }
-    });
-
-    _scrollController.addListener(() {
-      _scrollOffset = _scrollController.offset;
-      _weatherViewKey.currentState?.onScroll(_scrollOffset);
-      _appBarKey.currentState?.update(
-          _getAppBarTitle(),
-          _scrollOffset,
-          _headerHeight ?? _getHeaderHeight(),
-      );
-    });
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScrollChanged);
     _scrollController.dispose();
-    _initHolder.viewModel.dispose(context);
-    _initHolder.viewModel.event.removeListener(_onEventChanged);
-    _initHolder.viewModel.themeManager.unregisterWeatherViewThemeDelegate();
+    _onScrollChanged = null;
+
+    initHolder.viewModel.dispose(context);
+    initHolder.viewModel.themeManager.unregisterWeatherViewThemeDelegate();
 
     super.dispose();
   }
@@ -167,7 +142,7 @@ class _MainPageState extends GeoState<MainPage>
   @override
   void onVisibilityChanged(bool visible) {
     if (visible) {
-      _initHolder.viewModel.checkToUpdate();
+      initHolder.viewModel.checkToUpdate();
     }
     _weatherViewKey.currentState?.drawable = visible;
   }
@@ -175,13 +150,14 @@ class _MainPageState extends GeoState<MainPage>
   @override
   Widget build(BuildContext context) {
     _headerHeight = _getHeaderHeight();
-    final bool lightTheme = Theme.of(context).brightness == Brightness.light;
+    _lightTheme = Theme.of(context).brightness == Brightness.light;
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: _initHolder.viewModel.currentLocation),
+        ChangeNotifierProvider.value(value: initHolder.viewModel.currentLocation),
+        ChangeNotifierProvider.value(value: initHolder.viewModel.event),
         ChangeNotifierProvider.value(value: _listState),
-        ChangeNotifierProvider.value(value: _initHolder.viewModel.indicator),
+        ChangeNotifierProvider.value(value: initHolder.viewModel.indicator),
       ],
       child: PlatformScaffold(
         body: SnackBarContainer(
@@ -195,16 +171,25 @@ class _MainPageState extends GeoState<MainPage>
                     SizedBox(
                       width: 380.0,
                       height: double.infinity,
-                      child: _getManagementFragment(context),
+                      child: ManagementFragment(
+                        viewModel: initHolder.viewModel,
+                        snackBarKey: _snackBarContainerKey,
+                      ),
                     ),
                     Expanded(
-                      child: _getMainFragment(context, lightTheme),
+                      child: _getMainFragment(
+                          context,
+                          orientation == Orientation.landscape
+                      ),
                     ),
                   ],
                 );
               }
 
-              return _getMainFragment(context, lightTheme);
+              return _getMainFragment(
+                  context,
+                  orientation == Orientation.landscape
+              );
             },
           ),
         ),
@@ -212,25 +197,23 @@ class _MainPageState extends GeoState<MainPage>
     );
   }
 
-  Widget _getManagementFragment(BuildContext context) {
-    return ManagementFragment(
-      viewModel: _initHolder.viewModel,
-      snackBarKey: _snackBarContainerKey,
-    );
-  }
+  Widget _getMainFragment(
+      BuildContext context,
+      bool landscape) {
 
-  Widget _getMainFragment(BuildContext context, bool lightTheme) {
-    return Consumer<LiveData<Location>>(builder: (_, currentLocation, __) {
-      return Stack(
-        alignment: AlignmentDirectional.topCenter,
-        children: [
-          MaterialWeatherView(
+    return Stack(
+      alignment: AlignmentDirectional.topCenter,
+      children: [
+        Consumer<LiveData<Location>>(builder: (_, currentLocation, __) {
+          return MaterialWeatherView(
             key: _weatherViewKey,
             weatherKind: _getWeatherKind(),
             daylight: _isWeatherViewDaylight(),
-          ),
-          SwipeSwitchLayout(
-            child: NestedRefreshIndicator(
+          );
+        }),
+        SwipeSwitchLayout(
+          child: Consumer<LiveData<Location>>(builder: (_, currentLocation, __) {
+            return NestedRefreshIndicator(
               key: _refreshIndicatorKey,
               child: Consumer<LiveData<_MainListState>>(builder: (_, listState, __) {
                 switch (listState.value) {
@@ -238,7 +221,7 @@ class _MainPageState extends GeoState<MainPage>
                     return PlatformInkWell(
                       child: Container(),
                       onTap: () {
-                        _initHolder.viewModel.updateWeather(context);
+                        initHolder.viewModel.updateWeather();
                       },
                     );
 
@@ -259,137 +242,210 @@ class _MainPageState extends GeoState<MainPage>
                     );
 
                   default:
-                    return _getListView(currentLocation.value);
+                    return _getListView(currentLocation.value, landscape);
                 }
               }),
               edgeOffset: getAppBarHeight(context),
               onRefresh: _onRefresh,
-              color: _initHolder.viewModel.themeManager.getWeatherThemeColors(
+              color: initHolder.viewModel.themeManager.getWeatherThemeColors(
                   context,
                   currentLocation.value.currentWeatherCode,
-                  _initHolder.viewModel.themeManager.daytime,
-                  lightTheme
+                  initHolder.viewModel.themeManager.daytime,
+                  _lightTheme,
               )[0],
-            ),
-            swipeEnabled: (
-                _initHolder.viewModel.validLocationList?.length ?? 0
-            ) > 1,
-            onSwipe: _onSwiping,
-            onSwitch: _onSwitch,
-          ),
-          MainAppBar(
+            );
+          }),
+          swipeEnabled: (
+              initHolder.viewModel.validLocationList?.length ?? 0
+          ) > 1,
+          onSwipe: _onSwiping,
+          onSwitch: _onSwitch,
+        ),
+        Consumer<LiveData<Location>>(builder: (_, currentLocation, __) {
+          return MainAppBar(
             _appBarKey,
-            _initHolder.viewModel.themeManager,
+            initHolder.viewModel,
             title: _getAppBarTitle(),
             scrollOffset: _scrollOffset,
             headerHeight: _headerHeight,
-          ),
-          Consumer<LiveData<Indicator>>(builder: (_, indicator, __) {
-            final color = Theme
-                .of(context)
-                .textTheme
-                .bodyText2
-                .color;
+            lightTheme: _lightTheme,
+          );
+        }),
+        Consumer<LiveData<Indicator>>(builder: (_, indicator, __) {
+          final color = Theme
+              .of(context)
+              .textTheme
+              .bodyText2
+              .color;
+          _pageValue.value = indicator.value.index.toDouble();
 
-            return Visibility(
-              visible: indicator.value.total > 1,
-              child: Positioned(
-                bottom: 0,
-                child: SafeArea(
-                  child: getTabletAdaptiveWidthBox(
-                    context,
-                    InkPageIndicator(
-                      page: ValueNotifier(indicator.value.index.toDouble()),
-                      pageCount: indicator.value.total,
-                      gap: 8.0,
-                      padding: 16.0,
-                      shape: IndicatorShape.circle(4.0),
-                      activeColor: color,
-                      inactiveColor: color.withAlpha((255 * 0.1).toInt()),
-                      inkColor: color.withAlpha((255 * 0.1).toInt()),
-                    ),
+          return Visibility(
+            visible: indicator.value.total > 1,
+            child: Positioned(
+              bottom: 0,
+              child: SafeArea(
+                child: getTabletAdaptiveWidthBox(
+                  context,
+                  InkPageIndicator(
+                    page: _pageValue,
+                    pageCount: indicator.value.total,
+                    gap: 8.0,
+                    padding: 16.0,
+                    shape: IndicatorShape.circle(4.0),
+                    activeColor: color,
+                    inactiveColor: color.withAlpha((255 * 0.1).toInt()),
+                    inkColor: color.withAlpha((255 * 0.1).toInt()),
                   ),
                 ),
               ),
-            );
-          }),
-        ],
-      );
-    });
+            ),
+          );
+        }),
+        Consumer<LiveData<MainEvent>>(builder: (_, event, __) {
+          _ensureListState(event.value);
+          _ensureSwipeRefreshing(event.value);
+          _ensureSnackBarNotification(event.value);
+          return SizedBox(width: 0.0, height: 0.0);
+        }),
+      ],
+    );
   }
 
-  void _ensureListState() {
-    if (_initHolder.viewModel.event.value.data.weather == null) {
-      if (_initHolder.viewModel.event.value.status == ResourceStatus.LOADING) {
-        _listState.value = _MainListState.loadingWithoutCache;
-
-        _initHolder.viewModel.updateWeather(context);
-      } else {
-        _listState.value = _MainListState.noCache;
-      }
+  void _ensureListState(MainEvent event) {
+    _MainListState newState;
+    if (event.data.weather == null) {
+      newState = event.status == ResourceStatus.LOADING
+          ? _MainListState.loadingWithoutCache
+          : _MainListState.noCache;
     } else {
-      _listState.value = _MainListState.hasCache;
+      newState = _MainListState.hasCache;
+    }
+
+    if (newState != _listState.value) {
+      _listState.value = newState;
     }
   }
 
-  Widget _getListView(Location location) {
+  void _ensureSwipeRefreshing(MainEvent event) {
+    _swipeRefreshing = initHolder.viewModel.currentLocation.value?.weather != null
+        && event.status == ResourceStatus.LOADING
+        && event.initStage == InitializationStage.INITIALIZATION_DONE;
+    if (_swipeRefreshing) {
+      _refreshIndicatorKey.currentState?.show();
+    }
+  }
+
+  void _ensureSnackBarNotification(MainEvent event) {
+    if (event.locationEvent == _lastLocationEvent) {
+      return;
+    }
+    _lastLocationEvent = event.locationEvent;
+
+    switch (event.locationEvent) {
+      case LocationEvent.GET_GEO_POSITION_FAILED:
+      case LocationEvent.LOCATOR_FAILED:
+      case LocationEvent.LOCATOR_DISABLED:
+        Timer.run(() {
+          _snackBarContainerKey.currentState?.show(
+            S.of(context).feedback_location_failed,
+          );
+        });
+        break;
+
+      case LocationEvent.LOCATOR_PERMISSION_DENIED:
+        Timer.run(() {
+          _snackBarContainerKey.currentState?.show(
+            S.of(context).feedback_request_location_permission_failed,
+          );
+        });
+        break;
+
+      case LocationEvent.GET_WEATHER_FAILED:
+        Timer.run(() {
+          _snackBarContainerKey.currentState?.show(
+            S.of(context).feedback_get_weather_failed,
+          );
+        });
+        break;
+
+      case LocationEvent.UPDATE_FROM_BACKGROUND:
+        Timer.run(() {
+          _snackBarContainerKey.currentState?.show(
+            S.of(context).feedback_updated_in_background,
+          );
+        });
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  Widget _getListView(Location location, bool landscape) {
     bool executeAnimation = true;
     if (location.formattedId == _currentLocationFormattedId
         && location.weatherSource == _currentWeatherSource
         && location.weather != null
         && location.weather.base.timeStamp == _currentWeatherTimeStamp
         && _currentLightTheme != null
-        && _currentLightTheme == _initHolder.viewModel.themeManager.isLightTheme(context)) {
+        && _currentLightTheme == initHolder.viewModel.themeManager.isLightTheme(context)
+        && landscape == _currentLandscape) {
       executeAnimation = false;
+    } else {
+      Timer.run(() {
+        _weatherViewKey.currentState?.onScroll(0);
+        _appBarKey.currentState?.update(
+          _getAppBarTitle(),
+          0,
+          _headerHeight ?? _getHeaderHeight(),
+          initHolder.viewModel.themeManager.isLightTheme(context)
+        );
+      });
     }
 
     _currentLocationFormattedId = location.formattedId;
     _currentWeatherSource = location.weatherSource;
-    _currentLightTheme = _initHolder.viewModel.themeManager.isLightTheme(context);
+    _currentLightTheme = initHolder.viewModel.themeManager.isLightTheme(context);
     _currentWeatherTimeStamp = location.weather?.base?.timeStamp ?? -1;
+    _currentLandscape = landscape;
 
-    return getList(
-      context,
-      _scrollController,
-      _weatherViewKey,
-      _initHolder.viewModel.settingsManager,
-      _initHolder.viewModel.themeManager,
-      location.weather,
-      location.timezone,
-      executeAnimation,
-      () {
-        Timer.run(() {
-          _weatherViewKey.currentState?.onScroll(0);
-          _appBarKey.currentState?.update(
-            _getAppBarTitle(),
-            0,
-            _headerHeight ?? _getHeaderHeight(),
-          );
-        });
-      }
-    );
+    // we need to cache the list view widget.
+    // create the list view widget will consume a huge time.
+    if (_listCache == null || executeAnimation) {
+      _listCache = getList(
+          context,
+          _scrollController,
+          _weatherViewKey,
+          initHolder.viewModel,
+          location.weather,
+          location.timezone,
+          executeAnimation,
+      );
+    }
+
+    return _listCache;
   }
 
   WeatherKind _getWeatherKind() => weatherCodeToWeatherKind(
       _switchPreviewOffset == 0
-          ? _initHolder.viewModel.currentLocation.value.currentWeatherCode
-          : _initHolder.viewModel.getLocationFromList(_switchPreviewOffset).currentWeatherCode
+          ? initHolder.viewModel.currentLocation.value.currentWeatherCode
+          : initHolder.viewModel.getLocationFromList(_switchPreviewOffset).currentWeatherCode
   );
 
   bool _isWeatherViewDaylight() => _switchPreviewOffset == 0
-      ? _initHolder.viewModel.themeManager.daytime
-      : isDaylightLocation(_initHolder.viewModel.getLocationFromList(_switchPreviewOffset));
+      ? initHolder.viewModel.themeManager.daytime
+      : isDaylightLocation(initHolder.viewModel.getLocationFromList(_switchPreviewOffset));
 
   String _getAppBarTitle() => _switchPreviewOffset == 0 ? getLocationName(
       context,
-      _initHolder.viewModel.currentLocation.value
+      initHolder.viewModel.currentLocation.value
   ) : getLocationName(
       context,
-      _initHolder.viewModel.getLocationFromList(_switchPreviewOffset)
+      initHolder.viewModel.getLocationFromList(_switchPreviewOffset)
   );
 
   double _getHeaderHeight() =>
-      _initHolder.viewModel.themeManager.getHeaderHeight(context);
+      initHolder.viewModel.themeManager.getHeaderHeight(context);
 
   void _resetUIUpdateFlag() {
     _currentLocationFormattedId = null;
@@ -406,7 +462,7 @@ class _MainPageState extends GeoState<MainPage>
   Future<void> _onRefresh() async {
     _swipeRefreshing = true;
 
-    _initHolder.viewModel.updateWeather(context);
+    initHolder.viewModel.updateWeather();
 
     while (_swipeRefreshing) {
       await Future.delayed(Duration(milliseconds: 32));
@@ -414,12 +470,23 @@ class _MainPageState extends GeoState<MainPage>
   }
 
   void _onSwiping(double progress) {
+    _pageValue.value = initHolder.viewModel.indicator.value.index + max(
+        -1.0,
+        min(progress, 1.0)
+    );
+
     if (_switchPreviewOffset == 0) {
       if (progress.abs() >= 1) {
         _switchPreviewOffset = progress > 0 ? 1 : -1;
         _weatherViewKey.currentState?.setWeather(
           _getWeatherKind(),
           _isWeatherViewDaylight()
+        );
+        _appBarKey.currentState?.update(
+          _getAppBarTitle(),
+          _scrollOffset,
+          _headerHeight ?? _getHeaderHeight(),
+          _lightTheme,
         );
       }
     } else {
@@ -429,15 +496,26 @@ class _MainPageState extends GeoState<MainPage>
             _getWeatherKind(),
             _isWeatherViewDaylight()
         );
+        _appBarKey.currentState?.update(
+          _getAppBarTitle(),
+          _scrollOffset,
+          _headerHeight ?? _getHeaderHeight(),
+          _lightTheme,
+        );
       }
     }
   }
 
   Future<void> _onSwitch(int positionChanging) async {
+    _switchPreviewOffset = 0;
+    _pageValue.value = (
+        initHolder.viewModel.indicator.value.index + positionChanging
+    ).toDouble();
+
     _resetUIUpdateFlag();
 
     // switch location.
-    _initHolder.viewModel.offsetLocation(positionChanging);
+    initHolder.viewModel.offsetLocation(positionChanging);
 
     // wait widget tree building.
     while (!_isValidUIUpdateFlag()) {

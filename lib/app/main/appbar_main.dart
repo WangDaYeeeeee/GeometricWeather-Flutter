@@ -6,22 +6,25 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/common/utils/router.dart';
-import 'package:geometricweather_flutter/app/theme/manager.dart';
+import 'package:geometricweather_flutter/app/main/page_management.dart';
+import 'package:geometricweather_flutter/app/main/view_models.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 
 class MainAppBar extends StatefulWidget {
 
-  MainAppBar(Key key, this.themeManager, {
-    this.title,
-    this.scrollOffset,
-    this.headerHeight,
+  MainAppBar(Key key, this.viewModel, {
+    @required this.title,
+    @required this.scrollOffset,
+    @required this.headerHeight,
+    @required this.lightTheme,
   }): super(key: key);
 
-  final ThemeManager themeManager;
-  final double headerHeight;
+  final MainViewModel viewModel;
 
   final String title;
   final double scrollOffset;
+  final double headerHeight;
+  final bool lightTheme;
 
   @override
   State<StatefulWidget> createState() {
@@ -34,6 +37,7 @@ abstract class MainAppBarState extends State<MainAppBar> {
   String _title;
   double _scrollOffset;
   double _headerHeight;
+  bool _lightTheme;
 
   @override
   void initState() {
@@ -42,40 +46,58 @@ abstract class MainAppBarState extends State<MainAppBar> {
     _title = widget.title;
     _scrollOffset = widget.scrollOffset;
     _headerHeight = widget.headerHeight;
+    _lightTheme = widget.lightTheme;
   }
 
   @override
   void didUpdateWidget(covariant MainAppBar oldWidget) {
     super.didUpdateWidget(oldWidget);
     update(
-        widget.title,
-        widget.scrollOffset,
-        widget.headerHeight
+      widget.title,
+      widget.scrollOffset,
+      widget.headerHeight,
+      widget.lightTheme,
     );
   }
 
-  void update(String title, double scrollOffset, double headerHeight);
+  void update(
+      String title,
+      double scrollOffset,
+      double headerHeight,
+      bool lightTheme);
 }
 
 class _CupertinoAppBarState extends MainAppBarState {
 
   @override
-  void update(String title, double scrollOffset, double headerHeight) {
+  void update(
+      String title,
+      double scrollOffset,
+      double headerHeight,
+      bool lightTheme) {
+
     if (_title == title
         && _headerHeight == headerHeight
-        && (_scrollOffset > _headerHeight) == (scrollOffset > headerHeight)) {
-      _innerUpdate(title, scrollOffset, headerHeight);
+        && (_scrollOffset > _headerHeight) == (scrollOffset > headerHeight)
+        && _lightTheme == lightTheme) {
+      _innerUpdate(title, scrollOffset, headerHeight, lightTheme);
     } else {
       setState(() {
-        _innerUpdate(title, scrollOffset, headerHeight);
+        _innerUpdate(title, scrollOffset, headerHeight, lightTheme);
       });
     }
   }
 
-  void _innerUpdate(String title, double scrollOffset, double headerHeight) {
+  void _innerUpdate(
+      String title,
+      double scrollOffset,
+      double headerHeight,
+      bool lightTheme) {
+
     _title = title;
     _scrollOffset = scrollOffset;
     _headerHeight = headerHeight;
+    _lightTheme = lightTheme;
   }
 
   @override
@@ -99,10 +121,10 @@ class _CupertinoAppBarState extends MainAppBarState {
           return PlatformAppBar(
             leading: orientation == Orientation.landscape && isTabletDevice(context)
                 ? null
-                : _getSettingsIcon(context, widget.themeManager, headerHidden),
+                : _getSettingsIcon(context, _lightTheme, headerHidden),
             title: Text(_title,
                 style: _scrollOffset > _headerHeight ? TextStyle(
-                    color: widget.themeManager.isLightTheme(context)
+                    color: widget.viewModel.themeManager.isLightTheme(context)
                         ? Colors.black
                         : Colors.white
                 ) : TextStyle(
@@ -110,12 +132,12 @@ class _CupertinoAppBarState extends MainAppBarState {
                 ),
             ),
             trailingActions: orientation == Orientation.landscape && isTabletDevice(context)
-                ? [_getSettingsIcon(context, widget.themeManager, headerHidden)]
-                : [_getManagementIcon(context, widget.themeManager, headerHidden)],
+                ? [_getSettingsIcon(context, _lightTheme, headerHidden)]
+                : [_getManagementIcon(context, widget.viewModel, _lightTheme, headerHidden)],
             backgroundColor: Colors.transparent,
             cupertino: (_, __) => CupertinoNavigationBarData(
               brightness: _scrollOffset > _headerHeight ? (
-                  widget.themeManager.isLightTheme(context)
+                  widget.viewModel.themeManager.isLightTheme(context)
                       ? Brightness.light
                       : Brightness.dark
               ) : Brightness.dark,
@@ -132,22 +154,34 @@ class _MaterialAppBarState extends MainAppBarState {
   double _appBarHeight;
 
   @override
-  void update(String title, double scrollOffset, double headerHeight) {
+  void update(
+      String title,
+      double scrollOffset,
+      double headerHeight,
+      bool lightTheme) {
+
     if (_title == title
         && _headerHeight == headerHeight
-        && !_shouldUpdateTranslation(scrollOffset)) {
-      _innerUpdate(title, scrollOffset, headerHeight);
+        && !_shouldUpdateTranslation(scrollOffset)
+        && _lightTheme == lightTheme) {
+      _innerUpdate(title, scrollOffset, headerHeight, lightTheme);
     } else {
       setState(() {
-        _innerUpdate(title, scrollOffset, headerHeight);
+        _innerUpdate(title, scrollOffset, headerHeight, lightTheme);
       });
     }
   }
 
-  void _innerUpdate(String title, double scrollOffset, double headerHeight) {
+  void _innerUpdate(
+      String title,
+      double scrollOffset,
+      double headerHeight,
+      bool lightTheme) {
+
     _title = title;
     _scrollOffset = scrollOffset;
     _headerHeight = headerHeight;
+    _lightTheme = lightTheme;
   }
 
   bool _shouldUpdateTranslation(double newOffset) {
@@ -191,10 +225,10 @@ class _MaterialAppBarState extends MainAppBarState {
           return PlatformAppBar(
             title: Text(_title),
             trailingActions: orientation == Orientation.landscape && isTabletDevice(context) ? [
-              _getSettingsIcon(context, widget.themeManager, false)
+              _getSettingsIcon(context, _lightTheme, false)
             ] : [
-              _getManagementIcon(context, widget.themeManager, false),
-              _getSettingsIcon(context, widget.themeManager, false)
+              _getManagementIcon(context, widget.viewModel, _lightTheme, false),
+              _getSettingsIcon(context, _lightTheme, false)
             ],
             backgroundColor: Colors.transparent,
             material: (_, __) => MaterialAppBarData(
@@ -210,24 +244,27 @@ class _MaterialAppBarState extends MainAppBarState {
 
 Widget _getManagementIcon(
     BuildContext context,
-    ThemeManager themeManager,
+    MainViewModel viewModel,
+    bool lightTheme,
     bool iOSHeaderHidden) => _PlatformAppBarIconButton(context,
   materialIconData: Icons.domain,
   cupertinoIconData: CupertinoIcons.building_2_fill,
-  themeManager: themeManager,
+  lightTheme: lightTheme,
   iOSHeaderHidden: iOSHeaderHidden,
   onPressed: () {
-      Navigator.of(context).pushNamed(Routers.ROUTER_ID_MANAGEMENT);
+      Navigator.pushNamed(context, Routers.ROUTER_ID_MANAGEMENT,
+        arguments: ManagementArgument(viewModel),
+      );
   },
 );
 
 Widget _getSettingsIcon(
     BuildContext context,
-    ThemeManager themeManager,
+    bool lightTheme,
     bool iOSHeaderHidden) => _PlatformAppBarIconButton(context,
   materialIconData: Icons.settings_outlined,
   cupertinoIconData: CupertinoIcons.settings,
-  themeManager: themeManager,
+  lightTheme: lightTheme,
   iOSHeaderHidden: iOSHeaderHidden,
   onPressed: () {
       Navigator.pushNamed(context, Routers.ROUTER_ID_ABOUT);
@@ -239,16 +276,14 @@ class _PlatformAppBarIconButton extends PlatformIconButton {
   _PlatformAppBarIconButton(BuildContext context, {
     IconData materialIconData,
     IconData cupertinoIconData,
-    ThemeManager themeManager,
+    bool lightTheme,
     bool iOSHeaderHidden,
     void Function() onPressed
   }): super(
       materialIcon: Icon(materialIconData),
       cupertinoIcon: Icon(cupertinoIconData,
         color: iOSHeaderHidden ? (
-            themeManager.isLightTheme(context)
-                ? CupertinoColors.black
-                : CupertinoColors.white
+            lightTheme ? CupertinoColors.black : CupertinoColors.white
         ) : CupertinoColors.white
       ),
       cupertino: (_, __) => CupertinoIconButtonData(

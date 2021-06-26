@@ -7,17 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
-import 'package:geometricweather_flutter/app/common/ui/anim_list/flow_anim_list.dart';
+import 'package:geometricweather_flutter/app/common/ui/anim_list/main_anim_list.dart';
 import 'package:geometricweather_flutter/app/common/ui/sun_moon/moon_phase.dart';
 import 'package:geometricweather_flutter/app/common/ui/sun_moon/sun_moon_path.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
-import 'package:geometricweather_flutter/app/settings/interfaces.dart';
-import 'package:geometricweather_flutter/app/theme/manager.dart';
 import 'package:geometricweather_flutter/app/theme/providers/providers.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 
+import '../view_models.dart';
 import '_base.dart';
 
 ItemGenerator sunMoon = (
@@ -25,8 +24,7 @@ ItemGenerator sunMoon = (
     int index,
     bool initVisible,
     GlobalKey<WeatherViewState> weatherViewKey,
-    SettingsManager settingsManager,
-    ThemeManager themeManager,
+    MainViewModel viewModel,
     Weather weather,
     String timezone) {
 
@@ -34,14 +32,14 @@ ItemGenerator sunMoon = (
 
   final lightTheme = theme.brightness == Brightness.light;
 
-  final colors = themeManager.getWeatherThemeColors(
+  final colors = viewModel.themeManager.getWeatherThemeColors(
     context,
     weather.current.weatherCode,
-    themeManager.daytime,
+    viewModel.themeManager.daytime,
     theme.brightness == Brightness.light,
   );
 
-  final resProvider = ResourceProvider(context, settingsManager.resourceProviderId);
+  final resProvider = ResourceProvider(context, viewModel.settingsManager.resourceProviderId);
 
   final sunMoonKey = GlobalKey<SunMoonPathViewState>();
   final moonPhaseKey = GlobalKey<MoonPhaseViewState>();

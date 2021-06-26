@@ -158,7 +158,6 @@ AirAndPollen getAirAndPollen(
 
 
 Future<weather.Weather> toWeather(
-    BuildContext context,
     location.Location location,
     AccuCurrentResult currentResult,
     AccuDailyResult dailyResult,
@@ -197,14 +196,14 @@ Future<weather.Weather> toWeather(
             weather.Wind(
                 currentResult.wind.direction.localized,
                 weather.WindDegree(currentResult.wind.direction.degrees.toDouble()),
-                getWindLevel(context, currentResult.windGust.speed.metric.value.toDouble()),
+                getWindLevelWithoutContext(currentResult.windGust.speed.metric.value.toDouble()),
                 currentResult.windGust.speed.metric.value.toDouble(),
             ),
             weather.UV(currentResult.uVIndex, currentResult.uVIndexText),
             aqiResult == null
                 ? weather.AirQuality()
                 : weather.AirQuality(
-                    getAqiQuality(context, aqiResult.index),
+                    getAqiQualityWithoutContext(aqiResult.index),
                     aqiResult.index,
                     aqiResult.particulateMatter25.toDouble(),
                     aqiResult.particulateMatter10.toDouble(),
@@ -219,9 +218,9 @@ Future<weather.Weather> toWeather(
             currentResult.dewPoint.metric.value.toInt(),
             currentResult.cloudCover,
             (currentResult.ceiling.metric.value / 1000.0).toDouble(),
-            await convertUnit(context, dailyResult.headline.text),
+            dailyResult.headline.text,
         ),
-        await getDailyList(context, dailyResult),
+        await getDailyList(dailyResult),
         getHourlyList(hourlyResultList),
         getAlertList(alertResultList),
         weather.History(
@@ -246,14 +245,14 @@ Future<weather.Weather> toWeather(
   }
 }
 
-weather.AirQuality getDailyAirQuality(BuildContext context, List<AirAndPollen> list) {
+weather.AirQuality getDailyAirQuality(List<AirAndPollen> list) {
   AirAndPollen aqi = getAirAndPollen(list, "AirQuality");
   int index = aqi == null ? null : aqi.value;
   if (index != null && index == 0) {
     index = null;
   }
   return weather.AirQuality(
-      getAqiQuality(context, index),
+      getAqiQualityWithoutContext(index),
       index,
       null,
       null,
@@ -294,9 +293,7 @@ weather.UV getDailyUV(List<AirAndPollen> list) {
   );
 }
 
-Future<List<weather.Daily>> getDailyList(
-    BuildContext context,
-    AccuDailyResult dailyResult) async {
+Future<List<weather.Daily>> getDailyList(AccuDailyResult dailyResult) async {
   List<weather.Daily> dailyList = [];
 
   for (DailyForecasts forecasts in dailyResult.dailyForecasts) {
@@ -309,7 +306,7 @@ Future<List<weather.Daily>> getDailyList(
                 removeTimezoneOfDateString(forecasts.date)
             ).millisecondsSinceEpoch,
             [weather.HalfDay(
-                await convertUnit(context, forecasts.day.longPhrase),
+                forecasts.day.longPhrase,
                 forecasts.day.shortPhrase,
                 getWeatherCode(forecasts.day.icon),
                 weather.Temperature(
@@ -345,13 +342,13 @@ Future<List<weather.Daily>> getDailyList(
                 weather.Wind(
                     forecasts.day.wind.direction.localized,
                     weather.WindDegree(forecasts.day.wind.direction.degrees.toDouble()), 
-                    getWindLevel(context, forecasts.day.windGust.speed.value.toDouble()),
+                    getWindLevelWithoutContext(forecasts.day.windGust.speed.value.toDouble()),
                     forecasts.day.windGust.speed.value.toDouble()
                 ),
                 forecasts.day.cloudCover
             ),
             weather.HalfDay(
-                await convertUnit(context, forecasts.night.longPhrase),
+                forecasts.night.longPhrase,
                 forecasts.night.shortPhrase,
                 getWeatherCode(forecasts.night.icon),
                 weather.Temperature(
@@ -387,7 +384,7 @@ Future<List<weather.Daily>> getDailyList(
                 weather.Wind(
                     forecasts.night.wind.direction.localized,
                     weather.WindDegree(forecasts.night.wind.direction.degrees.toDouble()),
-                    getWindLevel(context, forecasts.night.windGust.speed.value.toDouble()),
+                    getWindLevelWithoutContext(forecasts.night.windGust.speed.value.toDouble()),
                     forecasts.night.windGust.speed.value.toDouble()
                 ),
                 forecasts.night.cloudCover
@@ -406,7 +403,7 @@ Future<List<weather.Daily>> getDailyList(
                 getMoonPhaseAngle(forecasts.moon.phase),
                 forecasts.moon.phase
             ),
-            getDailyAirQuality(context, forecasts.airAndPollen),
+            getDailyAirQuality(forecasts.airAndPollen),
             getDailyPollen(forecasts.airAndPollen),
             getDailyUV(forecasts.airAndPollen),
             forecasts.hoursOfSun

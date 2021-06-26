@@ -32,7 +32,7 @@ class ThemeColors {
   static const colorAlert = Color(0xFFfcc96b);
 }
 
-Color getCupertinoAppbarBackground(BuildContext context) =>
+Color getCupertinoAppBarBackground(BuildContext context) =>
     Theme.of(context).primaryColor.withAlpha((255 * 0.5).toInt());
 
 double getAppBarHeight(BuildContext context) =>

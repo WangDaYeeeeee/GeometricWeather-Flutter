@@ -9,6 +9,8 @@ import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/common/utils/router.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
+import 'package:geometricweather_flutter/app/main/page_management.dart';
+import 'package:geometricweather_flutter/app/main/view_models.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 
@@ -16,8 +18,9 @@ import '../../../main.dart';
 
 class TimeBar extends StatefulWidget {
 
-  TimeBar(this.weather, this.timezone): super();
+  TimeBar(this.viewModel, this.weather, this.timezone): super();
 
+  final MainViewModel viewModel;
   final Weather weather;
   final String timezone;
 
@@ -132,7 +135,9 @@ class _TimeBarState extends State<TimeBar> {
         ],
       ),
       onTap: () {
-        Navigator.of(context).pushNamed(Routers.ROUTER_ID_MANAGEMENT);
+        Navigator.pushNamed(context, Routers.ROUTER_ID_MANAGEMENT,
+          arguments: ManagementArgument(widget.viewModel),
+        );
       },
     );
   }

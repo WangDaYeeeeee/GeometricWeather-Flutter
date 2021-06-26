@@ -6,16 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/units.dart';
-import 'package:geometricweather_flutter/app/common/ui/anim_list/flow_anim_list.dart';
+import 'package:geometricweather_flutter/app/common/ui/anim_list/main_anim_list.dart';
 import 'package:geometricweather_flutter/app/common/ui/progress/arc_progress.dart';
 import 'package:geometricweather_flutter/app/common/ui/progress/linear_progress.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
-import 'package:geometricweather_flutter/app/settings/interfaces.dart';
-import 'package:geometricweather_flutter/app/theme/manager.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 
+import '../view_models.dart';
 import '_base.dart';
 
 ItemGenerator airQuality = (
@@ -23,17 +22,16 @@ ItemGenerator airQuality = (
     int index,
     bool initVisible,
     GlobalKey<WeatherViewState> weatherViewKey,
-    SettingsManager settingsManager,
-    ThemeManager themeManager,
+    MainViewModel viewModel,
     Weather weather,
     String timezone) {
 
   final theme = Theme.of(context);
 
-  final colors = themeManager.getWeatherThemeColors(
+  final colors = viewModel.themeManager.getWeatherThemeColors(
     context,
     weather.current.weatherCode,
-    themeManager.daytime,
+    viewModel.themeManager.daytime,
     theme.brightness == Brightness.light,
   );
 
