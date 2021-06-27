@@ -125,6 +125,9 @@ class _SearchPageState extends GeoState<SearchPage> {
                       )
                   );
 
+                  // divider.
+                  columnChildren.add(Divider(height: 1.0));
+
                   return PlatformInkWell(
                     child: Card(
                       shape: RoundedRectangleBorder(
@@ -140,9 +143,6 @@ class _SearchPageState extends GeoState<SearchPage> {
                       Navigator.pop(context, location);
                     },
                   );
-                },
-                separatorBuilder: (BuildContext context, int index) {
-                  return Divider(height: 1.0);
                 },
                 baseItemAnimationDuration: _ITEM_ANIM_DURATION,
                 initItemOffsetX: Platform.isIOS ? 128.0 : 0.0,

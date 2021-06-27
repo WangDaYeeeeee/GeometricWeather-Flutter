@@ -237,6 +237,10 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
     a.addListener(() {
       setState(() {
         setOffset(a.value);
+
+        if (widget.onSwipe != null) {
+          widget.onSwipe(progressX);
+        }
       });
     });
 

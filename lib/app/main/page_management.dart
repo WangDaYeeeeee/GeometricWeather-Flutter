@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
-import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
 import 'package:geometricweather_flutter/app/common/basic/mvvm.dart';
 import 'package:geometricweather_flutter/app/common/basic/widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/anim_list/slide_anim_list.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
+import 'package:geometricweather_flutter/app/common/ui/snackbar/model.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
 import 'package:geometricweather_flutter/app/main/appbar_management.dart';
@@ -124,6 +124,16 @@ class ManagementFragment extends StatelessWidget {
   }
 }
 
+class _ItemWidgetCache {
+
+  final Widget item;
+  final Location location;
+  final bool selected;
+  final bool residential;
+
+  _ItemWidgetCache(this.item, this.location, this.selected, this.residential);
+}
+
 class _ManagementBody extends StatelessWidget {
 
   _ManagementBody({
@@ -138,8 +148,7 @@ class _ManagementBody extends StatelessWidget {
 
   final GlobalKey<SnackBarContainerState> snackBarKey;
 
-  final formattedIdWeatherMap = Map<String, Weather>();
-  final formattedIdWidgetMap = Map<String, Widget>();
+  final formattedIdCacheMap = Map<String, _ItemWidgetCache>();
 
   final double topPadding;
   final VoidCallback onItemClickedCallback;
@@ -152,145 +161,129 @@ class _ManagementBody extends StatelessWidget {
     );
 
     return Consumer<LiveData<SelectableLocationListResource>>(builder: (_, listResource, __) {
-      Widget list = ReorderableSlideAnimatedListView(
+      Widget list = DraggableSlideAnimatedListView(
         itemCount: listResource.value.dataList.length,
         builder: (BuildContext context, int index) {
 
           final location = listResource.value.dataList[index];
           final theme = Theme.of(context);
+          final selected = location.formattedId
+              == viewModel.listResource.value.selectedId;
+          final residential = location.residentPosition;
 
-          final weatherCache = formattedIdWeatherMap[location.formattedId];
-          final widgetCache = formattedIdWidgetMap[location.formattedId];
-          if (location.weather == weatherCache && widgetCache != null) {
-            return WidgetWrapper(widgetCache, ValueKey(location.formattedId));
+          final cache = formattedIdCacheMap[location.formattedId];
+          if (cache != null
+              && cache.location.weather == location.weather
+              && cache.selected == selected
+              && cache.residential == residential) {
+            return WidgetWrapper(cache.item, ValueKey(location.formattedId));
           }
 
-          List<Widget> columnChildren = [];
+          Widget item = _getItem(
+              context,
+              location,
+              resProvider,
+              theme,
+              selected,
+              residential
+          );
 
-          // icon and title.
-          List<Widget> iconTitle = [];
-          if (location.weather != null) {
-            iconTitle.add(
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: normalMargin,
-                  ),
-                  child: Image(
-                    image: resProvider.getWeatherIcon(
-                        location.weather.current.weatherCode,
-                        isDaylightLocation(location)
-                    ),
-                    width: 24.0,
-                    height: 24.0,
-                  ),
-                )
+          formattedIdCacheMap[location.formattedId] = _ItemWidgetCache(
+              item,
+              location,
+              selected,
+              residential
+          );
+          return WidgetWrapper(item, ValueKey(location.formattedId),);
+        },
+        confirmCallback: (DismissDirection direction, int index) async {
+          // start to end -> delete location.
+          if (direction == DismissDirection.startToEnd) {
+            if (viewModel.totalLocationList.length > 1) {
+              return true;
+            }
+
+            snackBarKey.currentState?.show(
+                S.of(context).feedback_location_list_cannot_be_null
             );
+            return false;
           }
-          iconTitle.add(
-              Padding(
-                padding: EdgeInsets.only(
-                  left: normalMargin,
-                  right: normalMargin,
-                ),
-                child: Text(location.currentPosition ? S.of(context).current_location : '${
-                    getLocationName(context, location)
-                }${
-                    location.weather == null ? '' : (
-                        ', ${location.weather.current.temperature.getTemperature(
-                            context,
-                            viewModel.settingsManager.temperatureUnit
-                        )}'
-                    )
-                }', style: theme.textTheme.subtitle2),
-              )
-          );
-          columnChildren.add(
-              Padding(
-                padding: EdgeInsets.only(top: normalMargin),
-                child: Row(children: iconTitle),
-              )
-          );
 
-          // summary.
-          if (location.weather != null
-              && !isEmptyString(location.weather.current.dailyForecast)) {
-            columnChildren.add(
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: 2.0,
-                    left: normalMargin,
-                    right: normalMargin,
-                  ),
-                  child: Text(location.weather.current.dailyForecast,
-                      style: theme.textTheme.caption
-                  ),
-                )
+          // end to start -> set location as resident location or cancel it.
+          Location location = viewModel.totalLocationList[index];
+          if (!location.currentPosition) {
+            viewModel.forceUpdateLocation(
+                location.copyOf(residentPosition: !location.residentPosition)
             );
+          } else {
+            // todo: settings.
           }
+          return false;
+        },
+        dismissCallback: (DismissDirection direction, int index) {
+          final location = viewModel.deleteLocation(index);
 
-          // location.
-          columnChildren.add(
-              Padding(
-                padding: EdgeInsets.only(
-                  left: normalMargin,
-                  top: normalMargin,
-                  right: normalMargin,
-                ),
-                child: Text(location.toString(),
-                    style: theme.textTheme.bodyText2
-                ),
-              )
-          );
+          SnackBarModel snackBarModel;
 
-          // powered by.
-          columnChildren.add(
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 2.0,
-                  left: normalMargin,
-                  right: normalMargin,
-                  bottom: normalMargin,
-                ),
-                child: Text('Powered by ${location.weatherSource.url}',
-                    style: theme.textTheme.overline?.copyWith(
-                      color: location.weatherSource.color,
-                    )
-                ),
-              )
-          );
-
-          // divider.
-          columnChildren.add(Divider(height: 1.0));
-
-          Widget item = PlatformInkWell(
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.zero)
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: columnChildren,
-              ),
-              color: location.formattedId == listResource.value.selectedId
-                  ? theme.dividerColor
-                  : theme.cardColor,
-              margin: EdgeInsets.zero,
-            ),
-            onTap: () {
-              viewModel.setLocation(location.formattedId);
-              onItemClickedCallback?.call();
+          snackBarModel = snackBarKey.currentState?.show(
+            S.of(context).feedback_delete_succeed,
+            duration: DURATION_LONG,
+            action: S.of(context).cancel,
+            actionCallback: () {
+              viewModel.addLocation(location, index);
+              if (snackBarModel != null) {
+                snackBarKey.currentState?.dismiss(snackBarModel);
+              }
             },
           );
+        },
+        startBackgroundBuilder: (BuildContext context, int index) {
+          return Container(
+            color: Colors.red,
+            alignment: Alignment.centerLeft,
+            child: PlatformIconButton(
+              materialIcon: Icon(Icons.delete_outline,
+                color: Colors.white,
+              ),
+              cupertinoIcon: Icon(CupertinoIcons.delete,
+                color: Colors.white,
+              ),
+            ),
+          );
+        },
+        endBackgroundBuilder: (BuildContext context, int index) {
+          if (viewModel.totalLocationList[index].currentPosition) {
+            return Container(
+              color: ThemeColors.primaryDarkColor,
+              alignment: Alignment.centerRight,
+              child: PlatformIconButton(
+                materialIcon: Icon(Icons.settings_outlined,
+                  color: Colors.white,
+                ),
+                cupertinoIcon: Icon(CupertinoIcons.settings,
+                  color: Colors.white,
+                ),
+              ),
+            );
+          }
 
-          formattedIdWeatherMap[location.formattedId] = location.weather;
-          formattedIdWidgetMap[location.formattedId] = item;
-          return WidgetWrapper(item, ValueKey(location.formattedId),);
+          return Container(
+            color: ThemeColors.colorAlert,
+            alignment: Alignment.centerRight,
+            child: PlatformIconButton(
+              materialIcon: Icon(Icons.bookmark_outline,
+                color: Colors.white,
+              ),
+              cupertinoIcon: Icon(CupertinoIcons.bookmark,
+                color: Colors.white,
+              ),
+            ),
+          );
         },
         reorderCallback: (int oldIndex, int newIndex) {
           if(oldIndex < newIndex) {
             newIndex -= 1;
           }
-
           viewModel.moveLocation(oldIndex, newIndex);
         },
         padding: EdgeInsets.only(
@@ -332,6 +325,152 @@ class _ManagementBody extends StatelessWidget {
         ),
       ]);
     });
+  }
+
+  Widget _getItem(
+      BuildContext context,
+      Location location,
+      ResourceProvider resProvider,
+      ThemeData theme,
+      bool selected,
+      bool residential) {
+
+    List<Widget> columnChildren = [];
+
+    // icon and title.
+    List<Widget> iconTitle = [];
+    if (location.weather != null) {
+      iconTitle.add(
+          Padding(
+            padding: EdgeInsets.only(
+              left: normalMargin,
+            ),
+            child: Image(
+              image: resProvider.getWeatherIcon(
+                  location.weather.current.weatherCode,
+                  isDaylightLocation(location)
+              ),
+              width: 24.0,
+              height: 24.0,
+            ),
+          )
+      );
+    }
+    iconTitle.add(
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: normalMargin,
+              right: normalMargin,
+            ),
+            child: Text(location.currentPosition ? S.of(context).current_location : '${
+                getLocationName(context, location)
+            }${
+                location.weather == null ? '' : (
+                    ', ${location.weather.current.temperature.getTemperature(
+                        context,
+                        viewModel.settingsManager.temperatureUnit
+                    )}'
+                )
+            }', style: theme.textTheme.subtitle2),
+          ),
+        ),
+    );
+    columnChildren.add(
+        Padding(
+          padding: EdgeInsets.only(top: normalMargin),
+          child: Flex(
+            direction: Axis.horizontal,
+            children: iconTitle,
+          ),
+        )
+    );
+
+    // summary.
+    if (location.weather != null
+        && !isEmptyString(location.weather.current.dailyForecast)) {
+      columnChildren.add(
+          Padding(
+            padding: EdgeInsets.only(
+              top: 2.0,
+              left: normalMargin,
+              right: normalMargin,
+            ),
+            child: Text(location.weather.current.dailyForecast,
+                style: theme.textTheme.caption
+            ),
+          )
+      );
+    }
+
+    // location.
+    columnChildren.add(
+        Padding(
+          padding: EdgeInsets.only(
+            left: normalMargin,
+            top: normalMargin,
+            right: normalMargin,
+          ),
+          child: Text(location.toString(),
+              style: theme.textTheme.bodyText2
+          ),
+        )
+    );
+
+    // powered by.
+    columnChildren.add(
+        Padding(
+          padding: EdgeInsets.only(
+            top: 2.0,
+            left: normalMargin,
+            right: normalMargin,
+            bottom: normalMargin,
+          ),
+          child: Text('Powered by ${location.weatherSource.url}',
+              style: theme.textTheme.overline?.copyWith(
+                color: location.weatherSource.color,
+              )
+          ),
+        )
+    );
+
+    // divider.
+    columnChildren.add(Divider(height: 1.0));
+
+    final stackChildren = <Widget>[
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: columnChildren,
+      ),
+    ];
+    if (residential && !location.currentPosition) {
+      stackChildren.add(
+        Positioned(
+          top: normalMargin,
+          right: normalMargin,
+          child: Text('●',
+            style: theme.textTheme.overline?.copyWith(
+              color: ThemeColors.colorAlert,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return PlatformInkWell(
+      child: Card(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.zero)
+        ),
+        child: Stack(children: stackChildren),
+        color: selected ? theme.dividerColor : theme.cardColor,
+        margin: EdgeInsets.zero,
+      ),
+      onTap: () {
+        viewModel.setLocation(location.formattedId);
+        onItemClickedCallback?.call();
+      },
+    );
   }
 
   bool _containsCurrentLocation(List<Location> list) {

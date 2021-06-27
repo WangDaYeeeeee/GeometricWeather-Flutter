@@ -11,7 +11,6 @@ class SlideAnimatedListView extends StatelessWidget {
   SlideAnimatedListView({
     Key? key,
     required this.builder,
-    required this.separatorBuilder,
     required this.itemCount,
     this.scrollController,
     this.padding,
@@ -21,7 +20,6 @@ class SlideAnimatedListView extends StatelessWidget {
   }): super(key: key);
 
   final IndexedWidgetBuilder builder;
-  final IndexedWidgetBuilder separatorBuilder;
   final int itemCount;
   final ScrollController? scrollController;
   final EdgeInsetsGeometry? padding;
@@ -34,7 +32,7 @@ class SlideAnimatedListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimationLimiter(
       key: key,
-      child: ListView.separated(
+      child: ListView.builder(
         controller: scrollController,
         itemCount: itemCount,
         itemBuilder: (BuildContext context, int index) {
@@ -52,7 +50,6 @@ class SlideAnimatedListView extends StatelessWidget {
             ),
           );
         },
-        separatorBuilder: separatorBuilder,
         padding: padding,
       ),
     );
@@ -63,6 +60,14 @@ typedef IndexedWidgetWrapperBuilder = WidgetWrapper Function(
     BuildContext context,
     int index);
 
+typedef IndexedDismissCallback = void Function(
+    DismissDirection direction,
+    int index);
+
+typedef IndexedConfirmDismissCallback = Future<bool?> Function(
+    DismissDirection direction,
+    int index);
+
 class WidgetWrapper {
 
   final Widget item;
@@ -71,13 +76,17 @@ class WidgetWrapper {
   WidgetWrapper(this.item, this.key);
 }
 
-class ReorderableSlideAnimatedListView extends StatelessWidget {
+class DraggableSlideAnimatedListView extends StatelessWidget {
 
-  ReorderableSlideAnimatedListView({
+  DraggableSlideAnimatedListView({
     Key? key,
     required this.builder,
+    required this.dismissCallback,
     required this.reorderCallback,
     required this.itemCount,
+    this.confirmCallback,
+    this.startBackgroundBuilder,
+    this.endBackgroundBuilder,
     this.scrollController,
     this.padding,
     this.baseItemAnimationDuration = FLOW_ANIMATION_DURATION,
@@ -86,7 +95,11 @@ class ReorderableSlideAnimatedListView extends StatelessWidget {
   }): super(key: key);
 
   final IndexedWidgetWrapperBuilder builder;
+  final IndexedDismissCallback dismissCallback;
   final ReorderCallback reorderCallback;
+  final IndexedConfirmDismissCallback? confirmCallback;
+  final IndexedWidgetBuilder? startBackgroundBuilder;
+  final IndexedWidgetBuilder? endBackgroundBuilder;
   final int itemCount;
   final ScrollController? scrollController;
   final EdgeInsets? padding;
@@ -105,19 +118,33 @@ class ReorderableSlideAnimatedListView extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           final wrapper = builder(context, index);
 
-          return AnimationConfiguration.staggeredList(
+          return Dismissible(
             key: wrapper.key,
-            position: index,
-            duration: Duration(milliseconds: baseItemAnimationDuration),
-            child: SlideAnimation(
-              verticalOffset: initItemOffsetY,
-              horizontalOffset: initItemOffsetX,
-              curve: Curves.easeOutCubic,
-              child: FadeInAnimation(
-                child: wrapper.item,
+            child: AnimationConfiguration.staggeredList(
+              position: index,
+              duration: Duration(milliseconds: baseItemAnimationDuration),
+              child: SlideAnimation(
+                verticalOffset: initItemOffsetY,
+                horizontalOffset: initItemOffsetX,
                 curve: Curves.easeOutCubic,
+                child: FadeInAnimation(
+                  child: wrapper.item,
+                  curve: Curves.easeOutCubic,
+                ),
               ),
             ),
+            onDismissed: (DismissDirection direction) {
+              dismissCallback(direction, index);
+            },
+            confirmDismiss: confirmCallback == null ? null : (direction) {
+              return confirmCallback!(direction, index);
+            },
+            background: startBackgroundBuilder == null
+                ? null
+                : startBackgroundBuilder!(context, index),
+            secondaryBackground: endBackgroundBuilder == null
+                ? null
+                : endBackgroundBuilder!(context, index),
           );
         },
         onReorder: reorderCallback,

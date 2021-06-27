@@ -128,7 +128,7 @@ class MainViewModel extends ViewModel {
   ), indicator = LiveData(
       Indicator(_validList.length, 0)
   ), listResource = LiveData(
-      SelectableLocationListResource(_validList)
+      SelectableLocationListResource(_totalList)
   ), _themeManager = ThemeManager.getInstance(
       _settingsManager.darkMode
   );

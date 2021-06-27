@@ -172,7 +172,9 @@ class Location {
       result.addAll(list);
     } else {
       for (Location l in list) {
-        if (!l.residentPosition || !l.isCloseTo(currentLocation)) {
+        if (l.currentPosition
+            || !l.residentPosition
+            || !l.isCloseTo(currentLocation)) {
           result.add(l);
         }
       }

@@ -100,7 +100,7 @@ class SettingsManager {
 
   final ConfigStore _configStore;
 
-  DarkMode get darkMode => DarkMode.all[DarkMode.KEY_AUTO];
+  DarkMode get darkMode => DarkMode.all[DarkMode.KEY_SYSTEM];
 
   List<CardDisplay> get cardDisplayList => [
     CardDisplay.all[CardDisplay.KEY_DAILY_OVERVIEW],
