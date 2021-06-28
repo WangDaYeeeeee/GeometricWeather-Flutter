@@ -102,49 +102,38 @@ class _CupertinoAppBarState extends MainAppBarState {
 
   @override
   Widget build(BuildContext context) {
-    final appBarHeight = getAppBarHeight(context);
     final headerHidden = _scrollOffset > _headerHeight;
 
-    return Transform.translate(
-      offset: Offset(
-        0.0,
-        Platform.isIOS ? 0 : (
-            _scrollOffset > _headerHeight - appBarHeight - 162.0
-                ? (_headerHeight - appBarHeight - 162.0 - _scrollOffset)
-                : 0
-        ),
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        height: getAppBarHeight(context),
-        child: OrientationBuilder(builder: (BuildContext context, Orientation orientation) {
-          return PlatformAppBar(
-            leading: orientation == Orientation.landscape && isTabletDevice(context)
-                ? null
-                : _getSettingsIcon(context, _lightTheme, headerHidden),
-            title: Text(_title,
-                style: _scrollOffset > _headerHeight ? TextStyle(
-                    color: widget.viewModel.themeManager.isLightTheme(context)
-                        ? Colors.black
-                        : Colors.white
-                ) : TextStyle(
-                    color: Colors.white
-                ),
-            ),
-            trailingActions: orientation == Orientation.landscape && isTabletDevice(context)
-                ? [_getSettingsIcon(context, _lightTheme, headerHidden)]
-                : [_getManagementIcon(context, widget.viewModel, _lightTheme, headerHidden)],
-            backgroundColor: Colors.transparent,
-            cupertino: (_, __) => CupertinoNavigationBarData(
-              brightness: _scrollOffset > _headerHeight ? (
-                  widget.viewModel.themeManager.isLightTheme(context)
-                      ? Brightness.light
-                      : Brightness.dark
-              ) : Brightness.dark,
-            ),
-          );
-        }),
-      ),
+    return SizedBox(
+      width: double.infinity,
+      height: getAppBarHeight(context),
+      child: OrientationBuilder(builder: (BuildContext context, Orientation orientation) {
+        return PlatformAppBar(
+          leading: isLandscape(context) && isTabletDevice(context)
+              ? null
+              : _getSettingsIcon(context, _lightTheme, headerHidden),
+          title: Text(_title,
+              style: _scrollOffset > _headerHeight ? TextStyle(
+                  color: widget.viewModel.themeManager.isLightTheme(context)
+                      ? Colors.black
+                      : Colors.white
+              ) : TextStyle(
+                  color: Colors.white
+              ),
+          ),
+          trailingActions: isLandscape(context) && isTabletDevice(context)
+              ? [_getSettingsIcon(context, _lightTheme, headerHidden)]
+              : [_getManagementIcon(context, widget.viewModel, _lightTheme, headerHidden)],
+          backgroundColor: Colors.transparent,
+          cupertino: (_, __) => CupertinoNavigationBarData(
+            brightness: !isLandscape(context) && !isTabletDevice(context) && _scrollOffset > _headerHeight ? (
+                widget.viewModel.themeManager.isLightTheme(context)
+                    ? Brightness.light
+                    : Brightness.dark
+            ) : Brightness.dark,
+          ),
+        );
+      }),
     );
   }
 }
@@ -282,7 +271,7 @@ class _PlatformAppBarIconButton extends PlatformIconButton {
   }): super(
       materialIcon: Icon(materialIconData),
       cupertinoIcon: Icon(cupertinoIconData,
-        color: iOSHeaderHidden ? (
+        color: !isLandscape(context) && !isTabletDevice(context) && iOSHeaderHidden ? (
             lightTheme ? CupertinoColors.black : CupertinoColors.white
         ) : CupertinoColors.white
       ),

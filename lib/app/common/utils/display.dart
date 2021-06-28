@@ -113,8 +113,7 @@ String getWeekName(BuildContext context, int week) {
 }
 
 bool isLandscape(BuildContext context) {
-  Size size = MediaQuery.of(context).size;
-  return size.width > size.height;
+  return MediaQuery.of(context).orientation == Orientation.landscape;
 }
 
 bool isTabletDevice(BuildContext context) {

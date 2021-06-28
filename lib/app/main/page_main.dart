@@ -164,7 +164,7 @@ class _MainPageState extends GeoState<MainPage>
           key: _snackBarContainerKey,
           child: OrientationBuilder(
             builder: (BuildContext context, Orientation orientation) {
-              if (orientation == Orientation.landscape && isTabletDevice(context)) {
+              if (isLandscape(context) && isTabletDevice(context)) {
                 return Flex(
                   direction: Axis.horizontal,
                   children: [
@@ -396,7 +396,7 @@ class _MainPageState extends GeoState<MainPage>
         _weatherViewKey.currentState?.onScroll(0);
         _appBarKey.currentState?.update(
           _getAppBarTitle(),
-          0,
+          _scrollOffset = 0,
           _headerHeight ?? _getHeaderHeight(),
           initHolder.viewModel.themeManager.isLightTheme(context)
         );

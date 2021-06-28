@@ -10,6 +10,7 @@ import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
 import 'package:geometricweather_flutter/app/common/utils/router.dart';
 import 'package:geometricweather_flutter/app/main/view_models.dart';
+import 'package:geometricweather_flutter/app/search/page_search.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 
@@ -25,8 +26,8 @@ Widget getManagementAppBar(
         ClipRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(
-              sigmaX: 4.0,
-              sigmaY: 4.0,
+              sigmaX: 10.0,
+              sigmaY: 10.0,
             ),
             child: SizedBox(
               height: getAppBarHeight(context) - 0.5,
@@ -91,6 +92,8 @@ Widget getManagementAppBar(
     );
   }
 
+  // android.
+
   final appBarHeight = getAppBarHeight(context);
   final statusBarHeight = MediaQuery.of(context).padding.top;
 
@@ -102,52 +105,55 @@ Widget getManagementAppBar(
           top: littleMargin,
           bottom: littleMargin,
         ),
-        child: Card(
-          child: PlatformInkWell(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: normalMargin,
-                    right: normalMargin,
+        child: Hero(
+          tag: HERO_TAG_SEARCH_BAR,
+          child: Card(
+            child: PlatformInkWell(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: normalMargin,
+                      right: normalMargin,
+                    ),
+                    child: Icon(Icons.search,
+                      color: Theme.of(context).textTheme.caption?.color,
+                    ),
                   ),
-                  child: Icon(Icons.search,
-                    color: Theme.of(context).textTheme.caption?.color,
+                  Padding(
+                    padding: EdgeInsets.only(
+                      right: normalMargin,
+                    ),
+                    child: Text(S.of(context).feedback_search_location,
+                      softWrap: false,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: normalMargin,
-                  ),
-                  child: Text(S.of(context).feedback_search_location,
-                    softWrap: false,
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                ),
-              ],
+                ],
+              ),
+              onTap: () {
+                Navigator.pushNamed(
+                    context,
+                    Routers.ROUTER_ID_SEARCH
+                ).then((value) {
+                  if (value != null && value is Location) {
+                    _onAddLocation(context, viewModel, snackBarKey, value);
+                  }
+                });
+              },
             ),
-            onTap: () {
-              Navigator.pushNamed(
-                  context,
-                  Routers.ROUTER_ID_SEARCH
-              ).then((value) {
-                if (value != null && value is Location) {
-                  _onAddLocation(context, viewModel, snackBarKey, value);
-                }
-              });
-            },
+            color: Theme.of(context).dividerColor,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                    Radius.circular(
+                        (appBarHeight - statusBarHeight - 2 * littleMargin) / 2.0
+                    )
+                )
+            ),
+            clipBehavior: Clip.hardEdge,
+            margin: EdgeInsets.all(0.0),
           ),
-          color: Theme.of(context).dividerColor,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                  Radius.circular(
-                      (appBarHeight - statusBarHeight - 2 * littleMargin) / 2.0
-                  )
-              )
-          ),
-          clipBehavior: Clip.hardEdge,
-          margin: EdgeInsets.all(0.0),
         ),
       ),
     ),

@@ -93,20 +93,25 @@ class SnackBarContainerState extends State<SnackBarContainer> {
   Widget build(BuildContext context) {
     final children = <Widget>[];
     if (widget.child != null) {
-      children.add(widget.child!);
+      children.add(
+        Align(
+          alignment: Alignment.center,
+          child: widget.child!,
+        )
+      );
     }
     if (_currentSnackBar != null) {
       children.add(
-        SnackBarView(
-          key: _snackBarKey,
-          model: _currentSnackBar!,
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: SnackBarView(
+            key: _snackBarKey,
+            model: _currentSnackBar!,
+          ),
         )
       );
     }
 
-    return Stack(
-      alignment: AlignmentDirectional.bottomCenter,
-      children: children,
-    );
+    return Stack(children: children);
   }
 }

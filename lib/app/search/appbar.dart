@@ -7,7 +7,10 @@ import 'package:geometricweather_flutter/app/common/ui/platform/app_bar.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 
-Widget getAppBar(BuildContext context, ValueChanged<String> onSubmitCallback) {
+Widget getAppBar(
+    BuildContext context,
+    FocusNode focusNode,
+    ValueChanged<String> onSubmitCallback) {
 
   final appBarHeight = getAppBarHeight(context);
   final statusBarHeight = MediaQuery.of(context).padding.top;
@@ -33,7 +36,8 @@ Widget getAppBar(BuildContext context, ValueChanged<String> onSubmitCallback) {
           top: Platform.isAndroid ? 3.0 : 0.0
         ),
         child: PlatformTextField(
-          autofocus: true,
+          autofocus: Platform.isIOS,
+          focusNode: focusNode,
           hintText: S.of(context).feedback_search_location,
           textInputAction: TextInputAction.search,
           onSubmitted: onSubmitCallback,
