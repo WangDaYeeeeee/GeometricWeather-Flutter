@@ -539,7 +539,7 @@ class MaterialWeatherViewThemeDelegate implements WeatherViewThemeDelegate {
       bool daytime,
       bool lightTheme) {
     Color color = getBackgroundColor(context, weatherKind, daytime, lightTheme);
-    if (!lightTheme) {
+    if (!lightTheme && !daytime) {
       color = _getBrighterColor(color);
     }
 
