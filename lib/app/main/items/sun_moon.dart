@@ -160,7 +160,20 @@ double _getPathProgress(String timezone, DateTime rise, DateTime set) {
   int setTime = set.hour * 60 + set.minute;
   int currentTime = getCurrentTimeInMinute(timezone);
 
-  double progress = (currentTime - riseTime) / (setTime - riseTime);
+  double progress;
+  if (setTime > riseTime) {
+    progress = (currentTime - riseTime) / (setTime - riseTime);
+  } else if (currentTime <= setTime) {
+    // for example: 23:00 rise, 07:00 set, 05:00 currently.
+    progress = (currentTime - riseTime + 24 * 60) / (setTime - riseTime + 24 * 60);
+  } else if (currentTime < riseTime) {
+    // for example: 23:00 rise, 07:00 set, 13:00 currently.
+    progress = 0.0;
+  } else {
+    // for example: 23:00 rise, 07:00 set, 23:23 currently.
+    progress = (currentTime - riseTime) / (setTime - riseTime + 24 * 60);
+  }
+
   progress = max(0.0, progress);
   progress = min(1.0, progress);
   return progress;

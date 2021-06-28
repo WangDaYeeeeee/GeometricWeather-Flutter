@@ -23,6 +23,7 @@ import 'package:geometricweather_flutter/app/main/view_models.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:geometricweather_flutter/app/main/appbar_main.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
+import 'package:geometricweather_flutter/main.dart';
 import 'package:ink_page_indicator/ink_page_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -34,9 +35,8 @@ class _InitializationHolder {
   MainViewModel viewModel;
   bool initFlag = true;
 
-  Future<ThemeProvider> getViewModelInstance() async {
+  Future<void> getViewModelInstance() async {
     viewModel = await MainViewModel.getInstance();
-    return viewModel.themeManager.themeProvider;
   }
 
   void checkToInitialize() {
@@ -45,10 +45,10 @@ class _InitializationHolder {
     }
     initFlag = false;
 
-    viewModel.init();
+    viewModel.init(settingsManager, themeManager);
   }
 }
-Future<ThemeProvider> preloadMainViewModel() => initHolder.getViewModelInstance();
+Future<void> preloadMainViewModel() => initHolder.getViewModelInstance();
 
 const SWITCH_DURATION = 350;
 

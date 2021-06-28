@@ -103,8 +103,8 @@ class MainViewModel extends ViewModel {
   String? _formattedId; // current formatted id.
   List<Location> _totalList; // all locations.
   List<Location> _validList; // location list optimized for resident city.
-  final SettingsManager _settingsManager;
-  final ThemeManager _themeManager;
+  late SettingsManager _settingsManager;
+  late ThemeManager _themeManager;
 
   // async control.
   final _MainRepository _repository = _MainRepository();
@@ -114,7 +114,6 @@ class MainViewModel extends ViewModel {
   MainViewModel._(
       this._totalList,
       this._validList,
-      this._settingsManager,
   ): currentLocation = LiveData(
       _validList[0]
   ), event = LiveData(
@@ -129,27 +128,25 @@ class MainViewModel extends ViewModel {
       Indicator(_validList.length, 0)
   ), listResource = LiveData(
       SelectableLocationListResource(_totalList)
-  ), _themeManager = ThemeManager.getInstance(
-      _settingsManager.darkMode
   );
 
   static Future<MainViewModel> getInstance() async {
-    
-    final results = await Future.wait([
-      _MainRepository.getLocationList(List.empty()),
-      SettingsManager.getInstance()
-    ]);
-
-    final list = results[0] as List<Location>;
-    final settingsManager = results[1] as SettingsManager;
-
-    final totalList = List<Location>.from(list);
+    final totalList = List<Location>.from(
+        await _MainRepository.getLocationList(List.empty())
+    );
     final validList = Location.excludeInvalidResidentLocation(totalList);
 
-    return MainViewModel._(totalList, validList, settingsManager);
+    return MainViewModel._(totalList, validList);
   }
 
-  void init([String? formattedId]) {
+  void init(
+      SettingsManager settingsManager,
+      ThemeManager themeManager,
+      [String? formattedId]) {
+
+    _settingsManager = settingsManager;
+    _themeManager = themeManager;
+
     _setLiveDataWithVerification(
       location: currentLocation.value,
       defaultLocation: event.value.defaultLocation,
