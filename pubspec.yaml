@@ -45,6 +45,7 @@ dependencies:
   native_device_orientation: ^1.0.0
   flutter_staggered_animations: ^1.0.0
   ink_page_indicator: ^0.2.1
+  settings_ui: ^1.0.0
 
 dev_dependencies:
   flutter_test:

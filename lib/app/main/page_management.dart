@@ -215,6 +215,21 @@ class _ManagementBody extends StatelessWidget {
             viewModel.forceUpdateLocation(
                 location.copyOf(residentPosition: !location.residentPosition)
             );
+            if (viewModel.totalLocationList[index].residentPosition) {
+              SnackBarModel snackBarModel;
+
+              snackBarModel = snackBarKey.currentState?.show(
+                S.of(context).feedback_resident_location,
+                duration: DURATION_LONG,
+                action: S.of(context).get_more,
+                actionCallback: () {
+                  // todo: description of resident location.
+                  if (snackBarModel != null) {
+                    snackBarKey.currentState?.dismiss(snackBarModel);
+                  }
+                }
+              );
+            }
           } else {
             // todo: settings.
           }

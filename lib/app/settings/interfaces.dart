@@ -100,8 +100,6 @@ class SettingsManager {
 
   final ConfigStore _configStore;
 
-  DarkMode get darkMode => DarkMode.all[DarkMode.KEY_SYSTEM];
-
   List<CardDisplay> get cardDisplayList => [
     CardDisplay.all[CardDisplay.KEY_DAILY_OVERVIEW],
     CardDisplay.all[CardDisplay.KEY_HOURLY_OVERVIEW],
@@ -111,19 +109,171 @@ class SettingsManager {
     CardDisplay.all[CardDisplay.KEY_LIFE_DETAILS]
   ];
 
-  WeatherSource get weatherSource => WeatherSource.all[WeatherSource.KEY_ACCU];
+  bool get backgroundFree => _configStore.getBool(
+      'background_free',
+      true
+  );
 
-  TemperatureUnit get temperatureUnit => TemperatureUnit.all[TemperatureUnit.KEY_C];
+  set backgroundFree(bool value) {
+    _configStore.edit()
+        .putBool('background_free', value)
+        .apply();
+  }
 
-  PrecipitationUnit get precipitationUnit => PrecipitationUnit.all[PrecipitationUnit.KEY_MM];
+  bool get alertEnabled => _configStore.getBool(
+      'alert_enabled',
+      true
+  );
 
-  ProbabilityUnit get probabilityUnit => ProbabilityUnit.all[ProbabilityUnit.KEY_PERCENT];
+  set alertEnabled(bool value) {
+    _configStore.edit()
+        .putBool('alert_enabled', value)
+        .apply();
+  }
 
-  SpeedUnit get speedUnit => SpeedUnit.all[SpeedUnit.KEY_KPH];
+  DarkMode get darkMode => DarkMode.all[
+    _configStore.getString('dark_mode', DarkMode.KEY_SYSTEM)
+  ];
 
-  PressureUnit get pressureUnit => PressureUnit.all[PressureUnit.KEY_MB];
+  set darkMode(DarkMode value) {
+    _configStore.edit()
+        .putString('dark_mode', value.key)
+        .apply();
+  }
 
-  DistanceUnit get distanceUnit => DistanceUnit.all[DistanceUnit.KEY_KM];
+  WeatherSource get weatherSource => WeatherSource.all[
+    _configStore.getString('weather_source', WeatherSource.KEY_ACCU)
+  ];
 
-  String get resourceProviderId => DefaultResourceProvider.PROVIDER_ID;
+  set weatherSource(WeatherSource value) {
+    _configStore.edit()
+        .putString('weather_source', value.key)
+        .apply();
+  }
+
+  TemperatureUnit get temperatureUnit => TemperatureUnit.all[
+    _configStore.getString('temperature_unit', TemperatureUnit.KEY_C)
+  ];
+
+  set temperatureUnit(TemperatureUnit value) {
+    _configStore.edit()
+        .putString('temperature_unit', value.key)
+        .apply();
+  }
+
+  PrecipitationUnit get precipitationUnit => PrecipitationUnit.all[
+    _configStore.getString('precipitation_unit', PrecipitationUnit.KEY_MM)
+  ];
+
+  set precipitationUnit(PrecipitationUnit value) {
+    _configStore.edit()
+        .putString('precipitation_unit', value.key)
+        .apply();
+  }
+
+  ProbabilityUnit get probabilityUnit => ProbabilityUnit.all[
+    _configStore.getString('probability_unit', ProbabilityUnit.KEY_PERCENT)
+  ];
+
+  set probabilityUnit(ProbabilityUnit value) {
+    _configStore.edit()
+        .putString('probability_unit', value.key)
+        .apply();
+  }
+
+  SpeedUnit get speedUnit => SpeedUnit.all[
+    _configStore.getString('speed_unit', SpeedUnit.KEY_KPH)
+  ];
+
+  set speedUnit(SpeedUnit value) {
+    _configStore.edit()
+        .putString('speed_unit', value.key)
+        .apply();
+  }
+
+  PressureUnit get pressureUnit => PressureUnit.all[
+    _configStore.getString('pressure_unit', PressureUnit.KEY_MB)
+  ];
+
+  set pressureUnit(PressureUnit value) {
+    _configStore.edit()
+        .putString('pressure_unit', value.key)
+        .apply();
+  }
+
+  DistanceUnit get distanceUnit => DistanceUnit.all[
+    _configStore.getString('distance_unit', DistanceUnit.KEY_KM)
+  ];
+
+  set distanceUnit(DistanceUnit value) {
+    _configStore.edit()
+        .putString('distance_unit', value.key)
+        .apply();
+  }
+
+  String get resourceProviderId => _configStore.getString(
+      'resource_provider_id',
+      DefaultResourceProvider.PROVIDER_ID
+  );
+
+  set resourceProviderId(String value) {
+    _configStore.edit()
+        .putString('resource_provider_id', value)
+        .apply();
+  }
+
+  bool get todayForecastEnabled => _configStore.getBool(
+      'today_forecast_enabled',
+      true
+  );
+
+  set todayForecastEnabled(bool value) {
+    _configStore.edit()
+        .putBool('today_forecast_enabled', value)
+        .apply();
+  }
+
+  String get todayForecastTime => _configStore.getString(
+      'today_forecast_time',
+      '08:00'
+  );
+
+  set todayForecastTime(String value) {
+    _configStore.edit()
+        .putString('today_forecast_time', value)
+        .apply();
+  }
+
+  bool get tomorrowForecastEnabled => _configStore.getBool(
+      'tomorrow_forecast_enabled',
+      true
+  );
+
+  set tomorrowForecastEnabled(bool value) {
+    _configStore.edit()
+        .putBool('tomorrow_forecast_enabled', value)
+        .apply();
+  }
+
+  String get tomorrowForecastTime => _configStore.getString(
+      'tomorrow_forecast_time',
+      '22:00'
+  );
+
+  set tomorrowForecastTime(String value) {
+    _configStore.edit()
+        .putString('tomorrow_forecast_time', value)
+        .apply();
+  }
+
+  bool get notificationEnabled => _configStore.getBool(
+      'notification_enabled',
+      false,
+  );
+
+  set notificationEnabled(bool value) {
+    _configStore.edit()
+        .putBool('notification_enabled', value)
+        .apply();
+  }
 }

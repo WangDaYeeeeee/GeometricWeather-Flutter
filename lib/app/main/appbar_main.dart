@@ -256,7 +256,7 @@ Widget _getSettingsIcon(
   lightTheme: lightTheme,
   iOSHeaderHidden: iOSHeaderHidden,
   onPressed: () {
-      Navigator.pushNamed(context, Routers.ROUTER_ID_ABOUT);
+      Navigator.pushNamed(context, Routers.ROUTER_ID_SETTINGS);
   },
 );
 

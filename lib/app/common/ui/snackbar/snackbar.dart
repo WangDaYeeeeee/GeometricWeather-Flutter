@@ -1,19 +1,19 @@
 // @dart=2.12
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 
 import 'model.dart';
 
 const SHOW_ANIM_DURATION = 500;
-const HIDE_ANIM_DURATION = 350;
+const HIDE_ANIM_DURATION = 400;
 
 enum SnackBarStatus {
   executingShowAnimation,
@@ -55,6 +55,7 @@ class SnackBarViewState extends State<SnackBarView>
   void initState() {
     super.initState();
 
+    // show.
     _animController = AnimationController(
         duration: Duration(
           milliseconds: SHOW_ANIM_DURATION,
@@ -79,7 +80,7 @@ class SnackBarViewState extends State<SnackBarView>
         )
     );
     _positionAnim = Tween(
-        begin: Offset(0.0, 120.0),
+        begin: Offset(0.0, 50.0),
         end: Offset.zero
     ).animate(
         CurvedAnimation(
@@ -150,11 +151,11 @@ class SnackBarViewState extends State<SnackBarView>
       );
       _positionAnim = Tween(
           begin: _positionAnim?.value ?? Offset.zero,
-          end: Offset(0.0, 120.0),
+          end: Offset(0.0, 100.0),
       ).animate(
           CurvedAnimation(
             parent: _animController!,
-            curve: Curves.easeInOutQuint,
+            curve: Curves.ease,
           )
       );
 
@@ -168,71 +169,83 @@ class SnackBarViewState extends State<SnackBarView>
     if (child == null) {
       final theme = Theme.of(context);
 
-      List<Widget> contents = [
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.all(normalMargin),
-            child: Text(widget.model.content,
-              style: theme.textTheme.bodyText2
-            ),
-          ),
-        )
-      ];
-      if (!isEmptyString(widget.model.action)
-          && widget.model.actionCallback != null) {
-        contents.add(
-          Padding(
-            padding: EdgeInsets.only(
-              top: littleMargin,
-              bottom: littleMargin,
-              right: normalMargin,
-            ),
-            child: ElevatedButton(
-              child: PlatformText(widget.model.action!),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    ThemeColors.colorAlert
-                ),
-                foregroundColor: MaterialStateProperty.all(
-                    Colors.black
-                ),
-              ),
-              onPressed: () {
-                widget.model.actionCallback?.call();
-              },
-            ),
-          )
-        );
-      }
+      bool showAction = !isEmptyString(widget.model.action)
+          && widget.model.actionCallback != null;
 
-      child = getTabletAdaptiveWidthBox(
-        context,
-        SafeArea(
-          child: Card(
+      int alpha = Platform.isIOS ? 240 : 255;
+
+      final content = Padding(
+        padding: EdgeInsets.all(normalMargin),
+        child: Text(widget.model.content,
+          style: theme.textTheme.subtitle2,
+          textAlign: showAction ? TextAlign.start : TextAlign.center,
+        ),
+      );
+
+      child = ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: 268.0,
+          maxWidth: 368.0,
+        ),
+        child: SafeArea(
+          child: Padding(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [theme.dividerColor, theme.backgroundColor],
+                borderRadius: BorderRadius.circular(
+                    Platform.isIOS ? 99999999.0 : cardRadius
                 ),
+                color: theme.brightness == Brightness.light
+                    ? theme.backgroundColor.withAlpha(alpha)
+                    : theme.dividerColor.withAlpha(alpha),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(Platform.isIOS ? 15 : 30),
+                    spreadRadius: Platform.isIOS ? 8.0 : 4.0,
+                    blurRadius: 16.0,
+                  ),
+                ],
               ),
               child: Padding(
                 padding: EdgeInsets.only(
                   top: 4.0,
                   bottom: 4.0,
                 ),
-                child: Flex(
+                child: showAction ? Flex(
                   direction: Axis.horizontal,
-                  children: contents,
-                ),
+                  children: [
+                    Expanded(
+                      child: content,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: littleMargin,
+                        bottom: littleMargin,
+                        right: normalMargin,
+                      ),
+                      child: ElevatedButton(
+                        child: PlatformText(widget.model.action!),
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(ThemeColors.colorAlert),
+                          foregroundColor: MaterialStateProperty.all(Colors.black),
+                          shape: Platform.isIOS ? MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(999999.0),
+                              )
+                          ) : null,
+                          elevation: Platform.isIOS
+                              ? MaterialStateProperty.all(0.0)
+                              : null,
+                        ),
+                        onPressed: () {
+                          widget.model.actionCallback?.call();
+                        },
+                      ),
+                    )
+                  ],
+                ) : content,
               ),
             ),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                    Radius.circular(cardRadius)
-                )
-            ),
-            clipBehavior: Clip.antiAlias,
-            margin: EdgeInsets.all(normalMargin),
+            padding: EdgeInsets.all(normalMargin),
           ),
         ),
       );

@@ -4,6 +4,8 @@ import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:geometricweather_flutter/app/main/page_management.dart';
 import 'package:geometricweather_flutter/app/search/page_search.dart';
 import 'package:geometricweather_flutter/app/settings/interfaces.dart';
+import 'package:geometricweather_flutter/app/settings/page_settings.dart';
+import 'package:geometricweather_flutter/app/settings/page_settings_unit.dart';
 import 'package:geometricweather_flutter/app/theme/manager.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
@@ -67,9 +69,11 @@ class GeometricWeather extends StatelessWidget {
             darkTheme: ThemeProvider.darkTheme,
             themeMode: themeProvider.themeMode,
             routes: {
-              Routers.ROUTER_ID_ROOT: (context) => MainPage(),
+              Routers.ROUTER_ID_MAIN: (context) => MainPage(),
               Routers.ROUTER_ID_MANAGEMENT: (context) => ManagementPage(),
               Routers.ROUTER_ID_SEARCH: (context) => SearchPage(),
+              Routers.ROUTER_ID_SETTINGS: (context) => SettingsPage(),
+              Routers.ROUTER_ID_UNIT_SETTINGS: (context) => UnitSettingsPage(),
               Routers.ROUTER_ID_ABOUT: (context) => AboutPage(),
             },
             navigatorObservers: [routeObserver],

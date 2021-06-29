@@ -109,9 +109,7 @@ Stream<UpdateResult<Location>> requestWeatherUpdate(Location location) {
         controller.add(event);
 
         // request weather.
-        if (location.usable) {
-          disposable = _requestWeather(location, controller);
-        }
+        disposable = _requestWeather(location, controller);
       });
     },
     onCancel: () {
