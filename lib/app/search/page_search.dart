@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -9,6 +10,7 @@ import 'package:geometricweather_flutter/app/common/basic/mvvm.dart';
 import 'package:geometricweather_flutter/app/common/basic/widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/anim_list/slide_anim_list.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
+import 'package:geometricweather_flutter/app/common/ui/platform/scaffold.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
@@ -65,12 +67,24 @@ class _SearchPageState extends GeoState<SearchPage> {
   }
 
   @override
+  void setSystemBarStyle() {
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(
+          SystemUiOverlayStyle(
+            statusBarColor: Colors.black.withAlpha(androidStatusBarMaskAlpha),
+            systemNavigationBarColor: Colors.transparent,
+          )
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: _viewModel.loading),
       ],
-      child: PlatformScaffold(
+      child: GeoPlatformScaffold(
         appBar: getAppBar(context, _focusNode, (String value) {
           _viewModel.search(value);
         }),
@@ -144,7 +158,9 @@ class _SearchPageState extends GeoState<SearchPage> {
                               right: normalMargin,
                             ),
                             child: Text(location.toString(),
-                                style: theme.textTheme.bodyText2
+                                style: theme.textTheme.caption.copyWith(
+                                  color: theme.textTheme.bodyText2.color,
+                                )
                             ),
                           )
                       );

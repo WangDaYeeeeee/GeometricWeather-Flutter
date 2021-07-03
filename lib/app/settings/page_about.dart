@@ -1,13 +1,20 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:geometricweather_flutter/app/common/basic/widgets.dart';
+import 'package:geometricweather_flutter/app/common/ui/anim_list/slide_anim_list.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/app_bar.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
+import 'package:geometricweather_flutter/app/common/ui/platform/scaffold.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/common/utils/system_services.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 import 'package:geometricweather_flutter/main.dart';
+
+const _ITEM_ANIM_DURATION = 400;
 
 class _TranslatorItem extends StatelessWidget {
 
@@ -66,9 +73,37 @@ class _TranslatorItem extends StatelessWidget {
   }
 }
 
-class AboutPage extends StatelessWidget {
+class AboutPage extends GeoStatefulWidget {
 
   AboutPage({Key key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _AboutPageState();
+  }
+}
+
+class _AboutPageState extends GeoState<AboutPage> {
+
+  bool _showList = false;
+  Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _timer = Timer(Duration(milliseconds: _ITEM_ANIM_DURATION), () {
+      setState(() {
+        _showList = true;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +278,7 @@ class AboutPage extends StatelessWidget {
           true, textTheme, sysServices)
     ];
 
-    return PlatformScaffold(
+    return GeoPlatformScaffold(
       appBar: GeoPlatformAppBar(context,
         leading: GeoPlatformAppBarBackLeading(context,
           onPressed: () {
@@ -254,15 +289,18 @@ class AboutPage extends StatelessWidget {
       ),
       body: Container(
         alignment: AlignmentDirectional.topCenter,
-        child: getTabletAdaptiveWidthBox(
+        child: _showList ? getTabletAdaptiveWidthBox(
           context,
-          ListView.builder(
-              itemCount: itemList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return itemList[index];
-              }
+          SlideAnimatedListView(
+            itemCount: itemList.length,
+            builder: (BuildContext context, int index) {
+              return itemList[index];
+            },
+            baseItemAnimationDuration: _ITEM_ANIM_DURATION,
+            initItemOffsetX: Platform.isIOS ? 128.0 : 0.0,
+            initItemOffsetY: Platform.isIOS ? 0.0 : 128.0,
           ),
-        ),
+        ) : null,
       ),
     );
   }

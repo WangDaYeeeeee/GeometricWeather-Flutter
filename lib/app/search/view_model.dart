@@ -6,6 +6,7 @@ import 'package:geometricweather_flutter/app/common/basic/model/resources.dart';
 import 'package:geometricweather_flutter/app/common/basic/mvvm.dart';
 import 'package:geometricweather_flutter/app/common/utils/logger.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
+import 'package:geometricweather_flutter/app/updater/models.dart';
 import 'package:geometricweather_flutter/app/updater/weather/helper.dart';
 
 class _SearchRepository {

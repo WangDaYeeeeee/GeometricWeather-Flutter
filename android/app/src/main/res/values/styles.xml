@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Theme applied to the Android Window while the process is starting when the OS's Dark Mode setting is off -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <!-- Show a splash screen on the activity. Automatically removed when
@@ -14,5 +14,262 @@
          This Theme is only used starting with V2 of Flutter's Android embedding. -->
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>
+        <item name="android:windowTranslucentStatus" tools:ignore="NewApi">true</item>
+        <item name="android:windowTranslucentNavigation" tools:ignore="NewApi">true</item>
     </style>
+
+    <!-- app theme -->
+    <style name="GeometricWeatherTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowBackground">@color/colorRoot</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="dialogCornerRadius">8dp</item>
+    </style>
+
+    <style name="GeometricWeatherTheme.Main" parent="GeometricWeatherTheme">
+        <item name="colorAccent">@android:color/transparent</item>
+    </style>
+
+    <style name="GeometricWeatherTheme.Search" parent="GeometricWeatherTheme" />
+
+    <style name="GeometricWeatherTheme.AppbarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="elevation">2dp</item>
+    </style>
+    <style name="GeometricWeatherTheme.AppbarPopupTheme" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="GeometricWeatherTheme.AppbarTheme.Light" parent="ThemeOverlay.AppCompat.Light">
+        <item name="elevation">2dp</item>
+    </style>
+    <style name="GeometricWeatherTheme.AppbarPopupTheme.Light" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="GeometricWeatherTheme.AppbarTheme.Dark" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="elevation">2dp</item>
+    </style>
+    <style name="GeometricWeatherTheme.AppbarPopupTheme.Dark" parent="ThemeOverlay.AppCompat.Dark" />
+
+    <style name="GeometricWeatherTheme.TabLayoutTheme" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorHeight">3dp</item>
+        <item name="tabIndicatorColor">@color/colorTextTitle</item>
+        <item name="tabSelectedTextColor">@color/colorTextTitle</item>
+        <item name="tabTextColor">@color/colorTextSubtitle</item>
+    </style>
+
+    <!-- card. -->
+    <style name="material_card">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginLeft">@dimen/little_margin</item>
+        <item name="android:layout_marginRight">@dimen/little_margin</item>
+        <item name="android:layout_marginBottom">@dimen/little_margin</item>
+        <item name="android:clickable">true</item>
+        <item name="cardCornerRadius">8dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="cardBackgroundColor">@color/colorRoot</item>
+        <item name="android:stateListAnimator" tools:ignore="NewApi">@animator/touch_raise</item>
+        <item name="android:foreground">@drawable/selectable_item_background</item>
+    </style>
+
+    <style name="widget_background_card">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:src">@drawable/widget_card_light_100</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <!-- Popup window. -->
+    <style name="PopupWindowAnimation.Top.Left" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/popup_show_top_left</item>
+        <item name="android:windowExitAnimation">@anim/popup_hide</item>
+    </style>
+
+    <style name="PopupWindowAnimation.Top.Right" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/popup_show_top_right</item>
+        <item name="android:windowExitAnimation">@anim/popup_hide</item>
+    </style>
+
+    <style name="PopupWindowAnimation.Bottom.Left" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/popup_show_bottom_left</item>
+        <item name="android:windowExitAnimation">@anim/popup_hide</item>
+    </style>
+
+    <style name="PopupWindowAnimation.Bottom.Right" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/popup_show_bottom_right</item>
+        <item name="android:windowExitAnimation">@anim/popup_hide</item>
+    </style>
+
+    <!-- view. -->
+    <style name="week_weather_week_info">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">96dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:foreground">@drawable/selectable_item_background</item>
+    </style>
+
+    <!-- image. -->
+    <style name="material_icon">
+        <item name="android:layout_width">@dimen/material_icon_size</item>
+        <item name="android:layout_height">@dimen/material_icon_size</item>
+        <item name="android:layout_marginTop">@dimen/normal_margin</item>
+        <item name="android:layout_marginLeft">@dimen/normal_margin</item>
+        <item name="android:layout_marginRight">@dimen/normal_margin</item>
+        <item name="android:layout_marginBottom">@dimen/normal_margin</item>
+        <item name="android:tint">@color/colorTextContent</item>
+    </style>
+
+    <style name="widget_week_icon">
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:src">@drawable/weather_cloudy</item>
+    </style>
+
+    <!-- text. -->
+    <style name="large_title_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/large_title_text_size</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="title_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/title_text_size</item>
+        <item name="android:textColor">@color/colorTextTitle</item>
+    </style>
+
+    <style name="content_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/content_text_size</item>
+        <item name="android:textColor">@color/colorTextContent</item>
+    </style>
+
+    <style name="subtitle_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/subtitle_text_size</item>
+        <item name="android:textColor">@color/colorTextSubtitle</item>
+    </style>
+
+    <style name="notification_large_title_text" parent="@style/TextAppearance.Compat.Notification.Title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/large_title_text_size</item>
+    </style>
+
+    <style name="notification_title_text" parent="@style/TextAppearance.Compat.Notification.Title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/title_text_size</item>
+    </style>
+
+    <style name="notification_content_text" parent="@style/TextAppearance.Compat.Notification.Info">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/content_text_size</item>
+    </style>
+
+    <style name="notification_subtitle_text" parent="@style/TextAppearance.Compat.Notification.Info">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/subtitle_text_size</item>
+    </style>
+
+    <!-- spinner -->
+    <style name="spinner_item" parent="Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textSize">@dimen/content_text_size</item>
+        <item name="android:textColor">@color/colorTextContent</item>
+    </style>
+
+    <!-- switch -->
+    <style name="my_switch">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:backgroundTint" tools:targetApi="lollipop">@color/colorAccent</item>
+    </style>
+
+    <!-- button -->
+    <style name="material_button" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/content_text_size</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="activity_create_widget_done_button" parent="material_button">
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:text">@string/done</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="material_image_button">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:padding">@dimen/little_margin</item>
+        <item name="android:layout_margin">@dimen/little_margin</item>
+        <item name="android:background">@drawable/selectable_item_background_borderless</item>
+        <item name="android:tint">@color/colorTextContent</item>
+    </style>
+
+    <!-- clock -->
+    <style name="widget_text_clock">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:format24Hour">HH:mm</item>
+        <item name="android:format12Hour">h:mm</item>
+        <item name="android:textSize">@dimen/widget_current_weather_icon_size</item>
+        <item name="android:textColor">@color/colorTextLight</item>
+        <item name="android:shadowColor">@color/colorTextDark2nd</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+
+    <style name="widget_text_clock_aa">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:format24Hour">\t</item>
+        <item name="android:format12Hour">aa</item>
+        <item name="android:textSize" tools:ignore="SpUsage">@dimen/widget_aa_text_size</item>
+        <item name="android:textColor">@color/colorTextLight</item>
+        <item name="android:shadowColor">@color/colorTextDark2nd</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+    </style>
+
+    <style name="widget_text_clock_analog">
+        <item name="android:layout_width">128dp</item>
+        <item name="android:layout_height">128dp</item>
+        <item name="android:hand_hour">@drawable/clock_hour_light</item>
+        <item name="android:hand_minute">@drawable/clock_minute_light</item>
+        <item name="android:dial">@drawable/clock_dial_light</item>
+    </style>
+    <style name="widget_text_clock_analog.Light" parent="widget_text_clock_analog" />
+    <style name="widget_text_clock_analog.Dark" parent="widget_text_clock_analog">
+        <item name="android:hand_hour">@drawable/clock_hour_dark</item>
+        <item name="android:hand_minute">@drawable/clock_minute_dark</item>
+        <item name="android:dial">@drawable/clock_dial_dark</item>
+    </style>
+
+    <!-- progress bar. -->
+    <style name="widget_progress">
+        <item name="android:layout_width">@dimen/widget_little_weather_icon_size</item>
+        <item name="android:layout_height">@dimen/widget_little_weather_icon_size</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTintMode" tools:ignore="NewApi">src_atop</item>
+        <item name="android:indeterminateTint" tools:ignore="NewApi">@color/lightPrimary_5</item>
+    </style>
+
 </resources>

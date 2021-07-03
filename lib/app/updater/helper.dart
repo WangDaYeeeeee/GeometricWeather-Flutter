@@ -84,21 +84,28 @@ Disposable _requestWeather(
   return disposableFuture.disposable;
 }
 
-Stream<UpdateResult<Location>> requestWeatherUpdate(Location location) {
+Stream<UpdateResult<Location>> requestWeatherUpdate(Location location, {
+  bool inBackground = false,
+}) {
 
   StreamController<UpdateResult<Location>> controller;
-  Disposable disposable;
+  Disposable locationDisposable;
+  Disposable weatherDisposable;
 
   controller = StreamController(
     onListen: () {
       if (!location.currentPosition) {
         // just request weather.
-        disposable = _requestWeather(location, controller);
+        weatherDisposable = _requestWeather(location, controller);
         return;
       }
 
       // get location at first.
-      LocationHelper.requestLocation(location).then((event) {
+      final disposableFuture = LocationHelper.requestLocation(location,
+        inBackground: inBackground,
+      );
+      locationDisposable = disposableFuture.disposable;
+      disposableFuture.future.then((event) {
         // check is closed.
         if (controller.isClosed) {
           return;
@@ -109,11 +116,48 @@ Stream<UpdateResult<Location>> requestWeatherUpdate(Location location) {
         controller.add(event);
 
         // request weather.
-        disposable = _requestWeather(location, controller);
+        weatherDisposable = _requestWeather(location, controller);
       });
     },
     onCancel: () {
-      disposable?.dispose();
+      locationDisposable?.dispose();
+      weatherDisposable?.dispose();
+      controller.close();
+    },
+  );
+
+  return controller.stream;
+}
+
+Stream<UpdateResult<Location>> pollingUpdate(List<Location> locationList, {
+  bool inBackground = false,
+}) {
+
+  StreamController<UpdateResult<Location>> controller;
+  final idSubscriptionMap = Map<String, StreamSubscription>();
+
+  controller = StreamController(
+    onListen: () {
+      for (Location location in locationList) {
+        idSubscriptionMap[location.formattedId] = requestWeatherUpdate(location,
+          inBackground: inBackground,
+        ).listen((event) {
+          // check is closed.
+          if (controller.isClosed || event.running) {
+            return;
+          }
+
+          controller.add(event);
+          idSubscriptionMap.remove(event.data.formattedId);
+        });
+      }
+    },
+    onCancel: () {
+      idSubscriptionMap.values.forEach((element) {
+        element.cancel();
+      });
+      idSubscriptionMap.clear();
+
       controller.close();
     },
   );

@@ -434,5 +434,26 @@
     "duration_unit_voice_h": "hours",
 
     "pollen_unit_ppcm": "/m³",
-    "pollen_unit_voice_ppcm": "Per cubic meter"
+    "pollen_unit_voice_ppcm": "Per cubic meter",
+
+    "notification_style_native": "Native",
+    "notification_style_cities": "Cities",
+    "notification_style_daily": "Daily",
+    "notification_style_hourly": "Hourly",
+
+    "update_interval_100": "1 hour",
+    "update_interval_130": "1.5 hours",
+    "update_interval_200": "2 hours",
+    "update_interval_230": "2.5 hours",
+    "update_interval_300": "3 hours",
+    "update_interval_330": "3.5 hours",
+    "update_interval_400": "4 hours",
+    "update_interval_430": "4.5 hours",
+    "update_interval_500": "5 hours",
+    "update_interval_530": "5.5 hours",
+    "update_interval_600": "6 hours",
+
+    "widget_week_icon_mode_auto": "Automatic",
+    "widget_week_icon_mode_daytime": "Daytime",
+    "widget_week_icon_mode_nighttime": "Nighttime"
 }

@@ -139,9 +139,11 @@ Widget getTabletAdaptiveWidthBox(BuildContext context, Widget child) {
   );
 }
 
-double getTrendItemWidth(BuildContext context, double margin) =>
-    (getTabletAdaptiveWidth(context) - margin * 2.0)
-        / (isTabletDevice(context) || isLandscape(context) ? 7.0 : 5.0);
+double getTrendItemWidth(BuildContext context, double margin) => (
+    getTabletAdaptiveWidth(context) - margin * 2.0
+) / (
+    isTabletDevice(context) || isLandscape(context) ? 7.0 : 5.0
+);
 
 TextDirection getCurrentTextDirection(BuildContext context) =>
     intl.Bidi.isRtlLanguage(Localizations.localeOf(context).languageCode)

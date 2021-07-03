@@ -362,8 +362,8 @@ class _ShadowPainter extends CustomPainter {
 
   final _paint = Paint()
     ..isAntiAlias = true
-    ..style = PaintingStyle.stroke
-    ..strokeCap = StrokeCap.round;
+    ..color = Colors.black
+    ..style = PaintingStyle.fill;
 
   Animation<double> _sunProgressAnim;
   Animation<double>? _moonProgressAnim;
@@ -392,8 +392,6 @@ class _ShadowPainter extends CustomPainter {
     // x1.
     if (_moonProgressAnim == null
         || _sunProgressAnim.value != _moonProgressAnim!.value) {
-      _paint.color = Colors.black;
-      _paint.style = PaintingStyle.fill;
       _paint.shader = ui.Gradient.linear(
         Offset(0.0, 0.0),
         Offset(0.0, radius),
@@ -430,9 +428,6 @@ class _ShadowPainter extends CustomPainter {
           _paint
       );
     }
-
-    _paint.shader = null;
-    _paint.style = PaintingStyle.stroke;
   }
 
   @override

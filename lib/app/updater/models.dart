@@ -19,3 +19,18 @@ class UpdateResult<T> {
 
   UpdateResult(this.data, this.running, this.status);
 }
+
+abstract class Disposable {
+
+  void dispose();
+
+  bool get disposed;
+}
+
+class DisposableFuture<T> {
+
+  final Future<T> future;
+  final Disposable disposable;
+
+  DisposableFuture(this.future, this.disposable);
+}

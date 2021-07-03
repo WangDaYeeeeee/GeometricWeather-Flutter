@@ -4,12 +4,13 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/resources.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/providers.dart';
 import 'package:geometricweather_flutter/app/common/basic/mvvm.dart';
 import 'package:geometricweather_flutter/app/common/basic/widgets.dart';
+import 'package:geometricweather_flutter/app/common/ui/platform/scaffold.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
 import 'package:geometricweather_flutter/app/common/ui/swipe_refresh.dart';
 import 'package:geometricweather_flutter/app/common/ui/swipe_switch.dart';
@@ -17,6 +18,7 @@ import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/mtrl_weather_view.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
+import 'package:geometricweather_flutter/app/common/utils/router.dart';
 import 'package:geometricweather_flutter/app/main/items/_base.dart';
 import 'package:geometricweather_flutter/app/main/page_management.dart';
 import 'package:geometricweather_flutter/app/main/view_models.dart';
@@ -141,10 +143,24 @@ class _MainPageState extends GeoState<MainPage>
 
   @override
   void onVisibilityChanged(bool visible) {
+    super.onVisibilityChanged(visible);
+
     if (visible) {
       initHolder.viewModel.checkToUpdate();
     }
     _weatherViewKey.currentState?.drawable = visible;
+  }
+
+  @override
+  void setSystemBarStyle() {
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(
+          SystemUiOverlayStyle(
+            statusBarColor: Colors.black.withAlpha(androidStatusBarMaskAlpha),
+            systemNavigationBarColor: Colors.transparent,
+          )
+      );
+    }
   }
 
   @override
@@ -159,7 +175,7 @@ class _MainPageState extends GeoState<MainPage>
         ChangeNotifierProvider.value(value: _listState),
         ChangeNotifierProvider.value(value: initHolder.viewModel.indicator),
       ],
-      child: PlatformScaffold(
+      child: GeoPlatformScaffold(
         body: SnackBarContainer(
           key: _snackBarContainerKey,
           child: OrientationBuilder(
@@ -269,6 +285,18 @@ class _MainPageState extends GeoState<MainPage>
             scrollOffset: _scrollOffset,
             headerHeight: _headerHeight,
             lightTheme: _lightTheme,
+            settingsButtonCallback: () {
+              Navigator.pushNamed(context, Routers.ROUTER_ID_SETTINGS).then((_) {
+                // force update ui.
+                _resetUIUpdateFlag();
+                initHolder.viewModel.offsetLocation(0);
+              });
+            },
+            managementButtonCallback: () {
+              Navigator.pushNamed(context, Routers.ROUTER_ID_MANAGEMENT,
+                arguments: ManagementArgument(initHolder.viewModel),
+              );
+            },
           );
         }),
         Consumer<LiveData<Indicator>>(builder: (_, indicator, __) {

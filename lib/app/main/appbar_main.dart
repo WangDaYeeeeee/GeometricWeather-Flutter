@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
-import 'package:geometricweather_flutter/app/common/utils/router.dart';
-import 'package:geometricweather_flutter/app/main/page_management.dart';
 import 'package:geometricweather_flutter/app/main/view_models.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 
@@ -17,6 +15,8 @@ class MainAppBar extends StatefulWidget {
     @required this.scrollOffset,
     @required this.headerHeight,
     @required this.lightTheme,
+    @required this.managementButtonCallback,
+    @required this.settingsButtonCallback,
   }): super(key: key);
 
   final MainViewModel viewModel;
@@ -25,6 +25,9 @@ class MainAppBar extends StatefulWidget {
   final double scrollOffset;
   final double headerHeight;
   final bool lightTheme;
+
+  final VoidCallback managementButtonCallback;
+  final VoidCallback settingsButtonCallback;
 
   @override
   State<StatefulWidget> createState() {
@@ -111,7 +114,7 @@ class _CupertinoAppBarState extends MainAppBarState {
         return PlatformAppBar(
           leading: isLandscape(context) && isTabletDevice(context)
               ? null
-              : _getSettingsIcon(context, _lightTheme, headerHidden),
+              : _getSettingsIcon(context, _lightTheme, headerHidden, widget.settingsButtonCallback),
           title: Text(_title,
               style: _scrollOffset > _headerHeight ? TextStyle(
                   color: widget.viewModel.themeManager.isLightTheme(context)
@@ -122,8 +125,8 @@ class _CupertinoAppBarState extends MainAppBarState {
               ),
           ),
           trailingActions: isLandscape(context) && isTabletDevice(context)
-              ? [_getSettingsIcon(context, _lightTheme, headerHidden)]
-              : [_getManagementIcon(context, widget.viewModel, _lightTheme, headerHidden)],
+              ? [_getSettingsIcon(context, _lightTheme, headerHidden, widget.settingsButtonCallback)]
+              : [_getManagementIcon(context, widget.viewModel, _lightTheme, headerHidden, widget.managementButtonCallback)],
           backgroundColor: Colors.transparent,
           cupertino: (_, __) => CupertinoNavigationBarData(
             brightness: !isLandscape(context) && !isTabletDevice(context) && _scrollOffset > _headerHeight ? (
@@ -214,10 +217,10 @@ class _MaterialAppBarState extends MainAppBarState {
           return PlatformAppBar(
             title: Text(_title),
             trailingActions: orientation == Orientation.landscape && isTabletDevice(context) ? [
-              _getSettingsIcon(context, _lightTheme, false)
+              _getSettingsIcon(context, _lightTheme, false, widget.settingsButtonCallback)
             ] : [
-              _getManagementIcon(context, widget.viewModel, _lightTheme, false),
-              _getSettingsIcon(context, _lightTheme, false)
+              _getManagementIcon(context, widget.viewModel, _lightTheme, false, widget.managementButtonCallback),
+              _getSettingsIcon(context, _lightTheme, false, widget.settingsButtonCallback)
             ],
             backgroundColor: Colors.transparent,
             material: (_, __) => MaterialAppBarData(
@@ -235,29 +238,25 @@ Widget _getManagementIcon(
     BuildContext context,
     MainViewModel viewModel,
     bool lightTheme,
-    bool iOSHeaderHidden) => _PlatformAppBarIconButton(context,
+    bool iOSHeaderHidden,
+    VoidCallback callback) => _PlatformAppBarIconButton(context,
   materialIconData: Icons.domain,
   cupertinoIconData: CupertinoIcons.building_2_fill,
   lightTheme: lightTheme,
   iOSHeaderHidden: iOSHeaderHidden,
-  onPressed: () {
-      Navigator.pushNamed(context, Routers.ROUTER_ID_MANAGEMENT,
-        arguments: ManagementArgument(viewModel),
-      );
-  },
+  callback: callback,
 );
 
 Widget _getSettingsIcon(
     BuildContext context,
     bool lightTheme,
-    bool iOSHeaderHidden) => _PlatformAppBarIconButton(context,
+    bool iOSHeaderHidden,
+    VoidCallback callback) => _PlatformAppBarIconButton(context,
   materialIconData: Icons.settings_outlined,
   cupertinoIconData: CupertinoIcons.settings,
   lightTheme: lightTheme,
   iOSHeaderHidden: iOSHeaderHidden,
-  onPressed: () {
-      Navigator.pushNamed(context, Routers.ROUTER_ID_SETTINGS);
-  },
+  callback: callback,
 );
 
 class _PlatformAppBarIconButton extends PlatformIconButton {
@@ -267,7 +266,7 @@ class _PlatformAppBarIconButton extends PlatformIconButton {
     IconData cupertinoIconData,
     bool lightTheme,
     bool iOSHeaderHidden,
-    void Function() onPressed
+    VoidCallback callback
   }): super(
       materialIcon: Icon(materialIconData),
       cupertinoIcon: Icon(cupertinoIconData,
@@ -278,6 +277,6 @@ class _PlatformAppBarIconButton extends PlatformIconButton {
       cupertino: (_, __) => CupertinoIconButtonData(
           padding: EdgeInsets.zero
       ),
-      onPressed: onPressed
+      onPressed: callback,
   );
 }

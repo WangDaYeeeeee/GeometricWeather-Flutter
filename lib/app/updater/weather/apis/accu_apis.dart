@@ -36,6 +36,13 @@ Dio ensureDio() {
 }
 
 String getLanguage() {
+  // the local name may contains a location code.
+  // for example: 'zh_Hans_US'.
+  final codes = Platform.localeName.replaceAll('_', '-').split('-');
+  if (codes.length > 2) {
+    return '${codes[0]}-${codes[1]}';
+  }
+
   return Platform.localeName.replaceAll('_', '-');
 }
 

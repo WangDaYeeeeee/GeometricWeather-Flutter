@@ -10,6 +10,7 @@ import 'package:geometricweather_flutter/app/common/basic/mvvm.dart';
 import 'package:geometricweather_flutter/app/common/basic/widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/anim_list/slide_anim_list.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
+import 'package:geometricweather_flutter/app/common/ui/platform/scaffold.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/model.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
@@ -71,7 +72,7 @@ class _ManagePageState extends GeoState<ManagementPage> {
       providers: [
         ChangeNotifierProvider.value(value: args.viewModel.listResource),
       ],
-      child: PlatformScaffold(
+      child: GeoPlatformScaffold(
         appBar: getManagementAppBar(
             context,
             args.viewModel,
@@ -427,7 +428,9 @@ class _ManagementBody extends StatelessWidget {
             right: normalMargin,
           ),
           child: Text(location.toString(),
-              style: theme.textTheme.bodyText2
+              style: theme.textTheme.caption.copyWith(
+                color: theme.textTheme.bodyText2.color,
+              )
           ),
         )
     );

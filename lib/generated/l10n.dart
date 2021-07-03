@@ -3794,6 +3794,186 @@ class S {
       args: [],
     );
   }
+
+  /// `Native`
+  String get notification_style_native {
+    return Intl.message(
+      'Native',
+      name: 'notification_style_native',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cities`
+  String get notification_style_cities {
+    return Intl.message(
+      'Cities',
+      name: 'notification_style_cities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Daily`
+  String get notification_style_daily {
+    return Intl.message(
+      'Daily',
+      name: 'notification_style_daily',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hourly`
+  String get notification_style_hourly {
+    return Intl.message(
+      'Hourly',
+      name: 'notification_style_hourly',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `1 hour`
+  String get update_interval_100 {
+    return Intl.message(
+      '1 hour',
+      name: 'update_interval_100',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `1.5 hours`
+  String get update_interval_130 {
+    return Intl.message(
+      '1.5 hours',
+      name: 'update_interval_130',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `2 hours`
+  String get update_interval_200 {
+    return Intl.message(
+      '2 hours',
+      name: 'update_interval_200',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `2.5 hours`
+  String get update_interval_230 {
+    return Intl.message(
+      '2.5 hours',
+      name: 'update_interval_230',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `3 hours`
+  String get update_interval_300 {
+    return Intl.message(
+      '3 hours',
+      name: 'update_interval_300',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `3.5 hours`
+  String get update_interval_330 {
+    return Intl.message(
+      '3.5 hours',
+      name: 'update_interval_330',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `4 hours`
+  String get update_interval_400 {
+    return Intl.message(
+      '4 hours',
+      name: 'update_interval_400',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `4.5 hours`
+  String get update_interval_430 {
+    return Intl.message(
+      '4.5 hours',
+      name: 'update_interval_430',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `5 hours`
+  String get update_interval_500 {
+    return Intl.message(
+      '5 hours',
+      name: 'update_interval_500',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `5.5 hours`
+  String get update_interval_530 {
+    return Intl.message(
+      '5.5 hours',
+      name: 'update_interval_530',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `6 hours`
+  String get update_interval_600 {
+    return Intl.message(
+      '6 hours',
+      name: 'update_interval_600',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Automatic`
+  String get widget_week_icon_mode_auto {
+    return Intl.message(
+      'Automatic',
+      name: 'widget_week_icon_mode_auto',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Daytime`
+  String get widget_week_icon_mode_daytime {
+    return Intl.message(
+      'Daytime',
+      name: 'widget_week_icon_mode_daytime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Nighttime`
+  String get widget_week_icon_mode_nighttime {
+    return Intl.message(
+      'Nighttime',
+      name: 'widget_week_icon_mode_nighttime',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -1,3 +1,8 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 final routeObserver = RouteObserver<PageRoute>();
@@ -32,8 +37,25 @@ abstract class GeoState<T extends GeoStatefulWidget> extends State<T>
     WidgetsBinding.instance.removeObserver(this);
   }
 
+  @mustCallSuper
   void onVisibilityChanged(bool visible) {
-    // do nothing.
+    if (visible) {
+      Timer.run(() {
+        setSystemBarStyle();
+      });
+    }
+  }
+
+  void setSystemBarStyle() {
+    // set style of status bar by control the brightness of app bar.
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(
+          SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            systemNavigationBarColor: Colors.transparent,
+          )
+      );
+    }
   }
 
   @override
@@ -69,5 +91,30 @@ abstract class GeoState<T extends GeoStatefulWidget> extends State<T>
       appResumed = false;
       onVisibilityChanged(topLevelWidget && appResumed);
     }
+  }
+}
+
+class InsetsCompatBodyWrapper extends StatelessWidget {
+
+  InsetsCompatBodyWrapper({
+    Key key,
+    this.body,
+  }): super(key: key);
+
+  final Widget body;
+
+  @override
+  Widget build(BuildContext context) {
+    MediaQueryData mediaQuery = MediaQuery.of(context);
+
+    // we don't show a horizontal padding for iOS devices.
+    // because an iOS device won't have a horizontal navigation bar.
+    return Platform.isIOS ? body : Padding(
+      padding: EdgeInsets.only(
+        left: mediaQuery.padding.left,
+        right: mediaQuery.padding.right,
+      ),
+      child: body,
+    ) ?? Container();
   }
 }

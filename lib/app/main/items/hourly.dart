@@ -105,7 +105,8 @@ ItemGenerator hourly = (
                   padding: EdgeInsets.all(2.0),
                   child: Text(
                     ".",
-                    style: theme.textTheme.subtitle2?.copyWith(
+                    style: theme.textTheme.bodyText2?.copyWith(
+                        fontWeight: FontWeight.w500,
                         color: Colors.transparent
                     ),
                   ),
@@ -200,7 +201,9 @@ Widget _getHourlyItem(
             isTwelveHourFormat(context),
             S.of(context).of_clock
           ),
-          style: theme.textTheme.subtitle2,
+          style: theme.textTheme.bodyText2?.copyWith(
+              fontWeight: FontWeight.w500,
+          ),
         ),
       ),
       Padding(

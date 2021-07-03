@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,9 @@ Widget getAppBar(
   return GeoPlatformAppBar(context,
     leading: Platform.isAndroid ? PlatformIconButton(
       materialIcon: Icon(Icons.arrow_back,
-        color: Colors.black,
+        color: Theme.of(context).brightness == Brightness.light
+            ? Colors.black
+            : Colors.white,
       ),
       cupertinoIcon: Icon(CupertinoIcons.back),
       onPressed: () {

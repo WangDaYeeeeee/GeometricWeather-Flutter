@@ -7,5 +7,6 @@ class Routers {
 
   static const ROUTER_ID_SETTINGS = 'settings';
   static const ROUTER_ID_UNIT_SETTINGS = 'unit_settings';
+  static const ROUTER_ID_APPEARANCE_SETTINGS = 'appearance_settings';
   static const ROUTER_ID_ABOUT = 'about';
 }

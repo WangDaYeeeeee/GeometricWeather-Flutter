@@ -123,7 +123,7 @@ class PolylineAndHistogramView extends AbsChartItemView {
           getDividerColor(lightTheme),
           Theme.of(context).cardColor,
           Theme.of(context).textTheme.caption?.copyWith(
-            color: Theme.of(context).textTheme.overline?.color,
+            color: Theme.of(context).textTheme.bodyText2?.color,
           ),
           Theme.of(context).textTheme.caption?.copyWith(
             fontSize: Theme.of(context).textTheme.overline?.fontSize,

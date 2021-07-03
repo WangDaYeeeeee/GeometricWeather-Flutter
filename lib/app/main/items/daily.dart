@@ -106,8 +106,9 @@ ItemGenerator daily = (
                   padding: EdgeInsets.all(2.0),
                   child: Text(
                     ".",
-                    style: theme.textTheme.subtitle2?.copyWith(
-                        color: Colors.transparent
+                    style: theme.textTheme.bodyText2?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.transparent
                     ),
                   ),
                 ),
@@ -209,7 +210,9 @@ Widget _getDailyItem(
           isToday(weather.dailyForecast[index].date, timezone)
               ? S.of(context).today
               : getWeekName(context, weather.dailyForecast[index].getWeek()),
-          style: theme.textTheme.subtitle2,
+          style: theme.textTheme.bodyText2?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
       Padding(

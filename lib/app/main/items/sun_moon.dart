@@ -129,9 +129,11 @@ ItemGenerator sunMoon = (
               initVisible: initVisible,
               width: getTabletAdaptiveWidth(context) - 2 * (littleMargin + normalMargin),
               sunDuration: _getPathAnimationDuration(sunProgress!),
-              moonDuration: moonProgress != null
-                  ? _getPathAnimationDuration(moonProgress)
-                  : null,
+              moonDuration: moonProgress != null ? (
+                  moonProgress == sunProgress
+                      ? _getPathAnimationDuration(moonProgress) + 50
+                      : _getPathAnimationDuration(moonProgress)
+              ) : null,
               sunProgress: sunProgress,
               moonProgress: moonProgress,
               sunIcon: resProvider.getSunDrawable(),
@@ -218,10 +220,10 @@ Widget _getBottomDescriptions(BuildContext context, Weather weather, ThemeData t
         child: Row(children: [
           PlatformIconButton(
             materialIcon: Icon(Icons.wb_sunny_outlined,
-              color: theme.textTheme.caption?.color,
+              color: theme.textTheme.overline?.color,
             ),
             cupertinoIcon: Icon(CupertinoIcons.sun_max,
-              color: theme.textTheme.caption?.color,
+              color: theme.textTheme.overline?.color,
             ),
             padding: EdgeInsets.only(
               left: normalMargin,
@@ -230,7 +232,7 @@ Widget _getBottomDescriptions(BuildContext context, Weather weather, ThemeData t
             ),
           ),
           Text(sunText,
-            style: theme.textTheme.caption,
+            style: theme.textTheme.overline,
           ),
         ]),
       ),
@@ -239,10 +241,10 @@ Widget _getBottomDescriptions(BuildContext context, Weather weather, ThemeData t
         child: moonText == null ? Container() : Row(children: [
           PlatformIconButton(
             materialIcon: Icon(Icons.nightlight_outlined,
-              color: theme.textTheme.caption?.color,
+              color: theme.textTheme.overline?.color,
             ),
             cupertinoIcon: Icon(CupertinoIcons.moon,
-              color: theme.textTheme.caption?.color,
+              color: theme.textTheme.overline?.color,
             ),
             padding: EdgeInsets.only(
               left: normalMargin,
@@ -251,7 +253,7 @@ Widget _getBottomDescriptions(BuildContext context, Weather weather, ThemeData t
             ),
           ),
           Text(moonText,
-            style: theme.textTheme.caption,
+            style: theme.textTheme.overline,
           ),
         ]),
       ),

@@ -172,7 +172,7 @@ class SnackBarViewState extends State<SnackBarView>
       bool showAction = !isEmptyString(widget.model.action)
           && widget.model.actionCallback != null;
 
-      int alpha = Platform.isIOS ? 240 : 255;
+      int alpha = Platform.isIOS ? 245 : 255;
 
       final content = Padding(
         padding: EdgeInsets.all(normalMargin),

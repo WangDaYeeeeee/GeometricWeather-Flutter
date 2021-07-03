@@ -145,7 +145,8 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   Widget _innerBuild(Gradient gradient, CustomPainter painter) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        gradient: gradient
+        gradient: Platform.isIOS ? gradient : null,
+        color: Platform.isIOS ? null : gradient.colors[0],
       ),
       child: RepaintBoundary(
         child: CustomPaint(

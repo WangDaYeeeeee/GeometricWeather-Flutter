@@ -1,6 +1,520 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation">
 
+    <!-- app. -->
     <string name="app_name">Weather</string>
     <string name="geometric_weather">Geometric Weather</string>
+
+    <!-- keyword. -->
+    <string name="current_location">Current location</string>
+    <string name="resident_location">Resident location</string>
+    <string name="default_location">default location</string>
+    <string name="live">Live</string>
+    <string name="today">Today</string>
+    <string name="refresh_at">Refreshed at</string>
+    <string name="local_time">Local time</string>
+    <string name="precipitation">Precipitation</string>
+    <string name="precipitation_probability">Precipitation probability</string>
+    <string name="precipitation_duration">Precipitation duration</string>
+    <string name="maxi_temp">daytime</string>
+    <string name="mini_temp">nighttime</string>
+    <string name="time">time</string>
+    <string name="day">daytime</string>
+    <string name="night">nighttime</string>
+    <string name="temperature">Temperature</string>
+    <string name="wind">Wind</string>
+    <string name="wind_direction">Wind direction</string>
+    <string name="wind_speed">Wind speed</string>
+    <string name="wind_level">Wind gauge</string>
+    <string name="sensible_temp">Sensible temp</string>
+    <string name="humidity">Humidity</string>
+    <string name="uv_index">UV index</string>
+    <string name="hours_of_sun">Hours of sun</string>
+    <string name="forecast">Forecast</string>
+    <string name="briefings">Briefings</string>
+    <string name="daytime">Daytime</string>
+    <string name="nighttime">Nighttime</string>
+    <string name="publish_at">Publish at</string>
+    <string name="feels_like">Feels like</string>
+    <string name="follow_system">Follow system</string>
+    <string name="background_information">Background information</string>
+    <string name="pressure">Atmospheric pressure</string>
+    <string name="visibility">Visibility</string>
+    <string name="dew_point">Dew point</string>
+    <string name="cloud_cover">Cloud cover</string>
+    <string name="ceiling">Ceiling</string>
+    <string name="get_more">Get more</string>
+    <string name="get_more_store">Get more from app store</string>
+    <string name="get_more_github">Get more from GitHub</string>
+    <string name="refresh">Refresh</string>
+    <string name="restart">Restart</string>
+    <string name="edit">Edit</string>
+
+    <!-- The following set of strings should be as short as possible. -->
+    <string name="of_clock">:00</string>
+    <string name="yesterday">yday</string>
+    <string name="tomorrow">tmw</string>
+    <string name="week">week</string>
+    <string name="week_1">Mon</string>
+    <string name="week_2">Tue</string>
+    <string name="week_3">Wed</string>
+    <string name="week_4">Thu</string>
+    <string name="week_5">Fri</string>
+    <string name="week_6">Sat</string>
+    <string name="week_7">Sun</string>
+
+    <string name="real_feel_temperature">Real feel</string>
+    <string name="real_feel_shade_temperature">Real feel shade</string>
+    <string name="apparent_temperature">Apparent</string>
+    <string name="wind_chill_temperature">Wind chill</string>
+    <string name="wet_bulb_temperature">Wet bulb</string>
+    <string name="degree_day_temperature">Degree day</string>
+
+    <string name="total">Total</string>
+    <string name="thunderstorm">Thunderstorm</string>
+    <string name="rain">Rain</string>
+    <string name="snow">Snow</string>
+    <string name="ice">Ice</string>
+
+    <string name="wind_0">Calm</string>
+    <string name="wind_1">Light air</string>
+    <string name="wind_2">Light breeze</string>
+    <string name="wind_3">Gentle breeze</string>
+    <string name="wind_4">Moderate breeze</string>
+    <string name="wind_5">Fresh breeze</string>
+    <string name="wind_6">Strong breeze</string>
+    <string name="wind_7">Moderate gale</string>
+    <string name="wind_8">Gale</string>
+    <string name="wind_9">Strong gale</string>
+    <string name="wind_10">Storm</string>
+    <string name="wind_11">Violent storm</string>
+    <string name="wind_12">Hurricane</string>
+
+    <string name="precipitation_light">Drizzle</string>
+    <string name="precipitation_middle">Rain</string>
+    <string name="precipitation_heavy">Heavy rain</string>
+    <string name="precipitation_rainstorm">Rainstorm</string>
+
+    <string name="aqi_1">Fresh air</string>
+    <string name="aqi_2">Clear air</string>
+    <string name="aqi_3">Slight polluted</string>
+    <string name="aqi_4">Moderate pollution</string>
+    <string name="aqi_5">Heavy pollution</string>
+    <string name="aqi_6">Severe pollution</string>
+
+    <string name="phase_new">New moon</string>
+    <string name="phase_waxing_crescent">Waxing crescent</string>
+    <string name="phase_first">First quarter</string>
+    <string name="phase_waxing_gibbous">Waxing gibbous</string>
+    <string name="phase_full">Full moon</string>
+    <string name="phase_waning_gibbous">Waning gibbous</string>
+    <string name="phase_third">Third quarter</string>
+    <string name="phase_waning_crescent">Waning crescent</string>
+
+    <string name="grass">Grass</string>
+    <string name="mold">Mold</string>
+    <string name="ragweed">Ragweed</string>
+    <string name="tree">Tree</string>
+
+    <string name="daily_overview">Daily forecast</string>
+    <string name="hourly_overview">Hourly forecast</string>
+    <string name="minutely_overview">Minutely forecast</string>
+    <string name="precipitation_overview">Precipitation forecast</string>
+    <string name="air_quality">Air quality</string>
+    <string name="allergen">Allergen</string>
+    <string name="life_details">Details</string>
+    <string name="sunrise_sunset">Sun &amp; moon</string>
+
+    <string name="next">NEXT</string>
+    <string name="done">DONE</string>
+    <string name="cancel" tools:ignore="ButtonCase">CANCEL</string>
+    <string name="on">Enabled</string>
+    <string name="off">Disabled</string>
+    <string name="go_to_set">SET</string>
+    <string name="help">HELP</string>
+    <string name="learn_more">LEARN MORE</string>
+
+    <string name="filter_weather_sources">Filter</string>
+
+    <string name="about_app">ABOUT APP</string>
+    <string name="introduce">introduce</string>
+    <string name="email">E-mail</string>
+    <string name="donate">Donate</string>
+    <string name="gitHub">GitHub</string>
+    <string name="translator">Translators</string>
+    <string name="thanks">Thanks</string>
+
+    <string name="alipay">Alipay</string>
+    <string name="wechat">Wechat</string>
+
+    <!-- Date format strings. -->
+    <!-- Month : MMM(long) / M(short). -->
+    <!-- Day   : dd(long) / d(short). -->
+    <!-- Week  : EEEE(long) / EEE(short). -->
+    <string name="date_format_short">M-d</string>
+    <string name="date_format_long">MMM d</string>
+    <string name="date_format_widget_short">EEEE, MMM d</string>
+    <string name="date_format_widget_long">EEEE, MMM d</string>
+    <string name="date_format_widget_oreo_style">EEEE, MMM d│</string>
+
+    <!-- Do not translate the following set of strings. -->
+    <string name="tag_temperature">@string/temperature</string>
+    <string name="tag_wind">@string/wind</string>
+    <string name="tag_precipitation">@string/precipitation</string>
+    <string name="tag_aqi">@string/air_quality</string>
+    <string name="tag_uv">@string/uv_index</string>
+
+    <!-- about. -->
+    <!-- Optional, the following set of strings are not necessarily translated. -->
+    <string name="retrofit">Retrofit 2.0</string>
+    <string name="about_retrofit">Type-safe HTTP client for Android and Java by Square, Inc.</string>
+    <string name="glide">Glide</string>
+    <string name="about_glide">An image loading and caching library for Android focused on smooth scrolling.</string>
+    <string name="gson">Gson</string>
+    <string name="about_gson">A Java serialization/deserialization library that can convert Java Objects into JSON and back.</string>
+    <string name="greenDAO">GreenDAO</string>
+    <string name="about_greenDAO">greenDAO is a light and fast ORM solution for Android that maps objects to SQLite databases.</string>
+    <string name="page_indicator">InkPageIndicator</string>
+    <string name="about_page_indicator">InkPageIndicator created by @nickbutcher for Plaid https://github.com/nickbutcher/plaid and backported by David Pacioianu for API 14+ (4.0+).</string>
+    <string name="circular_progress_view">CircularProgressView</string>
+    <string name="about_circular_progress_view">Material style circular progress bar for Android.</string>
+
+    <!-- feedback. -->
+    <string name="feedback_request_permission">Permissions</string>
+    <string name="feedback_request_location">Location</string>
+    <string name="feedback_request_location_in_background">Locating in background</string>
+    <string name="feedback_request_location_permission_success">Location permissions request success</string>
+    <string name="feedback_request_location_permission_failed">Location permissions request failed</string>
+
+    <string name="feedback_location_permissions_title">Access location information</string>
+    <string name="feedback_location_permissions_statement">Geometric Weather needs to collect your location information in foreground or background to provide the weather data of your current location. For this, we will request some permissions. Your location information will only be used to obtain weather data at your current location. If you don\'t want us to obtain your location information, you can deny those requirements and manually set your location in the management page.</string>
+    <string name="feedback_background_location_title">Access location in background</string>
+    <string name="feedback_background_location_summary">In order to allow the app to access location information in background, so that we can perceive changes in location and provide you with valid weather data, please set location access as \"Allow all the time\".</string>
+
+    <string name="feedback_location_failed">Location failed</string>
+    <string name="feedback_get_weather_failed">Request weather data failed</string>
+    <string name="feedback_location_help_title">Cannot get location correctly?</string>
+    <string name="feedback_check_location_permission">Check location permissions</string>
+    <string name="feedback_enable_location_information">Enable Location Information</string>
+    <string name="feedback_select_location_provider">Select Location Provider</string>
+    <string name="feedback_add_location_manually">Add Location Manually And Delete \'$\'</string>
+    <string name="feedback_view_style">View style</string>
+    <string name="feedback_show_widget_card">Background color</string>
+    <string name="feedback_show_widget_card_alpha">Transparency</string>
+    <string name="feedback_hide_subtitle">Hide subtitle</string>
+    <string name="feedback_subtitle_data">Subtitle data</string>
+    <string name="feedback_black_text">Text color</string>
+    <string name="feedback_text_size">Text size</string>
+    <string name="feedback_clock_font">Clock font</string>
+    <string name="feedback_hide_lunar">Hide lunar calendar</string>
+    <string name="feedback_align_end">Align End</string>
+    <string name="feedback_custom_subtitle_explanation">You can input anything, but please pay attention to the length of the text. If you want to quote weather data, please use $ to reference the corresponding keyword.\n\nFor example, \"current weather = $cw$\" will be displayed as \"current weather = Clear Day\".</string>
+    <!-- keep those content with the format "$xxx$". -->
+    <!-- keep "\n" -->
+    <string name="feedback_custom_subtitle_keyword_cw">$cw$ : Current Weather\n</string>
+    <string name="feedback_custom_subtitle_keyword_ct">$ct$ : Current Temperature (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_ctd">$ctd$ : Current Temperature (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_at">$at$ : Apparent Temperature (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_atd">$atd$ : Apparent Temperature (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cpb">$cpb$ : Current Precipitation Probability (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cp">$cp$ : Current Precipitation (mm/L/m²)\n</string>
+    <string name="feedback_custom_subtitle_keyword_cwd">$cwd$ : Current Wind\n</string>
+    <string name="feedback_custom_subtitle_keyword_cuv">$cuv$ : Current UV\n</string>
+    <string name="feedback_custom_subtitle_keyword_ch">$ch$ : Current Humidity\n</string>
+    <string name="feedback_custom_subtitle_keyword_cps">$cps$ : Current Pressure\n</string>
+    <string name="feedback_custom_subtitle_keyword_cv">$cv$ : Current Visibility\n</string>
+    <string name="feedback_custom_subtitle_keyword_cdp">$cdp$ : Current DewPoint\n</string>
+    <string name="feedback_custom_subtitle_keyword_al">$al$ : Alerts\n</string>
+    <string name="feedback_custom_subtitle_keyword_als">$als$ : Alerts (Short)\n</string>
+    <string name="feedback_custom_subtitle_keyword_l">$l$ : Location\n</string>
+    <string name="feedback_custom_subtitle_keyword_lat">$lat$ : Latitude\n</string>
+    <string name="feedback_custom_subtitle_keyword_lon">$lon$ : Longitude\n</string>
+    <string name="feedback_custom_subtitle_keyword_ut">$ut$ : Update Time\n</string>
+    <string name="feedback_custom_subtitle_keyword_d">$d$ : Date\n</string>
+    <string name="feedback_custom_subtitle_keyword_lc">$lc$ : Lunar Calendar\n</string>
+    <string name="feedback_custom_subtitle_keyword_w">$w$ : Week\n</string>
+    <string name="feedback_custom_subtitle_keyword_ws">$ws$ : Week (Short)\n</string>
+    <string name="feedback_custom_subtitle_keyword_dd">$dd$ : Daily Description\n</string>
+    <string name="feedback_custom_subtitle_keyword_hd">$hd$ : Hourly Description\n</string>
+    <string name="feedback_custom_subtitle_keyword_enter">$enter$ : Enter\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdw">$0dw$, $1dw$, …, $4dw$ : \nDaytime Weather of Today, Tmw, …, 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnw">$0nw$, $1nw$, …, $4nw$ : \nNighttime Weather of Today, Tmw, …, 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdt">$0dt$, $1dt$, …, $4dt$ : \nDaytime Temperature of Today, Tmw, …, 4 days later (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnt">$0nt$, $1nt$, …, $4nt$ : \nNighttime Temperature of Today, Tmw, …, 4 days later (℃/℉)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdtd">$0dtd$, $1dtd$, …, $4dtd$ : \nDaytime Temperature of Today, Tmw, …, 4 days later (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xntd">$0ntd$, $1ntd$, …, $4ntd$ : \nNighttime Temperature of Today, Tmw, …, 4 days later (°)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdp">$0dp$, $1dp$, …, $4dp$ : \nDaytime Precipitation of Today, Tmw, …, 4 days later (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnp">$0np$, $1np$, …, $4np$ : \nNighttime Precipitation of Today, Tmw, …, 4 days later (%)\n</string>
+    <string name="feedback_custom_subtitle_keyword_xdwd">$0dwd$, $1dwd$, …, $4dwd$ : \nDaytime Wind of Today, Tmw, …, 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xnwd">$0nwd$, $1nwd$, …, $4nwd$ : \nNighttime Wind of Today, Tmw, …, 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xsr">$0sr$, $1sr$, …, $4sr$ : \nSunrise of Today, Tmw, …, 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xss">$0ss$, $1ss$, …, $4ss$ : \nSunset of Today, Tmw, …, 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xmr">$0mr$, $1mr$, …, $4mr$ : \nMoonrise of Today, Tmw, …, 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xms">$0ms$, $1ms$, …, $4ms$ : \nMoonset of Today, Tmw, …, 4 days later\n</string>
+    <string name="feedback_custom_subtitle_keyword_xmp">$0mp$, $1mp$, …, $4mp$ : \nMoon Phase of Today, Tmw, …, 4 days later\n</string>
+
+    <string name="feedback_live_wallpaper_weather_kind">Weather</string>
+    <string name="feedback_live_wallpaper_day_night_type">Time</string>
+
+    <string name="feedback_click_toggle">Press chart to toggle data</string>
+    <string name="feedback_no_data">NO DATA</string>
+
+    <string name="feedback_collect_failed">This location already exists</string>
+    <string name="feedback_collect_succeed">Add location success</string>
+    <string name="feedback_delete_succeed">Delete location success</string>
+    <string name="feedback_location_list_cannot_be_null">Location list cannot be empty</string>
+
+    <string name="feedback_search_location">Search a location…</string>
+    <string name="feedback_not_yet_location">No location yet…</string>
+    <string name="feedback_search_nothing">No locations found</string>
+    <string name="feedback_initializing">Initializing…</string>
+
+    <string name="feedback_refresh_notification_after_back">Changes will take effect when you return to the home page</string>
+    <string name="feedback_refresh_notification_now">Refresh now</string>
+    <string name="feedback_refresh_ui_after_refresh">Changes will take effect when data is refreshed</string>
+    <string name="feedback_restart">Changes will take effect after restart</string>
+    <string name="feedback_readd_location">Please re-add locations</string>
+    <string name="feedback_readd_location_after_changing_source">Please re-add locations after changing data source</string>
+
+    <string name="feedback_running_in_background">Running in background to keep updating</string>
+    <string name="feedback_updating_weather_data">Updating weather data</string>
+    <string name="feedback_updated_in_background">Updated in background</string>
+
+    <!-- there should be a "\" before single or double quotes. -->
+    <!-- Correct : ... after turning off \'Background free\', ... After turning off \"Free background\" ... -->
+    <!-- Wrong   : ... after turning off 'Background free', ... After turning off "Free background" ... -->
+    <string name="feedback_interpret_background_notification_content">In some devices, after turning off \'Background free\', there might be a notification that cannot be cleared in the notification bar.</string>
+    <string name="feedback_interpret_notification_group_title">Block notification group</string>
+    <string name="feedback_interpret_notification_group_content">After turning off \"Free background\", a notification indicating that background service is running will appear in the notification bar. You can turn off the Background Information Channel in the app\'s information page to block this notifications.</string>
+
+    <string name="feedback_ignore_battery_optimizations_title">Ignore battery optimization</string>
+    <string name="feedback_ignore_battery_optimizations_content">In order to ensure that the background services can continue to work, please ignore the battery optimization for GeometricWeather.</string>
+    
+    <string name="feedback_cannot_start_live_wallpaper_activity">Unable to start live wallpaper preview context</string>
+
+    <string name="feedback_unusable_geocoder">This device does not contain a valid geocoder. The location provider has been changed to Baidu Location.</string>
+    <string name="feedback_about_geocoder">Geocoder is a component that converts the location result from lat-lon format to a format like \'XX city, YY province \'. In the absence of this component, you can only get weather data through AccuWeather when using the native API as location provider.</string>
+
+    <string name="feedback_today_precipitation_alert">There may be precipitation today.</string>
+    <string name="feedback_short_term_precipitation_alert">Precipitation may occur in the next few hours.</string>
+
+    <string name="feedback_resident_location">Set as a resident city</string>
+    <string name="feedback_resident_location_description">GeometricWeather will automatically show and hide resident cities based on your current location.\nFor example, you can set your hometown as a resident city. You can check the weather in your hometown while you are traveling. When you get home, the weather in your hometown will be hidden and replaced by the weather for your current location.</string>
+
+    <string name="feedback_click_to_get_more">Click to get more…</string>
+    <string name="feedback_click_again_to_exit">Click again to exit</string>
+
+    <!-- content description -->
+    <string name="content_desc_back">Back</string>
+    <string name="content_desc_check_details">Check details</string>
+    <string name="content_desc_weather_alert_button">$ weather alerts</string> <!-- $ = alert count. -->
+    <string name="content_des_pm25">PM two point five</string>
+    <string name="content_des_pm10">PM ten</string>
+    <string name="content_des_so2">Sulfur dioxide</string>
+    <string name="content_des_no2">Nitrogen dioxide</string>
+    <string name="content_des_o3">Ozone</string>
+    <string name="content_des_co">Carbon monoxide</string>
+    <string name="content_des_m3">Carbon monoxide</string>
+    <string name="content_des_sunrise">Sunrise at $</string> <!-- $ = time. -->
+    <string name="content_des_sunset">Sunset at $</string> <!-- $ = time. -->
+    <string name="content_des_moonrise">Moonrise at $</string> <!-- $ = time. -->
+    <string name="content_des_moonset">Moonset at $</string> <!-- $ = time. -->
+    <string name="content_des_no_precipitation">No precipitation</string>
+    <string name="content_des_minutely_precipitation">Precipitation between $1 and $2</string> <!-- $1 = start time, $2 = end time. -->
+    <string name="content_des_add_current_location">Add current location</string>
+    <string name="content_des_drag_flag">Tap to drag the list items to sort</string>
+    <string name="content_des_delete_flag">Delete this item</string>
+    <string name="content_des_swipe_left_to_delete">You can swipe left to delete this item</string>
+    <string name="content_des_swipe_right_to_delete">You can swipe right to delete this item</string>
+    <string name="content_desc_search_filter_on">Only show locations from default weather source</string>
+    <string name="content_desc_search_filter_off">Show locations from all weather sources</string>
+    <string name="content_desc_powered_by">Powered by $</string> <!-- $ = weather source. -->
+    <string name="content_desc_app_store">@string/action_appStore</string>
+    <string name="content_desc_wechat_payment_code">Payment QR code of wechat</string>
+    <string name="content_desc_weather_icon">Weather icon</string>
+    <string name="content_desc_weather_icon_light">Light icon</string>
+    <string name="content_desc_weather_icon_grey">Grey icon</string>
+    <string name="content_desc_weather_icon_dark">Dark icon</string>
+    <string name="content_desc_filter_weather_sources">Filter weather sources</string>
+
+    <!-- action -->
+    <string name="action_alert">Alert</string>
+    <string name="action_manage">Manage</string>
+    <string name="action_search">Search</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_preview">Preview</string>
+    <string name="action_about">About</string>
+    <string name="action_appStore">App Store</string>
+
+    <!-- widget -->
+    <string name="widget_day">Daily</string>
+    <string name="widget_week">Weekly</string>
+    <string name="widget_day_week">Daily + Weekly</string>
+    <string name="widget_clock_day_horizontal">Clock + Daily (Horizontal style)</string>
+    <string name="widget_clock_day_details">Clock + Daily (Details)</string>
+    <string name="widget_clock_day_vertical">Clock + Daily (Vertical style)</string>
+    <string name="widget_clock_day_week">Clock + Daily + Weekly</string>
+    <string name="widget_text">Text</string>
+    <string name="widget_trend_daily">Daily Trend</string>
+    <string name="widget_trend_hourly">Hourly Trend</string>
+    <string name="widget_multi_city">Multi City</string>
+    <string name="wait_refresh">waiting</string>
+    <string name="ellipsis">…</string>
+
+    <!-- settings -->
+    <string name="settings_category_basic">Basic</string>
+    <string name="settings_title_background_free">Background Free</string>
+    <string name="settings_summary_background_free_on">Enabled\nIf widgets and notification cannot refresh automatically, please turn off this option.</string>
+    <string name="settings_summary_background_free_off">Disabled\nIf you do not want any services to continue working in background, please turn on this option.</string>
+    <string name="settings_title_live_wallpaper">Live wallpaper</string>
+    <string name="settings_summary_live_wallpaper">Set Material weather animation as live wallpaper</string>
+    <string name="settings_title_service_provider">Service provider</string>
+    <string name="settings_summary_service_provider">Select service provider of weather data and location information</string>
+    <string name="settings_title_weather_source">Weather source</string>
+    <string name="settings_title_location_service">Location service</string>
+    <string name="settings_title_dark_mode">Dark mode</string>
+    <string name="settings_title_ui_style">Interface style</string>
+    <string name="settings_title_icon_provider">Icon pack</string>
+    <string name="settings_title_appearance">Appearance</string>
+    <string name="settings_summary_appearance">Interface style, card order, language…</string>
+    <string name="settings_title_card_display">Displayed cards</string>
+    <string name="settings_title_daily_trend_display">Display daily trend</string>
+    <string name="settings_title_trend_horizontal_line_switch">Horizontal lines in trend</string>
+    <string name="settings_title_exchange_day_night_temp_switch">Exchange day night temperature</string>
+    <string name="settings_title_card_order">Card order</string>
+    <string name="settings_title_gravity_sensor_switch">Gravity sensor</string>
+    <string name="settings_title_list_animation_switch">List animation</string>
+    <string name="settings_title_item_animation_switch">Item animation</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_title_unit">Units</string>
+    <string name="settings_summary_unit">Set the unit of weather data</string>
+    <string name="settings_title_temperature_unit">Temperature unit</string>
+    <string name="settings_title_distance_unit">Distance unit</string>
+    <string name="settings_title_precipitation_unit">Precipitation unit</string>
+    <string name="settings_title_pressure_unit">Pressure unit</string>
+    <string name="settings_title_speed_unit">Speed unit</string>
+    <string name="settings_title_refresh_rate">Automatic refresh rate</string>
+    <string name="settings_title_alert_notification_switch">Send Alert Notification</string>
+    <string name="settings_title_precipitation_notification_switch">Send Precipitation Forecast</string>
+    <string name="settings_title_permanent_service">Permanent service</string>
+    <string name="settings_category_forecast">Forecast</string>
+    <string name="settings_title_forecast_today">Forecast for today</string>
+    <string name="settings_title_forecast_today_time">Forecast time for today</string>
+    <string name="settings_title_forecast_tomorrow">Forecast for tomorrow</string>
+    <string name="settings_title_forecast_tomorrow_time">Forecast time for tomorrow</string>
+    <string name="settings_category_widget">Widget</string>
+    <string name="settings_title_week_icon_mode">Weekly icons mode</string>
+    <string name="settings_title_minimal_icon">Minimalistic icons</string>
+    <string name="settings_title_click_widget_to_refresh">Refresh widget when clicked</string>
+    <string name="settings_title_widget_config">Widget config</string>
+    <string name="settings_category_notification">Notification</string>
+    <string name="settings_title_notification">Send Notification</string>
+    <string name="settings_title_notification_style">Notification style</string>
+    <string name="settings_title_notification_temp_icon">Temperature as status bar icon</string>
+    <string name="settings_title_notification_color">Notification color</string>
+    <string name="settings_title_notification_custom_color">Custom Notification Color</string>
+    <string name="settings_title_notification_text_color">Text color</string>
+    <string name="settings_title_notification_background">Background color</string>
+    <string name="settings_notification_background_off">Follow System</string>
+    <string name="settings_title_notification_can_be_cleared">Can be cleared</string>
+    <string name="settings_notification_can_be_cleared_on">Can be cleared by dragging</string>
+    <string name="settings_notification_can_be_cleared_off">Cannot be cleared</string>
+    <string name="settings_title_notification_hide_icon">Hide notification icon</string>
+    <string name="settings_notification_hide_icon_on">Hide</string>
+    <string name="settings_notification_hide_icon_off">Show</string>
+    <string name="settings_title_notification_hide_in_lockScreen">Hide in lock screen</string>
+    <string name="settings_notification_hide_in_lockScreen_on">Hide (need to open in the system settings)</string>
+    <string name="settings_notification_hide_in_lockScreen_off">Show</string>
+    <string name="settings_title_notification_hide_big_view">Extended style</string>
+    <string name="settings_notification_hide_big_view_on">Hide</string>
+    <string name="settings_notification_hide_big_view_off">Show</string>
+
+    <!--share preference-->
+    <!-- Do not translate the following set of strings. -->
+    <string name="sp_widget_day_setting">widget_day_setting</string>
+    <string name="sp_widget_week_setting">widget_week_setting</string>
+    <string name="sp_widget_day_week_setting">widget_day_week_setting</string>
+    <string name="sp_widget_clock_day_horizontal_setting">widget_clock_day_horizontal_setting</string>
+    <string name="sp_widget_clock_day_details_setting">widget_clock_day_details_setting</string>
+    <string name="sp_widget_clock_day_vertical_setting">widget_clock_day_vertical_setting</string>
+    <string name="sp_widget_clock_day_week_setting">widget_clock_day_week_setting</string>
+    <string name="sp_widget_text_setting">widget_text_setting</string>
+    <string name="sp_widget_daily_trend_setting">widget_daily_trend_setting</string>
+    <string name="sp_widget_hourly_trend_setting">widget_hourly_trend_setting</string>
+    <string name="sp_widget_multi_city">widget_multi_city</string>
+    <string name="key_view_type">view_type</string>
+    <string name="key_card_style">card_style</string>
+    <string name="key_card_alpha">card_alpha_1</string>
+    <string name="key_hide_subtitle">hide_refresh_time</string>
+    <string name="key_subtitle_data">subtitle_data</string>
+    <string name="key_text_color">text_color</string>
+    <string name="key_text_size">text_size</string>
+    <string name="key_clock_font">clock_font</string>
+    <string name="key_hide_lunar">hide_lunar</string>
+    <string name="key_align_end">align_end</string>
+
+    <!-- Do not translate the following set of strings. -->
+    <string name="key_background_free">background_free_3</string>
+    <string name="key_live_wallpaper">live_wallpaper</string>
+    <string name="key_service_provider">service_provider</string>
+    <string name="key_weather_source">weather_source</string>
+    <string name="key_location_service">location_service</string>
+    <string name="key_dark_mode">dark_mode</string>
+    <string name="key_ui_style">ui_style</string>
+    <string name="key_icon_provider">icon_provider</string>
+    <string name="key_appearance">appearance</string>
+    <string name="key_card_display">card_display_2</string>
+    <string name="key_daily_trend_display">daily_trend_display</string>
+    <string name="key_trend_horizontal_line_switch">trend_horizontal_line_switch</string>
+    <string name="key_exchange_day_night_temp_switch">exchange_day_night_temp_switch</string>
+    <string name="key_gravity_sensor_switch">gravity_sensor_switch</string>
+    <string name="key_list_animation_switch">list_animation_switch</string>
+    <string name="key_item_animation_switch">item_animation_switch</string>
+    <string name="key_language">language</string>
+    <string name="key_unit">unit</string>
+    <string name="key_temperature_unit">temperature_unit</string>
+    <string name="key_distance_unit">distance_unit</string>
+    <string name="key_precipitation_unit">precipitation_unit</string>
+    <string name="key_pressure_unit">pressure_unit</string>
+    <string name="key_speed_unit">speed_unit</string>
+    <string name="key_refresh_rate">refresh_rate</string>
+    <string name="key_alert_notification_switch">alert_notification_switch</string>
+    <string name="key_precipitation_notification_switch">precipitation_notification_switch</string>
+    <string name="key_forecast_today">timing_forecast_switch_today</string>
+    <string name="key_forecast_today_time">forecast_time_today</string>
+    <string name="key_forecast_tomorrow">timing_forecast_switch_tomorrow</string>
+    <string name="key_forecast_tomorrow_time">forecast_time_tomorrow</string>
+    <string name="key_week_icon_mode">week_icon_mode</string>
+    <string name="key_widget_minimal_icon">widget_minimal_icon</string>
+    <string name="key_click_widget_to_refresh">click_widget_to_refresh</string>
+    <string name="key_widget_config">widget_config</string>
+    <string name="key_widget_day">widget_day</string>
+    <string name="key_widget_week">widget_week</string>
+    <string name="key_widget_day_week">widget_day_week</string>
+    <string name="key_widget_clock_day_horizontal">widget_clock_day_horizontal</string>
+    <string name="key_widget_clock_day_details">widget_clock_day_details</string>
+    <string name="key_widget_clock_day_vertical">widget_clock_day_vertical</string>
+    <string name="key_widget_clock_day_week">widget_clock_day_week</string>
+    <string name="key_widget_text">widget_text</string>
+    <string name="key_widget_trend_daily">widget_trend_daily</string>
+    <string name="key_widget_trend_hourly">widget_trend_hourly</string>
+    <string name="key_widget_multi_city">widget_multi_city</string>
+    <string name="key_notification">notification_switch</string>
+    <string name="key_notification_style">notification_style</string>
+    <string name="key_notification_minimal_icon">notification_minimal_icon</string>
+    <string name="key_notification_temp_icon">notification_temp_icon_switch</string>
+    <string name="key_notification_color">notification_color</string>
+    <string name="key_notification_custom_color">notification_custom_color</string>
+    <string name="key_notification_background_color">notification_background_color</string>
+    <string name="key_notification_text_color">notification_text_color</string>
+    <string name="key_notification_can_be_cleared">notification_can_clear_switch</string>
+    <string name="key_notification_hide_icon">hide_notification_icon</string>
+    <string name="key_notification_hide_in_lockScreen">hide_notification_in_lockScreen</string>
+    <string name="key_notification_hide_big_view">hide_notification_big_view</string>
+
+    <!-- transition. -->
+    <!-- Do not translate the following set of strings. -->
+    <string name="transition_activity_search_bar">activity_search_bar</string>
+    <string name="transition_activity_search_txt">activity_search_txt</string>
 
 </resources>

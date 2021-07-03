@@ -1,6 +1,9 @@
 import 'package:geometricweather_flutter/app/common/basic/options/appearance.dart';
+import 'package:geometricweather_flutter/app/common/basic/options/notification.dart';
+import 'package:geometricweather_flutter/app/common/basic/options/polling.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/providers.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/units.dart';
+import 'package:geometricweather_flutter/app/common/basic/options/widget.dart';
 import 'package:geometricweather_flutter/app/theme/providers/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -131,6 +134,27 @@ class SettingsManager {
         .apply();
   }
 
+  bool get precipitationAlertEnabled => _configStore.getBool(
+      'precipitation_alert_enabled',
+      false
+  );
+
+  set precipitationAlertEnabled(bool value) {
+    _configStore.edit()
+        .putBool('precipitation_alert_enabled', value)
+        .apply();
+  }
+
+  UpdateInterval get updateInterval => UpdateInterval.all[
+    _configStore.getString('update_interval', UpdateInterval.KEY_130)
+  ];
+
+  set updateInterval(UpdateInterval value) {
+    _configStore.edit()
+        .putString('update_interval', value.key)
+        .apply();
+  }
+
   DarkMode get darkMode => DarkMode.all[
     _configStore.getString('dark_mode', DarkMode.KEY_SYSTEM)
   ];
@@ -138,6 +162,17 @@ class SettingsManager {
   set darkMode(DarkMode value) {
     _configStore.edit()
         .putString('dark_mode', value.key)
+        .apply();
+  }
+
+  bool get exchangeDayNightTemperature => _configStore.getBool(
+      'exchange_day_night_temperature',
+      false
+  );
+
+  set exchangeDayNightTemperature(bool value) {
+    _configStore.edit()
+        .putBool('exchange_day_night_temperature', value)
         .apply();
   }
 
@@ -266,6 +301,16 @@ class SettingsManager {
         .apply();
   }
 
+  WidgetWeekIconMode get widgetWeekIconMode => WidgetWeekIconMode.all[
+    _configStore.getString('widget_week_icon_mode', WidgetWeekIconMode.KEY_AUTO)
+  ];
+
+  set widgetWeekIconMode(WidgetWeekIconMode value) {
+    _configStore.edit()
+        .putString('widget_week_icon_mode', value.key)
+        .apply();
+  }
+
   bool get notificationEnabled => _configStore.getBool(
       'notification_enabled',
       false,
@@ -274,6 +319,49 @@ class SettingsManager {
   set notificationEnabled(bool value) {
     _configStore.edit()
         .putBool('notification_enabled', value)
+        .apply();
+  }
+
+  NotificationStyle get notificationStyle => NotificationStyle.all[
+  _configStore.getString('notification_style', NotificationStyle.KEY_DAILY)
+  ];
+
+  set notificationStyle(NotificationStyle value) {
+    _configStore.edit()
+        .putString('notification_style', value.key)
+        .apply();
+  }
+
+  bool get temperatureNotificationIcon => _configStore.getBool(
+    'temperature_notification_icon',
+    false,
+  );
+
+  set temperatureNotificationIcon(bool value) {
+    _configStore.edit()
+        .putBool('temperature_notification_icon', value)
+        .apply();
+  }
+
+  bool get notificationCanBeCleared => _configStore.getBool(
+    'notification_can_be_cleared',
+    false,
+  );
+
+  set notificationCanBeCleared(bool value) {
+    _configStore.edit()
+        .putBool('notification_can_be_cleared', value)
+        .apply();
+  }
+
+  bool get notificationHideBigView => _configStore.getBool(
+    'notification_hide_big_view',
+    false,
+  );
+
+  set notificationHideBigView(bool value) {
+    _configStore.edit()
+        .putBool('notification_hide_big_view', value)
         .apply();
   }
 }
