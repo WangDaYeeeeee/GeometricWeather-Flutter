@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.util.Pair;
 
 import androidx.core.app.ActivityCompat;
 
@@ -23,6 +24,7 @@ public class LocationPlugin {
     private static final String CHANNEL_NAME = "com.wangdaye.geometricweather/location";
     
     private static final String METHOD_REQUEST_LOCATION = "requestLocation";
+    private static final String METHOD_GET_LAST_KNOWN_LOCATION = "getLastKnownLocation";
     private static final String METHOD_CANCEL_REQUEST = "cancelRequest";
     private static final String METHOD_IS_LOCATION_SERVICE_ENABLED = "isLocationServiceEnabled";
     private static final String METHOD_CHECK_PERMISSIONS = "checkPermissions";
@@ -48,16 +50,31 @@ public class LocationPlugin {
         ).setMethodCallHandler((methodCall, result) -> {
             switch (methodCall.method) {
                 case METHOD_REQUEST_LOCATION:
-                    Integer timeOutMillis = methodCall.argument("timeOutMillis");
                     Boolean inBackground = methodCall.argument("inBackground");
 
                     cancel();
                     requestLocation(
                             applicationContext,
-                            timeOutMillis == null ? 10 : timeOutMillis,
                             inBackground != null && inBackground,
                             result
                     );
+                    break;
+
+                case METHOD_GET_LAST_KNOWN_LOCATION:
+                    Pair<Double, Double> r = sLocationService.getLastKnownLocation();
+                    if (r == null) {
+                        result.error(
+                                ERROR_CODE_TIMEOUT,
+                                "Location time out.",
+                                null
+                        );
+                        return;
+                    }
+
+                    final Map<String, Double> map = new HashMap<>();
+                    map.put("latitude", r.first);
+                    map.put("longitude", r.second);
+                    result.success(map);
                     break;
 
                 case METHOD_CANCEL_REQUEST:
@@ -93,7 +110,6 @@ public class LocationPlugin {
     }
 
     public static void requestLocation(Context context,
-                                       long timeOutMillis,
                                        boolean inBackground,
                                        MethodChannel.Result result) {
         PermissionStatus status = checkPermissions(context);
@@ -115,8 +131,7 @@ public class LocationPlugin {
         }
 
         sLocationService.requestLocation(
-                context,
-                timeOutMillis,
+                context, 
                 r -> {
                     if (r == null) {
                         result.error(

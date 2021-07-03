@@ -1,13 +1,11 @@
 package wangdaye.com.geometricweather_flutter.location;
 
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Pair;
@@ -17,16 +15,13 @@ import androidx.annotation.Nullable;
 
 @SuppressLint("MissingPermission")
 public class NativeLocator {
-
-    private final Handler mTimer;
-
+    
     @Nullable private LocationManager mLocationManager;
 
     @Nullable private LocationListener mNetworkListener;
     @Nullable private LocationListener mGPSListener;
 
     @Nullable private LocationCallback mLocationCallback;
-    @Nullable private Location mLastKnownLocation;
 
     public interface LocationCallback {
         void onCompleted(@Nullable Pair<Double, Double> geoPosition);
@@ -59,17 +54,13 @@ public class NativeLocator {
     }
 
     public NativeLocator() {
-        mTimer = new Handler(Looper.getMainLooper());
-
         mNetworkListener = null;
         mGPSListener = null;
 
-        mLocationCallback = null;
-        mLastKnownLocation = null;
+        mLocationCallback = null; 
     }
 
     public void requestLocation(Context context,
-                                long timeOutMillis, 
                                 @NonNull LocationCallback callback){
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -84,7 +75,6 @@ public class NativeLocator {
         mGPSListener = new LocationListener();
 
         mLocationCallback = callback;
-        mLastKnownLocation = getLastKnownLocation();
 
         if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
@@ -94,34 +84,35 @@ public class NativeLocator {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     0, 0, mGPSListener, Looper.getMainLooper());
         }
-
-        mTimer.postDelayed(() -> {
-            stopLocationUpdates();
-            handleLocation(mLastKnownLocation);
-        }, timeOutMillis);
     }
 
     @Nullable
-    private Location getLastKnownLocation() {
+    public Pair<Double, Double> getLastKnownLocation() {
         if (mLocationManager == null) {
             return null;
         }
 
         Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location != null) {
-            return location;
+            return new Pair<>(location.getLatitude(), location.getLongitude());
         }
+        
         location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         if (location != null) {
-            return location;
+            return new Pair<>(location.getLatitude(), location.getLongitude());
         }
-        return mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+        location = mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+        if (location != null) {
+            return new Pair<>(location.getLatitude(), location.getLongitude());
+        }
+        
+        return null;
     }
 
     public void cancel() {
         stopLocationUpdates();
         mLocationCallback = null;
-        mTimer.removeCallbacksAndMessages(null);
     }
 
     private void stopLocationUpdates() {
