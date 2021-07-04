@@ -6,7 +6,6 @@ import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/appearance.dart';
 import 'package:geometricweather_flutter/app/common/ui/anim_list/main_anim_list.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
-import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/main/items/_time_bar.dart';
 import 'package:geometricweather_flutter/app/main/items/air.dart';
 import 'package:geometricweather_flutter/app/main/items/allergen.dart';
@@ -91,6 +90,7 @@ Widget getCard(Widget child) {
         )
     ),
     margin: EdgeInsets.fromLTRB(littleMargin, 0.0, littleMargin, littleMargin),
+    clipBehavior: Clip.hardEdge,
   );
 }
 
@@ -123,37 +123,34 @@ Widget getList(
     }
   }
 
-  return getTabletAdaptiveWidthBox(
-    context,
-    MainAnimatedListView(
-      key: listKey,
-      builder: (BuildContext context, int index, bool initVisible) {
-        if (index != 0) {
-          return _generatorMap[cardDisplayList[index - 1].key](
-              context,
-              index,
-              initVisible,
-              weatherViewKey,
-              viewModel,
-              weather,
-              timezone
-          );
-        }
-        return header(
+  return MainAnimatedListView(
+    key: listKey,
+    builder: (BuildContext context, int index, bool initVisible) {
+      if (index != 0) {
+        return _generatorMap[cardDisplayList[index - 1].key](
             context,
-            0,
+            index,
             initVisible,
             weatherViewKey,
             viewModel,
             weather,
             timezone
         );
-      },
-      itemCount: itemCount,
-      scrollController: scrollController,
-      baseItemAnimationDuration: 500,
-      initItemOffsetY: 40.0,
-      initItemScale: 1.05,
-    )
+      }
+      return header(
+          context,
+          0,
+          initVisible,
+          weatherViewKey,
+          viewModel,
+          weather,
+          timezone
+      );
+    },
+    itemCount: itemCount,
+    scrollController: scrollController,
+    baseItemAnimationDuration: 500,
+    initItemOffsetY: 40.0,
+    initItemScale: 1.05,
   );
 }

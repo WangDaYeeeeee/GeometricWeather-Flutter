@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geometricweather_flutter/app/common/utils/display.dart';
 
 const FLOW_ANIMATION_DURATION = 500;
 
@@ -76,17 +77,10 @@ class _MainAnimatedListViewState extends State<MainAnimatedListView> {
   }
 
   @override
-  void didUpdateWidget(covariant MainAnimatedListView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    setState(() {
-      // re-execute those uncompleted item animations.
-      lastAnimateIndex -= animationMap.length;
-      animationMap.clear();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    lastAnimateIndex -= animationMap.length;
+    animationMap.clear();
+
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       widget.scrollController.position.didEndScroll();
     });
@@ -104,15 +98,20 @@ class _MainAnimatedListViewState extends State<MainAnimatedListView> {
       }
 
       widgets.add(
-          _AnimatedItem(
-            key,
-            animationMap,
-            itemWrapper.item,
-            i,
-            initVisible,
-            widget.baseItemAnimationDuration,
-            widget.initItemOffsetY,
-            widget.initItemScale,
+          Center(
+            child: getTabletAdaptiveWidthBox(
+                context,
+                _AnimatedItem(
+                  key,
+                  animationMap,
+                  itemWrapper.item,
+                  i,
+                  initVisible,
+                  widget.baseItemAnimationDuration,
+                  widget.initItemOffsetY,
+                  widget.initItemScale,
+                )
+            ),
           )
       );
     }
@@ -147,6 +146,7 @@ class _MainAnimatedListViewState extends State<MainAnimatedListView> {
       }
 
       final boundFirst = oldParentData.layoutOffset;
+      final lastIndexBeforeUpdate = lastAnimateIndex;
       if ((boundFirst ?? 0.0) <= notification.metrics.pixels
           + notification.metrics.viewportDimension) {
         lastAnimateIndex = max(lastAnimateIndex, oldParentData.index ?? -1);

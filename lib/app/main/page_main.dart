@@ -286,7 +286,12 @@ class _MainPageState extends GeoState<MainPage>
             headerHeight: _headerHeight,
             lightTheme: _lightTheme,
             settingsButtonCallback: () {
-              Navigator.pushNamed(context, Routers.ROUTER_ID_SETTINGS).then((_) {
+              Navigator.pushNamed(
+                  context,
+                  Routers.ROUTER_ID_SETTINGS
+              ).then((value) async {
+                await Future.delayed(Duration(milliseconds: 300));
+              }).then((value) {
                 // force update ui.
                 _resetUIUpdateFlag();
                 initHolder.viewModel.offsetLocation(0);
@@ -312,6 +317,8 @@ class _MainPageState extends GeoState<MainPage>
             child: Positioned(
               bottom: 0,
               child: SafeArea(
+                left: false,
+                right: false,
                 child: getTabletAdaptiveWidthBox(
                   context,
                   InkPageIndicator(

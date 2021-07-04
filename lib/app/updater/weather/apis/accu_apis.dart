@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
 import 'package:geometricweather_flutter/app/common/utils/logger.dart';
 import 'package:geometricweather_flutter/app/updater/weather/converters/accu_converter.dart';
+import 'package:geometricweather_flutter/app/updater/weather/helper.dart';
 import 'package:geometricweather_flutter/app/updater/weather/json/accu/air_quality.dart';
 import 'package:geometricweather_flutter/app/updater/weather/json/accu/alert.dart';
 import 'package:geometricweather_flutter/app/updater/weather/json/accu/current.dart';
@@ -14,13 +15,18 @@ import 'package:geometricweather_flutter/app/updater/weather/json/accu/location.
 import '../properties.dart';
 import '_basic.dart';
 
+const int CONNECT_TIMEOUT_MILLIS = 20000;
+const int RECEIVE_TIMEOUT_MILLIS = 20000;
+
 Dio _dio;
 
 Dio ensureDio() {
   if (_dio == null) {
     _dio = Dio(
       BaseOptions(
-        baseUrl: ACCU_WEATHER_BASE_URL
+        baseUrl: ACCU_WEATHER_BASE_URL,
+        connectTimeout: CONNECT_TIMEOUT_MILLIS,
+        receiveTimeout: RECEIVE_TIMEOUT_MILLIS,
       )
     );
     _dio.interceptors.add(

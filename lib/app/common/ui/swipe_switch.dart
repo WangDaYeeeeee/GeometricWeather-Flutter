@@ -20,6 +20,7 @@ const SWIPE_RATIO = 0.4;
 enum _DragState {
   idle,
   dragging,
+  nestedDragging,
 }
 
 class SwipeSwitchLayout extends StatefulWidget {
@@ -47,6 +48,7 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
     with TickerProviderStateMixin {
 
   double offsetX;
+  double nestedOffsetX;
   double progressX;
   double triggerDistanceX = 100;
 
@@ -122,7 +124,7 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
                 }
               } else if (notification is OverscrollNotification) {
                 if (_shouldStartDragging(notification)) {
-                  _onDragStart();
+                  _onDragStart(nestedScrolling: true);
                 }
 
                 if (state == _DragState.dragging) {
@@ -170,11 +172,12 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
         && (notification.metrics.atEdge || notification.metrics.outOfRange);
   }
 
-  void _onDragStart() {
+  void _onDragStart({bool nestedScrolling = false}) {
     cancelResetAnimation();
 
-    state = _DragState.dragging;
+    state = nestedScrolling ? _DragState.nestedDragging : _DragState.dragging;
     setState(() {
+      nestedOffsetX = 0;
       // do not reset offsetX as 0, we might just stop a reset animation.
       setOffset(offsetX);
     });
@@ -182,6 +185,15 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
 
   void _onDragUpdate(double dx) {
     setState(() {
+      if (state == _DragState.nestedDragging) {
+        dx *= 0.5;
+
+        nestedOffsetX += dx;
+        if (nestedOffsetX > triggerDistanceX * 0.3) {
+          state = _DragState.dragging;
+        }
+      }
+
       setOffset(offsetX + dx);
 
       if (widget.onSwipe != null) {

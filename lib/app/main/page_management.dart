@@ -297,9 +297,6 @@ class _ManagementBody extends StatelessWidget {
           );
         },
         reorderCallback: (int oldIndex, int newIndex) {
-          if(oldIndex < newIndex) {
-            newIndex -= 1;
-          }
           viewModel.moveLocation(oldIndex, newIndex);
         },
         padding: EdgeInsets.only(
@@ -312,7 +309,7 @@ class _ManagementBody extends StatelessWidget {
       );
 
       return Stack(children: [
-        getTabletAdaptiveWidthBox(context, list),
+        list,
         Visibility(
           visible: !_containsCurrentLocation(listResource.value.dataList),
           child: Positioned(
@@ -332,7 +329,14 @@ class _ManagementBody extends StatelessWidget {
                   ),
                   backgroundColor: ThemeColors.colorAlert,
                   onPressed: () {
-
+                    Location.buildLocal().then((value) {
+                      bool succeed = viewModel.addLocation(value);
+                      snackBarKey.currentState?.show(
+                          succeed
+                              ? S.of(context).feedback_collect_succeed
+                              : S.of(context).feedback_collect_failed
+                      );
+                    });
                   },
                 ),
               ),
@@ -475,19 +479,19 @@ class _ManagementBody extends StatelessWidget {
       );
     }
 
-    return PlatformInkWell(
-      child: Card(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.zero)
-        ),
-        child: Stack(children: stackChildren),
-        color: selected ? theme.dividerColor : theme.cardColor,
-        margin: EdgeInsets.zero,
+    return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.zero)
       ),
-      onTap: () {
-        viewModel.setLocation(location.formattedId);
-        onItemClickedCallback?.call();
-      },
+      child: PlatformInkWell(
+        child: Stack(children: stackChildren),
+        onTap: () {
+          viewModel.setLocation(location.formattedId);
+          onItemClickedCallback?.call();
+        },
+      ),
+      color: selected ? theme.dividerColor : theme.cardColor,
+      margin: EdgeInsets.zero,
     );
   }
 

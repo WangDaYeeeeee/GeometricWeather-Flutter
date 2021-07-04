@@ -93,6 +93,7 @@ ItemGenerator hourly = (
                     minTemperature ?? 0
                 );
               },
+              padding: EdgeInsets.zero,
             ),
             littleMargin,
           ),

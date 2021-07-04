@@ -373,7 +373,13 @@ class MainViewModel extends ViewModel {
 
   bool get updating => _updating;
 
-  void addLocation(Location location, [int? position]) {
+  bool addLocation(Location location, [int? position]) {
+    for (Location l in _totalList) {
+      if (l == location) {
+        return false;
+      }
+    }
+
     position = position ?? _totalList.length;
 
     List<Location> totalList = List.from(_totalList);
@@ -396,9 +402,15 @@ class MainViewModel extends ViewModel {
     } else {
       _repository.writeLocationListWithIndex(List.unmodifiable(totalList), position);
     }
+
+    return true;
   }
 
   void moveLocation(int from, int to) {
+    if (from == to) {
+      return;
+    }
+
     List<Location> totalList = List.from(_totalList);
     totalList.insert(to, totalList.removeAt(from));
 

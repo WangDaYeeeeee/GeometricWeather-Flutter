@@ -95,6 +95,7 @@ ItemGenerator daily = (
                     minTemperature ?? 0
                 );
               },
+              padding: EdgeInsets.zero,
             ),
             littleMargin,
           ),

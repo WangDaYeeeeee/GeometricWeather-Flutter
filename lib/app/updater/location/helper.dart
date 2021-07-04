@@ -155,21 +155,31 @@ class LocationHelper {
             await Future.delayed(Duration(seconds: TIMEOUT_SECONDS));
 
             if (locating) {
-              locating = false;
-              locationChannel.invokeMethod("cancelRequest");
+              try {
+                locating = false;
+                locationChannel.invokeMethod("cancelRequest");
 
-              final result = await locationChannel.invokeMethod(
-                  'getLastKnownLocation'
-              ) as Map;
-              testLog('Got last known location.');
-              return UpdateResult(
-                  location.copyOf(
-                    latitude: result['latitude'],
-                    longitude: result['longitude'],
-                  ),
-                  true,
-                  UpdateStatus.LOCATOR_FAILED
-              );
+                final result = await locationChannel.invokeMethod(
+                    'getLastKnownLocation'
+                ) as Map;
+                testLog('Got last known location.');
+                return UpdateResult(
+                    location.copyOf(
+                      latitude: result['latitude'],
+                      longitude: result['longitude'],
+                    ),
+                    true,
+                    UpdateStatus.LOCATOR_FAILED
+                );
+              } on Exception catch (e, stacktrace) {
+                testLog(e.toString());
+                testLog(stacktrace.toString());
+
+                return _buildFailedResult(
+                  location,
+                  UpdateStatus.LOCATOR_FAILED,
+                );
+              }
             }
 
             return _buildFailedResult(

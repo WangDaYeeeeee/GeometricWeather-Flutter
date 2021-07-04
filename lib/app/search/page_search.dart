@@ -9,6 +9,8 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/mvvm.dart';
 import 'package:geometricweather_flutter/app/common/basic/widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/anim_list/slide_anim_list.dart';
+import 'package:geometricweather_flutter/app/common/ui/heros/durations.dart';
+import 'package:geometricweather_flutter/app/common/ui/heros/tweens.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/scaffold.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
@@ -50,7 +52,7 @@ class _SearchPageState extends GeoState<SearchPage> {
 
     if (Platform.isAndroid) {
       _focusNode = FocusNode();
-      _timer = Timer(Duration(milliseconds: 500), () {
+      _timer = Timer(Duration(milliseconds: SEARCH_BAR_HERO_DURATION + 200), () {
         _focusNode?.requestFocus();
       });
     }
@@ -80,7 +82,7 @@ class _SearchPageState extends GeoState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    Widget page = MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: _viewModel.loading),
       ],
@@ -89,10 +91,7 @@ class _SearchPageState extends GeoState<SearchPage> {
           _viewModel.search(value);
         }),
         body: Stack(children: [
-          Hero(
-            tag: HERO_TAG_SEARCH_BAR,
-            child: Container(color: Theme.of(context).backgroundColor),
-          ),
+
           GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
@@ -100,117 +99,125 @@ class _SearchPageState extends GeoState<SearchPage> {
             },
             child: SnackBarContainer(
               key: _snackBarContainerKey,
-              child: getTabletAdaptiveWidthBox(
-                context,
-                Consumer<LiveData<bool>>(builder: (_, loading, __) {
-                  if (_loading != loading.value) {
-                    _loading = loading.value;
-                    _listKey = UniqueKey();
-                  }
+              child: Consumer<LiveData<bool>>(builder: (_, loading, __) {
+                if (_loading != loading.value) {
+                  _loading = loading.value;
+                  _listKey = UniqueKey();
+                }
 
-                  if (loading.value) {
-                    return Center(
-                      child: PlatformCircularProgressIndicator(),
+                if (loading.value) {
+                  return Center(
+                    child: PlatformCircularProgressIndicator(),
+                  );
+                }
+
+                if (!isEmptyString(_viewModel.query)
+                    && _query != _viewModel.query
+                    && _viewModel.results.value.dataList.isEmpty) {
+                  _query = _viewModel.query;
+                  Timer.run(() {
+                    _snackBarContainerKey.currentState?.show(
+                        S.of(context).feedback_search_nothing
                     );
-                  }
+                  });
+                }
 
-                  if (!isEmptyString(_viewModel.query)
-                      && _query != _viewModel.query
-                      && _viewModel.results.value.dataList.isEmpty) {
-                    _query = _viewModel.query;
-                    Timer.run(() {
-                      _snackBarContainerKey.currentState?.show(
-                          S.of(context).feedback_search_nothing
-                      );
-                    });
-                  }
+                return SlideAnimatedListView(
+                  key: _listKey,
+                  itemCount: _viewModel.results.value.dataList.length,
+                  builder: (BuildContext context, int index) {
 
-                  return SlideAnimatedListView(
-                    key: _listKey,
-                    itemCount: _viewModel.results.value.dataList.length,
-                    builder: (BuildContext context, int index) {
+                    final location = _viewModel.results.value.dataList[index];
+                    final theme = Theme.of(context);
 
-                      final location = _viewModel.results.value.dataList[index];
-                      final theme = Theme.of(context);
+                    List<Widget> columnChildren = [];
 
-                      List<Widget> columnChildren = [];
-
-                      // title.
-                      columnChildren.add(
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: normalMargin,
-                              left: normalMargin,
-                              right: normalMargin,
-                            ),
-                            child: Text(getLocationName(context, location),
-                                style: theme.textTheme.subtitle2
-                            ),
-                          )
-                      );
-
-                      // location.
-                      columnChildren.add(
-                          Padding(
-                            padding: EdgeInsets.only(
-                              left: normalMargin,
-                              top: normalMargin,
-                              right: normalMargin,
-                            ),
-                            child: Text(location.toString(),
-                                style: theme.textTheme.caption.copyWith(
-                                  color: theme.textTheme.bodyText2.color,
-                                )
-                            ),
-                          )
-                      );
-
-                      // powered by.
-                      columnChildren.add(
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: 2.0,
-                              left: normalMargin,
-                              right: normalMargin,
-                              bottom: normalMargin,
-                            ),
-                            child: Text('Powered by ${location.weatherSource.url}',
-                                style: theme.textTheme.overline?.copyWith(
-                                  color: location.weatherSource.color,
-                                )
-                            ),
-                          )
-                      );
-
-                      // divider.
-                      columnChildren.add(Divider(height: 1.0));
-
-                      return PlatformInkWell(
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.zero)
+                    // title.
+                    columnChildren.add(
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: normalMargin,
+                            left: normalMargin,
+                            right: normalMargin,
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: columnChildren,
+                          child: Text(getLocationName(context, location),
+                              style: theme.textTheme.subtitle2
                           ),
-                          margin: EdgeInsets.zero,
+                        )
+                    );
+
+                    // location.
+                    columnChildren.add(
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: normalMargin,
+                            top: normalMargin,
+                            right: normalMargin,
+                          ),
+                          child: Text(location.toString(),
+                              style: theme.textTheme.caption.copyWith(
+                                color: theme.textTheme.bodyText2.color,
+                              )
+                          ),
+                        )
+                    );
+
+                    // powered by.
+                    columnChildren.add(
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: 2.0,
+                            left: normalMargin,
+                            right: normalMargin,
+                            bottom: normalMargin,
+                          ),
+                          child: Text('Powered by ${location.weatherSource.url}',
+                              style: theme.textTheme.overline?.copyWith(
+                                color: location.weatherSource.color,
+                              )
+                          ),
+                        )
+                    );
+
+                    // divider.
+                    columnChildren.add(Divider(height: 1.0));
+
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.zero)
+                      ),
+                      child: PlatformInkWell(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: columnChildren,
                         ),
                         onTap: () {
                           Navigator.pop(context, location);
                         },
-                      );
-                    },
-                    baseItemAnimationDuration: _ITEM_ANIM_DURATION,
-                    initItemOffsetX: Platform.isIOS ? 128.0 : 0.0,
-                    initItemOffsetY: Platform.isIOS ? 0.0 : 128.0,
-                  );
-                }),
-              ),
+                      ),
+                      margin: EdgeInsets.zero,
+                    );
+                  },
+                  baseItemAnimationDuration: _ITEM_ANIM_DURATION,
+                  initItemOffsetX: Platform.isIOS ? 128.0 : 0.0,
+                  initItemOffsetY: Platform.isIOS ? 0.0 : 128.0,
+                );
+              }),
             ),
           ),
         ]),
       ),
     );
+
+    return Platform.isAndroid ? Hero(
+      tag: HERO_TAG_SEARCH_BAR,
+      child: page,
+      createRectTween: (Rect begin, Rect end) {
+        return SearchBarTween(
+          begin: begin,
+          end: end,
+        );
+      },
+    ) : page;
   }
 }

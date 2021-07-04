@@ -205,12 +205,12 @@ Future<weather.Weather> toWeather(
                 : weather.AirQuality(
                     getAqiQualityWithoutContext(aqiResult.index),
                     aqiResult.index,
-                    aqiResult.particulateMatter25.toDouble(),
-                    aqiResult.particulateMatter10.toDouble(),
-                    aqiResult.sulfurDioxide.toDouble(),
-                    aqiResult.nitrogenDioxide.toDouble(),
-                    aqiResult.ozone.toDouble(),
-                    aqiResult.carbonMonoxide.toDouble()
+                    aqiResult.particulateMatter25?.toDouble(),
+                    aqiResult.particulateMatter10?.toDouble(),
+                    aqiResult.sulfurDioxide?.toDouble(),
+                    aqiResult.nitrogenDioxide?.toDouble(),
+                    aqiResult.ozone?.toDouble(),
+                    aqiResult.carbonMonoxide?.toDouble()
                 ),
             currentResult.relativeHumidity.toDouble(),
             currentResult.pressure.metric.value.toDouble(),

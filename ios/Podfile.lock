@@ -6,11 +6,11 @@ PODS:
     - Flutter
   - flutter_sensors (0.0.1):
     - Flutter
+  - flutter_vibrate (0.0.1):
+    - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
-  - geolocator (6.2.0):
-    - Flutter
   - native_device_orientation (0.0.1):
     - Flutter
   - package_info_plus (0.4.5):
@@ -28,7 +28,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_native_timezone (from `.symlinks/plugins/flutter_native_timezone/ios`)
   - flutter_sensors (from `.symlinks/plugins/flutter_sensors/ios`)
-  - geolocator (from `.symlinks/plugins/geolocator/ios`)
+  - flutter_vibrate (from `.symlinks/plugins/flutter_vibrate/ios`)
   - native_device_orientation (from `.symlinks/plugins/native_device_orientation/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
@@ -48,8 +48,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_native_timezone/ios"
   flutter_sensors:
     :path: ".symlinks/plugins/flutter_sensors/ios"
-  geolocator:
-    :path: ".symlinks/plugins/geolocator/ios"
+  flutter_vibrate:
+    :path: ".symlinks/plugins/flutter_vibrate/ios"
   native_device_orientation:
     :path: ".symlinks/plugins/native_device_orientation/ios"
   package_info_plus:
@@ -66,8 +66,8 @@ SPEC CHECKSUMS:
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   flutter_native_timezone: 5f05b2de06c9776b4cc70e1839f03de178394d22
   flutter_sensors: dc6eed3291e7724bf8f4138d7d14c4071b42bd29
+  flutter_vibrate: c0ca4ac994ff97c3f147f69865458bbc0cc3508b
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
-  geolocator: f5e3de65e241caba7ce3e8a618803387bda73384
   native_device_orientation: 3b4cfc9565a7b879cc4fde282b3e27745e852d0d
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d

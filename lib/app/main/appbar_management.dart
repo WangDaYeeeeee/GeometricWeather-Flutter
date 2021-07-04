@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
+import 'package:geometricweather_flutter/app/common/ui/heros/durations.dart';
+import 'package:geometricweather_flutter/app/common/ui/heros/tweens.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/app_bar.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
@@ -97,7 +99,7 @@ Widget getManagementAppBar(
   final appBarHeight = getAppBarHeight(context);
   final statusBarHeight = MediaQuery.of(context).padding.top;
 
-  return GeoPlatformAppBar(context,
+  final appBar = GeoPlatformAppBar(context,
     title: SizedBox(
       height: appBarHeight - statusBarHeight,
       child: Padding(
@@ -105,34 +107,71 @@ Widget getManagementAppBar(
           top: littleMargin,
           bottom: littleMargin,
         ),
-        child: Hero(
-          tag: HERO_TAG_SEARCH_BAR,
-          child: Card(
-            child: PlatformInkWell(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: normalMargin,
-                      right: normalMargin,
-                    ),
-                    child: Icon(Icons.search,
-                      color: Theme.of(context).textTheme.caption?.color,
-                    ),
+        child: Card(
+          child: PlatformInkWell(
+            child: Hero(
+              tag: HERO_TAG_SEARCH_BAR,
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(
+                    Radius.circular(
+                        (appBarHeight - statusBarHeight - 2 * littleMargin) / 2.0
+                    )
+                ),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).dividerColor,
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                      right: normalMargin,
-                    ),
-                    child: Text(S.of(context).feedback_search_location,
-                      softWrap: false,
-                      style: Theme.of(context).textTheme.caption,
-                    ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: normalMargin,
+                          right: normalMargin,
+                        ),
+                        child: Icon(Icons.search,
+                          color: Theme.of(context).textTheme.caption?.color,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          right: normalMargin,
+                        ),
+                        child: Text(S.of(context).feedback_search_location,
+                          softWrap: false,
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-              onTap: () {
+              createRectTween: (Rect begin, Rect end) {
+                return SearchBarTween(
+                  begin: begin,
+                  end: end,
+                );
+              },
+            ),
+            onTap: () {
+              if (Platform.isAndroid) {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    transitionDuration: Duration(
+                      milliseconds: SEARCH_BAR_HERO_DURATION
+                    ),
+                    reverseTransitionDuration: Duration(
+                      milliseconds: SEARCH_BAR_HERO_DURATION
+                    ),
+                    pageBuilder: (_, __, ___) => SearchPage(),
+                  ),
+                ).then((value) {
+                  if (value != null && value is Location) {
+                    _onAddLocation(context, viewModel, snackBarKey, value);
+                  }
+                });
+              } else {
                 Navigator.pushNamed(
                     context,
                     Routers.ROUTER_ID_SEARCH
@@ -141,23 +180,30 @@ Widget getManagementAppBar(
                     _onAddLocation(context, viewModel, snackBarKey, value);
                   }
                 });
-              },
-            ),
-            color: Theme.of(context).dividerColor,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                    Radius.circular(
-                        (appBarHeight - statusBarHeight - 2 * littleMargin) / 2.0
-                    )
-                )
-            ),
-            clipBehavior: Clip.hardEdge,
-            margin: EdgeInsets.all(0.0),
+              }
+            },
           ),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                  Radius.circular(
+                      (appBarHeight - statusBarHeight - 2 * littleMargin) / 2.0
+                  )
+              )
+          ),
+          clipBehavior: Clip.hardEdge,
+          margin: EdgeInsets.all(0.0),
         ),
       ),
     ),
     automaticallyImplyLeading: false,
+  );
+
+  if (!fragment) {
+    return appBar;
+  }
+  return SizedBox(
+    height: appBarHeight,
+    child: appBar,
   );
 }
 
@@ -166,7 +212,10 @@ void _onAddLocation(
     MainViewModel viewModel,
     GlobalKey<SnackBarContainerState> snackBarKey,
     Location location) {
-  viewModel.addLocation(location);
-
-  snackBarKey.currentState?.show(S.of(context).feedback_collect_succeed);
+  bool succeed = viewModel.addLocation(location);
+  snackBarKey.currentState?.show(
+      succeed
+          ? S.of(context).feedback_collect_succeed
+          : S.of(context).feedback_collect_failed
+  );
 }

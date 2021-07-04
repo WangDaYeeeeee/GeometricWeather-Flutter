@@ -150,8 +150,8 @@ class SnackBarViewState extends State<SnackBarView>
           )
       );
       _positionAnim = Tween(
-          begin: _positionAnim?.value ?? Offset.zero,
-          end: Offset(0.0, 100.0),
+        begin: _positionAnim?.value ?? Offset.zero,
+        end: Offset(0.0, 100.0),
       ).animate(
           CurvedAnimation(
             parent: _animController!,
@@ -187,85 +187,87 @@ class SnackBarViewState extends State<SnackBarView>
           minWidth: 268.0,
           maxWidth: 368.0,
         ),
-        child: SafeArea(
-          child: Padding(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(
-                    Platform.isIOS ? 99999999.0 : cardRadius
-                ),
-                color: theme.brightness == Brightness.light
-                    ? theme.backgroundColor.withAlpha(alpha)
-                    : theme.dividerColor.withAlpha(alpha),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(Platform.isIOS ? 15 : 30),
-                    spreadRadius: Platform.isIOS ? 8.0 : 4.0,
-                    blurRadius: 16.0,
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(
-                  top: 4.0,
-                  bottom: 4.0,
-                ),
-                child: showAction ? Flex(
-                  direction: Axis.horizontal,
-                  children: [
-                    Expanded(
-                      child: content,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: littleMargin,
-                        bottom: littleMargin,
-                        right: normalMargin,
-                      ),
-                      child: ElevatedButton(
-                        child: PlatformText(widget.model.action!),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(ThemeColors.colorAlert),
-                          foregroundColor: MaterialStateProperty.all(Colors.black),
-                          shape: Platform.isIOS ? MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(999999.0),
-                              )
-                          ) : null,
-                          elevation: Platform.isIOS
-                              ? MaterialStateProperty.all(0.0)
-                              : null,
-                        ),
-                        onPressed: () {
-                          widget.model.actionCallback?.call();
-                        },
-                      ),
-                    )
-                  ],
-                ) : content,
-              ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+                Platform.isIOS ? 99999999.0 : cardRadius
             ),
-            padding: EdgeInsets.all(normalMargin),
+            color: theme.brightness == Brightness.light
+                ? theme.backgroundColor.withAlpha(alpha)
+                : theme.dividerColor.withAlpha(alpha),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(Platform.isIOS ? 15 : 30),
+                spreadRadius: Platform.isIOS ? 8.0 : 4.0,
+                blurRadius: 16.0,
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 4.0,
+              bottom: 4.0,
+            ),
+            child: showAction ? Flex(
+              direction: Axis.horizontal,
+              children: [
+                Expanded(
+                  child: content,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: littleMargin,
+                    bottom: littleMargin,
+                    right: normalMargin,
+                  ),
+                  child: ElevatedButton(
+                    child: PlatformText(widget.model.action!),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(ThemeColors.colorAlert),
+                      foregroundColor: MaterialStateProperty.all(Colors.black),
+                      shape: Platform.isIOS ? MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(999999.0),
+                          )
+                      ) : null,
+                      elevation: Platform.isIOS
+                          ? MaterialStateProperty.all(0.0)
+                          : null,
+                    ),
+                    onPressed: () {
+                      widget.model.actionCallback?.call();
+                    },
+                  ),
+                )
+              ],
+            ) : content,
           ),
         ),
       );
     }
 
-    return AnimatedBuilder(
-        animation: _animController!,
-        child: child,
-        builder: (BuildContext context, Widget? child) {
-          return Opacity(
-            opacity: _opacityAnim?.value ?? 1.0,
-            child: Transform.translate(
-              offset: _positionAnim?.value ?? Offset.zero,
-              child: Transform.scale(
-                scale: _scaleAnim?.value ?? 1.0,
-                child: child,
-              ),
-            ),
-          );
-        }
+    return SafeArea(
+      left: false,
+      right: false,
+      child: Padding(
+        padding: EdgeInsets.all(normalMargin),
+        child: AnimatedBuilder(
+            animation: _animController!,
+            child: child,
+            builder: (BuildContext context, Widget? child) {
+              return Opacity(
+                opacity: _opacityAnim?.value ?? 1.0,
+                child: Transform.translate(
+                  offset: _positionAnim?.value ?? Offset.zero,
+                  child: Transform.scale(
+                    scale: _scaleAnim?.value ?? 1.0,
+                    child: child,
+                  ),
+                ),
+              );
+            }
+        ),
+      ),
     );
   }
 }

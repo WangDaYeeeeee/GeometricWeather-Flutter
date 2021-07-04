@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:geometricweather_flutter/app/common/utils/display.dart';
+import 'package:geometricweather_flutter/app/common/utils/interaction.dart';
 
 const FLOW_ANIMATION_DURATION = 400;
 
@@ -36,21 +38,27 @@ class SlideAnimatedListView extends StatelessWidget {
         controller: scrollController,
         itemCount: itemCount,
         itemBuilder: (BuildContext context, int index) {
-          return AnimationConfiguration.staggeredList(
-            position: index,
-            duration: Duration(milliseconds: baseItemAnimationDuration),
-            child: SlideAnimation(
-              verticalOffset: initItemOffsetY,
-              horizontalOffset: initItemOffsetX,
-              curve: Curves.easeOutCubic,
-              child: FadeInAnimation(
-                child: builder(context, index),
-                curve: Curves.easeOutCubic,
+          return Center(
+            child: getTabletAdaptiveWidthBox(
+              context,
+              AnimationConfiguration.staggeredList(
+                position: index,
+                duration: Duration(milliseconds: baseItemAnimationDuration),
+                child: SlideAnimation(
+                  verticalOffset: initItemOffsetY,
+                  horizontalOffset: initItemOffsetX,
+                  curve: Curves.easeOutCubic,
+                  child: FadeInAnimation(
+                    child: builder(context, index),
+                    curve: Curves.easeOutCubic,
+                  ),
+                ),
               ),
             ),
           );
         },
         padding: padding,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       ),
     );
   }
@@ -118,38 +126,107 @@ class DraggableSlideAnimatedListView extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           final wrapper = builder(context, index);
 
-          return Dismissible(
+          return Center(
             key: wrapper.key,
-            child: AnimationConfiguration.staggeredList(
-              position: index,
-              duration: Duration(milliseconds: baseItemAnimationDuration),
-              child: SlideAnimation(
-                verticalOffset: initItemOffsetY,
-                horizontalOffset: initItemOffsetX,
-                curve: Curves.easeOutCubic,
-                child: FadeInAnimation(
-                  child: wrapper.item,
-                  curve: Curves.easeOutCubic,
+            child: getTabletAdaptiveWidthBox(
+              context,
+              ReorderableDelayedDragStartListener(
+                child: Dismissible(
+                  key: wrapper.key,
+                  child: AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: Duration(milliseconds: baseItemAnimationDuration),
+                    child: SlideAnimation(
+                      verticalOffset: initItemOffsetY,
+                      horizontalOffset: initItemOffsetX,
+                      curve: Curves.easeOutCubic,
+                      child: FadeInAnimation(
+                        child: wrapper.item,
+                        curve: Curves.easeOutCubic,
+                      ),
+                    ),
+                  ),
+                  onDismissed: (DismissDirection direction) {
+                    dismissCallback(direction, index);
+                  },
+                  confirmDismiss: confirmCallback == null ? null : (direction) {
+                    return confirmCallback!(direction, index);
+                  },
+                  background: startBackgroundBuilder == null
+                      ? null
+                      : startBackgroundBuilder!(context, index),
+                  secondaryBackground: endBackgroundBuilder == null
+                      ? null
+                      : endBackgroundBuilder!(context, index),
+                ),
+                index: index
+              ),
+            ),
+          );
+        },
+        onReorder: (int oldIndex, int newIndex) {
+          // These two lines are workarounds for ReorderableListView problems
+          if (newIndex > itemCount) {
+            newIndex = itemCount;
+          }
+          if (oldIndex < newIndex) {
+            newIndex --;
+          }
+          if (newIndex != oldIndex) {
+            reorderCallback(oldIndex, newIndex);
+          }
+        },
+        padding: padding,
+        buildDefaultDragHandles: false,
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        proxyDecorator: (Widget child, int index, Animation<double> animation) {
+          return _HapticItem(
+            Center(
+              child: getTabletAdaptiveWidthBox(
+                context,
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(25),
+                        spreadRadius: 4.0,
+                        blurRadius: 8.0,
+                      ),
+                    ],
+                  ),
+                  child: child,
                 ),
               ),
             ),
-            onDismissed: (DismissDirection direction) {
-              dismissCallback(direction, index);
-            },
-            confirmDismiss: confirmCallback == null ? null : (direction) {
-              return confirmCallback!(direction, index);
-            },
-            background: startBackgroundBuilder == null
-                ? null
-                : startBackgroundBuilder!(context, index),
-            secondaryBackground: endBackgroundBuilder == null
-                ? null
-                : endBackgroundBuilder!(context, index),
           );
         },
-        onReorder: reorderCallback,
-        padding: padding,
       ),
     );
+  }
+}
+
+class _HapticItem extends StatefulWidget {
+
+  _HapticItem(this.child): super();
+
+  final Widget child;
+
+  @override
+  State<StatefulWidget> createState() {
+    return _HapticItemState();
+  }
+}
+
+class _HapticItemState extends State<_HapticItem> {
+
+  @override
+  void initState() {
+    super.initState();
+    haptic();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }

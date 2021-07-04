@@ -93,28 +93,3 @@ abstract class GeoState<T extends GeoStatefulWidget> extends State<T>
     }
   }
 }
-
-class InsetsCompatBodyWrapper extends StatelessWidget {
-
-  InsetsCompatBodyWrapper({
-    Key key,
-    this.body,
-  }): super(key: key);
-
-  final Widget body;
-
-  @override
-  Widget build(BuildContext context) {
-    MediaQueryData mediaQuery = MediaQuery.of(context);
-
-    // we don't show a horizontal padding for iOS devices.
-    // because an iOS device won't have a horizontal navigation bar.
-    return Platform.isIOS ? body : Padding(
-      padding: EdgeInsets.only(
-        left: mediaQuery.padding.left,
-        right: mediaQuery.padding.right,
-      ),
-      child: body,
-    ) ?? Container();
-  }
-}
