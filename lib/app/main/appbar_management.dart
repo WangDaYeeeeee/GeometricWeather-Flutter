@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -10,6 +9,7 @@ import 'package:geometricweather_flutter/app/common/ui/heros/tweens.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/app_bar.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/common/utils/router.dart';
 import 'package:geometricweather_flutter/app/main/view_models.dart';
 import 'package:geometricweather_flutter/app/search/page_search.dart';
@@ -22,7 +22,7 @@ Widget getManagementAppBar(
     GlobalKey<SnackBarContainerState> snackBarKey,
     bool fragment) {
 
-  if (Platform.isIOS) {
+  if (GeoPlatform.isCupertinoStyle) {
     if (fragment) {
       return Column(children: [
         ClipRect(
@@ -154,7 +154,7 @@ Widget getManagementAppBar(
               },
             ),
             onTap: () {
-              if (Platform.isAndroid) {
+              if (GeoPlatform.isMaterialStyle) {
                 Navigator.push(
                   context,
                   PageRouteBuilder(

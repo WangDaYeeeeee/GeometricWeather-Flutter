@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:geometricweather_flutter/app/common/ui/weather_view/material/pai
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/palette.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 
@@ -145,8 +145,8 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
   Widget _innerBuild(Gradient gradient, CustomPainter painter) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        gradient: Platform.isIOS ? gradient : null,
-        color: Platform.isIOS ? null : gradient.colors[0],
+        gradient: GeoPlatform.isCupertinoStyle ? gradient : null,
+        color: GeoPlatform.isCupertinoStyle ? null : gradient.colors[0],
       ),
       child: RepaintBoundary(
         child: CustomPaint(
@@ -188,7 +188,7 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
       _streamSubscriptions.add(value.listen((event) {
         accelerometer = event.data;
 
-        if (Platform.isIOS) {
+        if (GeoPlatform.isCupertinoStyle) {
           for (int i = 0; i < accelerometer.length; i ++) {
             accelerometer[i] *= -9.81;
           }
@@ -203,7 +203,7 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
       _streamSubscriptions.add(value.listen((event) {
         userAccelerometer = event.data;
 
-        if (Platform.isIOS) {
+        if (GeoPlatform.isCupertinoStyle) {
           for (int i = 0; i < userAccelerometer.length; i ++) {
             userAccelerometer[i] *= -9.81;
           }
@@ -359,7 +359,9 @@ class MaterialWeatherViewState extends WeatherViewState<MaterialWeatherView>
 
 abstract class MaterialWeatherPainter extends CustomPainter {
 
-  static final double _sinkDistance = Platform.isIOS ? cupertinoNavBarHeight : 0;
+  static final double _sinkDistance = GeoPlatform.isCupertinoStyle
+      ? cupertinoNavBarHeight
+      : 0;
   get sinkDistance => _sinkDistance;
 
   MaterialWeatherPainter(this.repaint): super(repaint: repaint);

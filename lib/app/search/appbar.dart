@@ -1,10 +1,10 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/app_bar.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 
@@ -17,7 +17,7 @@ Widget getAppBar(
   final statusBarHeight = MediaQuery.of(context).padding.top;
 
   return GeoPlatformAppBar(context,
-    leading: Platform.isAndroid ? PlatformIconButton(
+    leading: GeoPlatform.isMaterialStyle ? PlatformIconButton(
       materialIcon: Icon(Icons.arrow_back,
         color: Theme.of(context).brightness == Brightness.light
             ? Colors.black
@@ -36,10 +36,10 @@ Widget getAppBar(
       height: appBarHeight - statusBarHeight,
       child: Padding(
         padding: EdgeInsets.only(
-          top: Platform.isAndroid ? 3.0 : 0.0
+          top: GeoPlatform.isMaterialStyle ? 3.0 : 0.0
         ),
         child: PlatformTextField(
-          autofocus: Platform.isIOS,
+          autofocus: GeoPlatform.isCupertinoStyle,
           focusNode: focusNode,
           hintText: S.of(context).feedback_search_location,
           textInputAction: TextInputAction.search,
@@ -55,7 +55,7 @@ Widget getAppBar(
         ),
       ),
     ),
-    backgroundColor: Platform.isIOS
+    backgroundColor: GeoPlatform.isCupertinoStyle
         ? getCupertinoAppBarBackground(context)
         : Theme.of(context).dividerColor,
   );

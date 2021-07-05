@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
 import 'package:geometricweather_flutter/app/common/utils/logger.dart';
 import 'package:geometricweather_flutter/app/updater/weather/converters/accu_converter.dart';
-import 'package:geometricweather_flutter/app/updater/weather/helper.dart';
 import 'package:geometricweather_flutter/app/updater/weather/json/accu/air_quality.dart';
 import 'package:geometricweather_flutter/app/updater/weather/json/accu/alert.dart';
 import 'package:geometricweather_flutter/app/updater/weather/json/accu/current.dart';

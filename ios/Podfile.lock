@@ -1,6 +1,4 @@
 PODS:
-  - device_info_plus (0.0.1):
-    - Flutter
   - Flutter (1.0.0)
   - flutter_native_timezone (0.0.1):
     - Flutter
@@ -24,7 +22,6 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - flutter_native_timezone (from `.symlinks/plugins/flutter_native_timezone/ios`)
   - flutter_sensors (from `.symlinks/plugins/flutter_sensors/ios`)
@@ -40,8 +37,6 @@ SPEC REPOS:
     - FMDB
 
 EXTERNAL SOURCES:
-  device_info_plus:
-    :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
   flutter_native_timezone:
@@ -62,7 +57,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher/ios"
 
 SPEC CHECKSUMS:
-  device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   flutter_native_timezone: 5f05b2de06c9776b4cc70e1839f03de178394d22
   flutter_sensors: dc6eed3291e7724bf8f4138d7d14c4071b42bd29

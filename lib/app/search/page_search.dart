@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +14,7 @@ import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/scaffold.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
 import 'package:geometricweather_flutter/app/search/appbar.dart';
 import 'package:geometricweather_flutter/app/search/view_model.dart';
@@ -50,7 +50,7 @@ class _SearchPageState extends GeoState<SearchPage> {
   void initState() {
     super.initState();
 
-    if (Platform.isAndroid) {
+    if (GeoPlatform.isMaterialStyle) {
       _focusNode = FocusNode();
       _timer = Timer(Duration(milliseconds: SEARCH_BAR_HERO_DURATION + 200), () {
         _focusNode?.requestFocus();
@@ -70,7 +70,7 @@ class _SearchPageState extends GeoState<SearchPage> {
 
   @override
   void setSystemBarStyle() {
-    if (Platform.isAndroid) {
+    if (GeoPlatform.isMaterialStyle) {
       SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(
             statusBarColor: Colors.black.withAlpha(androidStatusBarMaskAlpha),
@@ -199,8 +199,8 @@ class _SearchPageState extends GeoState<SearchPage> {
                     );
                   },
                   baseItemAnimationDuration: _ITEM_ANIM_DURATION,
-                  initItemOffsetX: Platform.isIOS ? 128.0 : 0.0,
-                  initItemOffsetY: Platform.isIOS ? 0.0 : 128.0,
+                  initItemOffsetX: GeoPlatform.isCupertinoStyle ? 128.0 : 0.0,
+                  initItemOffsetY: GeoPlatform.isCupertinoStyle ? 0.0 : 128.0,
                 );
               }),
             ),
@@ -209,7 +209,7 @@ class _SearchPageState extends GeoState<SearchPage> {
       ),
     );
 
-    return Platform.isAndroid ? Hero(
+    return GeoPlatform.isMaterialStyle ? Hero(
       tag: HERO_TAG_SEARCH_BAR,
       child: page,
       createRectTween: (Rect begin, Rect end) {

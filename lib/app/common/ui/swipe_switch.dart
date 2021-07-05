@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:geometricweather_flutter/app/common/ui/size_changed_notifier.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 
 ///  progress:
 ///   0: reset position.
@@ -18,9 +19,14 @@ const RESET_ANIMATION_DURATION = 800;
 const SWIPE_RATIO = 0.4;
 
 enum _DragState {
+  // user is not scrolling the child view,
+  // or just end scroll (fling) the child view.
   idle,
+  // user started scrolling the child view,
+  // but we still not respond the nested scrolling event.
+  prepare,
+  // normally nested scrolling.
   dragging,
-  nestedDragging,
 }
 
 class SwipeSwitchLayout extends StatefulWidget {
@@ -92,56 +98,9 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
                   return true;
                 },
               ),
-              onNotification: (OverscrollIndicatorNotification notification) {
-                if (state == _DragState.dragging) {
-                  notification.disallowGlow();
-                  return true;
-                }
-                return false;
-              },
+              onNotification: _handleOverScrollNotification,
             ),
-            onNotification: (ScrollNotification notification) {
-              if (notification is ScrollStartNotification) {
-                // reset drag state when scroll start.
-                state = _DragState.idle;
-              } else if (notification is ScrollUpdateNotification) {
-                if (_shouldStartDragging(notification)) {
-                  _onDragStart();
-                }
-
-                if (state == _DragState.dragging) {
-                  if (notification.dragDetails != null
-                      && (notification.metrics.atEdge || notification.metrics.outOfRange)) {
-                    _onDragUpdate(-notification.scrollDelta);
-                  } else {
-                    // if drag details is nonnull,
-                    // it means user canceled the nested scrolling by reversed scroll.
-                    _onDragEnd(
-                      forceCancel: notification.dragDetails != null
-                    );
-                  }
-                  return true;
-                }
-              } else if (notification is OverscrollNotification) {
-                if (_shouldStartDragging(notification)) {
-                  _onDragStart(nestedScrolling: true);
-                }
-
-                if (state == _DragState.dragging) {
-                  if (notification.dragDetails != null) {
-                    _onDragUpdate(- 0.5 * notification.overscroll);
-                  } else {
-                    _onDragEnd();
-                  }
-                  return true;
-                }
-              } else if (notification is ScrollEndNotification) {
-                _onDragEnd();
-                return true;
-              }
-
-              return false;
-            }
+            onNotification: _handleScrollNotification,
           )
         ),
       ),
@@ -158,6 +117,61 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
     );
   }
 
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification is ScrollStartNotification) {
+      // reset drag state when scroll start.
+      state = _DragState.prepare;
+    } else if (notification is ScrollUpdateNotification) {
+      if (_shouldStartDragging(notification)) {
+        _onDragStart();
+      }
+
+      if (state == _DragState.dragging) {
+        if (notification.dragDetails != null
+            && (notification.metrics.atEdge || notification.metrics.outOfRange)) {
+          _onDragUpdate(-notification.scrollDelta,
+              nestedScrolling: GeoPlatform.isMaterialStyle,
+          );
+        } else {
+          // if drag details is nonnull,
+          // it means user canceled the nested scrolling by reversed scroll.
+          _onDragEnd(
+              forceCancel: notification.dragDetails != null
+          );
+        }
+        return true;
+      }
+
+      if (notification.dragDetails == null) {
+        state = _DragState.idle;
+      }
+
+    } else if (notification is OverscrollNotification) {
+      if (_shouldStartDragging(notification)) {
+        _onDragStart();
+      }
+
+      if (state == _DragState.dragging) {
+        if (notification.dragDetails != null) {
+          _onDragUpdate(- 0.5 * notification.overscroll,
+              nestedScrolling: true
+          );
+        } else {
+          _onDragEnd();
+        }
+        return true;
+      }
+
+      state = _DragState.idle;
+
+    } else if (notification is ScrollEndNotification) {
+      _onDragEnd();
+      return true;
+    }
+
+    return false;
+  }
+
   bool _shouldStartDragging(ScrollNotification notification) {
     bool validDrag = (
         notification is ScrollUpdateNotification
@@ -166,34 +180,35 @@ class _SwipeSwitchLayoutState extends State<SwipeSwitchLayout>
         notification is OverscrollNotification
             && notification.dragDetails != null
     );
-    return state == _DragState.idle
+    return state == _DragState.prepare
         && validDrag
         && notification.metrics.axis == Axis.horizontal
         && (notification.metrics.atEdge || notification.metrics.outOfRange);
   }
 
-  void _onDragStart({bool nestedScrolling = false}) {
-    cancelResetAnimation();
+  bool _handleOverScrollNotification(OverscrollIndicatorNotification notification) {
+    if (state == _DragState.prepare
+        || state == _DragState.dragging) {
+      notification.disallowGlow();
+      return true;
+    }
+    return false;
+  }
 
-    state = nestedScrolling ? _DragState.nestedDragging : _DragState.dragging;
+  void _onDragStart() {
     setState(() {
+      cancelResetAnimation();
+
+      state = _DragState.dragging;
+
       nestedOffsetX = 0;
       // do not reset offsetX as 0, we might just stop a reset animation.
       setOffset(offsetX);
     });
   }
 
-  void _onDragUpdate(double dx) {
+  void _onDragUpdate(double dx, {bool nestedScrolling = false}) {
     setState(() {
-      if (state == _DragState.nestedDragging) {
-        dx *= 0.5;
-
-        nestedOffsetX += dx;
-        if (nestedOffsetX > triggerDistanceX * 0.3) {
-          state = _DragState.dragging;
-        }
-      }
-
       setOffset(offsetX + dx);
 
       if (widget.onSwipe != null) {

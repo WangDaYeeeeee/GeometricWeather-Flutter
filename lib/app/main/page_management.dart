@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +13,7 @@ import 'package:geometricweather_flutter/app/common/ui/platform/scaffold.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/model.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
 import 'package:geometricweather_flutter/app/main/appbar_management.dart';
 import 'package:geometricweather_flutter/app/main/models.dart';
@@ -304,8 +304,8 @@ class _ManagementBody extends StatelessWidget {
           bottom: MediaQuery.of(context).padding.bottom,
         ),
         baseItemAnimationDuration: _ITEM_ANIM_DURATION,
-        initItemOffsetX: Platform.isIOS ? 128.0 : 0.0,
-        initItemOffsetY: Platform.isIOS ? 0.0 : 128.0,
+        initItemOffsetX: GeoPlatform.isCupertinoStyle ? 128.0 : 0.0,
+        initItemOffsetY: GeoPlatform.isCupertinoStyle ? 0.0 : 128.0,
       );
 
       return Stack(children: [

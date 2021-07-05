@@ -1,12 +1,12 @@
 // @dart=2.12
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 
@@ -172,7 +172,7 @@ class SnackBarViewState extends State<SnackBarView>
       bool showAction = !isEmptyString(widget.model.action)
           && widget.model.actionCallback != null;
 
-      int alpha = Platform.isIOS ? 245 : 255;
+      int alpha = GeoPlatform.isCupertinoStyle ? 245 : 255;
 
       final content = Padding(
         padding: EdgeInsets.all(normalMargin),
@@ -190,15 +190,15 @@ class SnackBarViewState extends State<SnackBarView>
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(
-                Platform.isIOS ? 99999999.0 : cardRadius
+                GeoPlatform.isCupertinoStyle ? 99999999.0 : cardRadius
             ),
             color: theme.brightness == Brightness.light
                 ? theme.backgroundColor.withAlpha(alpha)
                 : theme.dividerColor.withAlpha(alpha),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withAlpha(Platform.isIOS ? 15 : 30),
-                spreadRadius: Platform.isIOS ? 8.0 : 4.0,
+                color: Colors.black.withAlpha(GeoPlatform.isCupertinoStyle ? 15 : 30),
+                spreadRadius: GeoPlatform.isCupertinoStyle ? 8.0 : 4.0,
                 blurRadius: 16.0,
               ),
             ],
@@ -225,12 +225,12 @@ class SnackBarViewState extends State<SnackBarView>
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(ThemeColors.colorAlert),
                       foregroundColor: MaterialStateProperty.all(Colors.black),
-                      shape: Platform.isIOS ? MaterialStateProperty.all(
+                      shape: GeoPlatform.isCupertinoStyle ? MaterialStateProperty.all(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(999999.0),
                           )
                       ) : null,
-                      elevation: Platform.isIOS
+                      elevation: GeoPlatform.isCupertinoStyle
                           ? MaterialStateProperty.all(0.0)
                           : null,
                     ),

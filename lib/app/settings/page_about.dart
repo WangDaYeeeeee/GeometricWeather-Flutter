@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:geometricweather_flutter/app/common/ui/anim_list/slide_anim_list
 import 'package:geometricweather_flutter/app/common/ui/platform/app_bar.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/scaffold.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/common/utils/system_services.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 import 'package:geometricweather_flutter/main.dart';
@@ -297,8 +297,8 @@ class _AboutPageState extends GeoState<AboutPage> {
             );
           },
           baseItemAnimationDuration: _ITEM_ANIM_DURATION,
-          initItemOffsetX: Platform.isIOS ? 128.0 : 0.0,
-          initItemOffsetY: Platform.isIOS ? 0.0 : 128.0,
+          initItemOffsetX: GeoPlatform.isCupertinoStyle ? 128.0 : 0.0,
+          initItemOffsetY: GeoPlatform.isCupertinoStyle ? 0.0 : 128.0,
         ) : null,
       ),
     );

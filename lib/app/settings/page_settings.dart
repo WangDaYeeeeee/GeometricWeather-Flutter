@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -10,6 +8,7 @@ import 'package:geometricweather_flutter/app/common/basic/widgets.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/app_bar.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/scaffold.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/common/utils/router.dart';
 import 'package:geometricweather_flutter/app/settings/interfaces.dart';
 import 'package:geometricweather_flutter/app/settings/widgets.dart';
@@ -118,7 +117,7 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
         },
       ),
     ];
-    if (Platform.isAndroid) {
+    if (GeoPlatform.isMaterialStyle) {
       baseTiles.addAll([
         getSwitchTile(context,
           title: S.of(context).settings_title_background_free,
@@ -159,7 +158,7 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
         },
       ),
     ];
-    if (Platform.isAndroid) {
+    if (GeoPlatform.isMaterialStyle) {
       notificationTiles.addAll([
         getListTile(context,
           title: S.of(context).settings_title_notification_style,

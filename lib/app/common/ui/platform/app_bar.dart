@@ -1,10 +1,10 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 
 class PlatformAppBarIconButton extends PlatformIconButton {
@@ -69,11 +69,10 @@ class GeoPlatformAppBar extends PlatformAppBar {
 class GeoPlatformAppBarTitle extends Text {
 
   GeoPlatformAppBarTitle(BuildContext context, String data) : super(data,
-    style: Platform.isIOS
-        ? TextStyle(
-            color: Theme.of(context).brightness == Brightness.light
-                ? CupertinoColors.black
-                : CupertinoColors.white
-        ) : null
+    style: GeoPlatform.isCupertinoStyle ? TextStyle(
+        color: Theme.of(context).brightness == Brightness.light
+            ? CupertinoColors.black
+            : CupertinoColors.white
+    ) : null
   );
 }

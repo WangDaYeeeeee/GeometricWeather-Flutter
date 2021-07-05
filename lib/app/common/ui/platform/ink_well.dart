@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 
 class PlatformInkWell extends StatefulWidget {
 
@@ -30,14 +29,14 @@ class _PlatformInkWellState extends State<PlatformInkWell> {
 
   @override
   Widget build(BuildContext context) {
-    if (Platform.isAndroid) {
+    if (GeoPlatform.isMaterialStyle) {
       return InkWell(
           child: widget.child,
           onTap: widget.onTap,
           onDoubleTap: widget.onDoubleTap,
           onLongPress: widget.onLongPress
       );
-    } else if (Platform.isIOS) {
+    } else if (GeoPlatform.isCupertinoStyle) {
       return GestureDetector(
         child: AnimatedOpacity(
           child: widget.child,

@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/appearance.dart';
 import 'package:geometricweather_flutter/app/common/basic/widgets.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/settings/page_settings.dart';
 import 'package:geometricweather_flutter/app/settings/widgets.dart';
 import 'package:geometricweather_flutter/app/theme/providers/providers.dart';
@@ -45,7 +44,7 @@ class _AppearanceSettingsPageState
         },
       )
     ];
-    if (Platform.isAndroid) {
+    if (GeoPlatform.isMaterialStyle) {
       tiles.add(
         getTile(context,
           title: S.of(context).settings_title_icon_provider,

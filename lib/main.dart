@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
@@ -38,19 +35,13 @@ void main() {
     preloadMainViewModel(),
     SettingsManager.getInstance(),
     PackageInfo.fromPlatform(),
-    Platform.isIOS ? DeviceInfoPlugin().iosInfo : DeviceInfoPlugin().androidInfo,
     FlutterNativeTimezone.getLocalTimezone(),
   ]).then((value) {
     settingsManager = value[1] as SettingsManager;
     themeManager = ThemeManager.getInstance(settingsManager.darkMode);
 
     versionName = (value[2] as PackageInfo).version;
-    systemVersion = Platform.isIOS ? (
-        value[3] as IosDeviceInfo
-    ).systemVersion : (
-        value[3] as AndroidDeviceInfo
-    ).version.codename;
-    currentTimezone = value[4] as String;
+    currentTimezone = value[3] as String;
 
     WidgetsBinding.instance
       // ignore: invalid_use_of_protected_member

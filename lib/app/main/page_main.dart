@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
@@ -18,6 +17,7 @@ import 'package:geometricweather_flutter/app/common/ui/platform/ink_well.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/material/mtrl_weather_view.dart';
 import 'package:geometricweather_flutter/app/common/ui/weather_view/weather_view.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/common/utils/router.dart';
 import 'package:geometricweather_flutter/app/main/items/_base.dart';
 import 'package:geometricweather_flutter/app/main/page_management.dart';
@@ -153,7 +153,7 @@ class _MainPageState extends GeoState<MainPage>
 
   @override
   void setSystemBarStyle() {
-    if (Platform.isAndroid) {
+    if (GeoPlatform.isMaterialStyle) {
       SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(
             statusBarColor: Colors.black.withAlpha(androidStatusBarMaskAlpha),
@@ -243,7 +243,7 @@ class _MainPageState extends GeoState<MainPage>
 
                   case _MainListState.loadingWithoutCache:
                     return Center(
-                      child: Platform.isIOS ? Theme(
+                      child: GeoPlatform.isCupertinoStyle ? Theme(
                           data: ThemeData(
                               cupertinoOverrideTheme: CupertinoThemeData(
                                   brightness: Brightness.dark

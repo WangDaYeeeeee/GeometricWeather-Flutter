@@ -149,8 +149,12 @@ class DraggableSlideAnimatedListView extends StatelessWidget {
                   onDismissed: (DismissDirection direction) {
                     dismissCallback(direction, index);
                   },
-                  confirmDismiss: confirmCallback == null ? null : (direction) {
-                    return confirmCallback!(direction, index);
+                  confirmDismiss: confirmCallback == null ? null : (direction) async {
+                    bool? confirm = await confirmCallback!(direction, index);
+                    if (confirm != null && !confirm) {
+                      haptic();
+                    }
+                    return confirm;
                   },
                   background: startBackgroundBuilder == null
                       ? null

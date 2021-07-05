@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/main/view_models.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 
@@ -31,7 +30,7 @@ class MainAppBar extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return Platform.isIOS ? _CupertinoAppBarState() : _MaterialAppBarState();
+    return GeoPlatform.isCupertinoStyle ? _CupertinoAppBarState() : _MaterialAppBarState();
   }
 }
 

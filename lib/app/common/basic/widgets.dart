@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 
 final routeObserver = RouteObserver<PageRoute>();
 
@@ -48,7 +48,7 @@ abstract class GeoState<T extends GeoStatefulWidget> extends State<T>
 
   void setSystemBarStyle() {
     // set style of status bar by control the brightness of app bar.
-    if (Platform.isAndroid) {
+    if (GeoPlatform.isMaterialStyle) {
       SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,

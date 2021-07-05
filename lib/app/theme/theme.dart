@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 
 const materialToolbarHeight = 56.0;
 const cupertinoNavBarHeight = 44.0;
@@ -50,7 +50,7 @@ Color getCupertinoAppBarBackground(BuildContext context) =>
     Theme.of(context).primaryColor.withAlpha((255 * 0.5).toInt());
 
 double getAppBarHeight(BuildContext context) =>
-    (Platform.isIOS ? cupertinoNavBarHeight : materialToolbarHeight)
+    (GeoPlatform.isCupertinoStyle ? cupertinoNavBarHeight : materialToolbarHeight)
         + MediaQuery.of(context).padding.top;
 
 class ThemeProvider with ChangeNotifier {
@@ -71,13 +71,13 @@ class ThemeProvider with ChangeNotifier {
   static final ThemeData _lightTheme = ThemeData(
     brightness: Brightness.light,
     primarySwatch: Colors.grey,
-    primaryColor: Platform.isIOS
+    primaryColor: GeoPlatform.isCupertinoStyle
         ? ThemeColors.lightDividerColor
         : ThemeColors.primaryColor,
-    primaryColorBrightness: Platform.isIOS
+    primaryColorBrightness: GeoPlatform.isCupertinoStyle
         ? Brightness.light
         : Brightness.dark,
-    primaryColorDark: Platform.isIOS
+    primaryColorDark: GeoPlatform.isCupertinoStyle
         ? ThemeColors.lightDividerColor
         : ThemeColors.primaryDarkColor,
     accentColor: ThemeColors.primaryAccentColor,
@@ -146,11 +146,11 @@ class ThemeProvider with ChangeNotifier {
   static final ThemeData _darkTheme = ThemeData(
       brightness: Brightness.dark,
       primarySwatch: Colors.grey,
-      primaryColor: Platform.isIOS
+      primaryColor: GeoPlatform.isCupertinoStyle
           ? ThemeColors.darkDividerColor
           : ThemeColors.primaryColor,
       primaryColorBrightness: Brightness.dark,
-      primaryColorDark: Platform.isIOS
+      primaryColorDark: GeoPlatform.isCupertinoStyle
           ? ThemeColors.darkDividerColor
           : ThemeColors.primaryDarkColor,
       accentColor: ThemeColors.primaryAccentColor,

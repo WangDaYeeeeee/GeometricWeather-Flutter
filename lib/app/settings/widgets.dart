@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/settings/time_picker.dart' as tp;
 import 'package:geometricweather_flutter/app/theme/theme.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
@@ -18,7 +17,7 @@ SettingsSection getSection(BuildContext context, {
     titleTextStyle: Theme.of(context).textTheme.caption.copyWith(
       fontWeight: FontWeight.bold,
     ),
-    titlePadding: Platform.isAndroid ? EdgeInsets.symmetric(
+    titlePadding: GeoPlatform.isMaterialStyle ? EdgeInsets.symmetric(
       vertical: normalMargin,
       horizontal: normalMargin,
     ) : EdgeInsets.only(
@@ -60,7 +59,7 @@ SettingsTile getSwitchTile(BuildContext context, {
     titleTextStyle: Theme.of(context).textTheme.subtitle2,
     subtitleMaxLines: 3,
     subtitleTextStyle: Theme.of(context).textTheme.caption,
-    switchActiveColor: Platform.isIOS
+    switchActiveColor: GeoPlatform.isCupertinoStyle
         ? CupertinoColors.activeGreen
         : ThemeColors.colorAlert,
   );
