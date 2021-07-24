@@ -17,7 +17,7 @@ import java.util.Map;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
 import wangdaye.com.geometricweather_flutter.MainActivity;
-import wangdaye.com.geometricweather_flutter.bus.DataBus;
+import wangdaye.com.geometricweather_flutter.common.bus.DataBus;
 
 public class LocationPlugin {
 
@@ -33,13 +33,17 @@ public class LocationPlugin {
     private static final String ERROR_CODE_LACK_OF_PERMISSION = "0";
     private static final String ERROR_CODE_TIMEOUT = "1";
 
+    private static final String PARAM_IN_BACKGROUND = "inBackground";
+    private static final String PARAM_LATITUDE = "latitude";
+    private static final String PARAM_LONGITUDE = "longitude";
+
     public enum PermissionStatus {
         DENIED,
         FOREGROUND_ONLY,
         ALLOW_ALL_THE_TIME,
     }
 
-    private static final NativeLocator sLocationService = new NativeLocator();
+    private static final NativeLocator locator = new NativeLocator();
 
     public static void register(Context context, BinaryMessenger messenger) {
         Context applicationContext = context.getApplicationContext();
@@ -50,7 +54,7 @@ public class LocationPlugin {
         ).setMethodCallHandler((methodCall, result) -> {
             switch (methodCall.method) {
                 case METHOD_REQUEST_LOCATION:
-                    Boolean inBackground = methodCall.argument("inBackground");
+                    Boolean inBackground = methodCall.argument(PARAM_IN_BACKGROUND);
 
                     cancel();
                     requestLocation(
@@ -61,7 +65,7 @@ public class LocationPlugin {
                     break;
 
                 case METHOD_GET_LAST_KNOWN_LOCATION:
-                    Pair<Double, Double> r = sLocationService.getLastKnownLocation();
+                    Pair<Double, Double> r = locator.getLastKnownLocation();
                     if (r == null) {
                         result.error(
                                 ERROR_CODE_TIMEOUT,
@@ -72,8 +76,8 @@ public class LocationPlugin {
                     }
 
                     final Map<String, Double> map = new HashMap<>();
-                    map.put("latitude", r.first);
-                    map.put("longitude", r.second);
+                    map.put(PARAM_LATITUDE, r.first);
+                    map.put(PARAM_LONGITUDE, r.second);
                     result.success(map);
                     break;
 
@@ -84,7 +88,7 @@ public class LocationPlugin {
 
                 case METHOD_IS_LOCATION_SERVICE_ENABLED:
                     result.success(
-                            sLocationService.isLocationEnabled(applicationContext)
+                            locator.isLocationEnabled(applicationContext)
                     );
                     break;
 
@@ -130,7 +134,7 @@ public class LocationPlugin {
             return;
         }
 
-        sLocationService.requestLocation(
+        locator.requestLocation(
                 context, 
                 r -> {
                     if (r == null) {
@@ -143,15 +147,15 @@ public class LocationPlugin {
                     }
 
                     final Map<String, Double> map = new HashMap<>();
-                    map.put("latitude", r.first);
-                    map.put("longitude", r.second);
+                    map.put(PARAM_LATITUDE, r.first);
+                    map.put(PARAM_LONGITUDE, r.second);
                     result.success(map);
                 }
         );
     }
 
     public static void cancel() {
-        sLocationService.cancel();
+        locator.cancel();
     }
     
     public static PermissionStatus checkPermissions(Context context) {

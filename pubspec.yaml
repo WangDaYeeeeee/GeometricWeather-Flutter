@@ -46,7 +46,7 @@ dependencies:
   ink_page_indicator: ^0.2.1
   settings_ui: ^1.0.0
   flutter_vibrate: ^1.1.0
-  blur: ^3.0.0
+  event_bus: ^2.0.0
 
 dev_dependencies:
   flutter_test:

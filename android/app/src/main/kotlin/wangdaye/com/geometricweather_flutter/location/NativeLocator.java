@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
@@ -17,10 +18,7 @@ import androidx.annotation.Nullable;
 public class NativeLocator {
     
     @Nullable private LocationManager mLocationManager;
-
-    @Nullable private LocationListener mNetworkListener;
-    @Nullable private LocationListener mGPSListener;
-
+    @Nullable private LocationListener mLocationListener;
     @Nullable private LocationCallback mLocationCallback;
 
     public interface LocationCallback {
@@ -54,9 +52,7 @@ public class NativeLocator {
     }
 
     public NativeLocator() {
-        mNetworkListener = null;
-        mGPSListener = null;
-
+        mLocationListener = null;
         mLocationCallback = null; 
     }
 
@@ -66,24 +62,29 @@ public class NativeLocator {
             mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         }
 
-        if (mLocationManager == null) {
-            callback.onCompleted(null);
+        if (mLocationManager == null || !isNetworkAvailable(context)) {
+            callback.onCompleted(getLastKnownLocation());
             return;
         }
 
-        mNetworkListener = new LocationListener();
-        mGPSListener = new LocationListener();
-
+        mLocationListener = new LocationListener();
         mLocationCallback = callback;
 
         if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                    0, 0, mNetworkListener, Looper.getMainLooper());
+                    100, 0, mLocationListener, Looper.getMainLooper());
+        } else {
+            callback.onCompleted(getLastKnownLocation());
         }
-        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    0, 0, mGPSListener, Looper.getMainLooper());
+    }
+
+    private static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(
+                Context.CONNECTIVITY_SERVICE);
+        if (manager != null) {
+            return manager.getActiveNetworkInfo() != null;
         }
+        return false;
     }
 
     @Nullable
@@ -92,12 +93,12 @@ public class NativeLocator {
             return null;
         }
 
-        Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         if (location != null) {
             return new Pair<>(location.getLatitude(), location.getLongitude());
         }
-        
-        location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location != null) {
             return new Pair<>(location.getLatitude(), location.getLongitude());
         }
@@ -117,13 +118,9 @@ public class NativeLocator {
 
     private void stopLocationUpdates() {
         if (mLocationManager != null) {
-            if (mNetworkListener != null) {
-                mLocationManager.removeUpdates(mNetworkListener);
-                mNetworkListener = null;
-            }
-            if (mGPSListener != null) {
-                mLocationManager.removeUpdates(mGPSListener);
-                mGPSListener = null;
+            if (mLocationListener != null) {
+                mLocationManager.removeUpdates(mLocationListener);
+                mLocationListener = null;
             }
         }
     }
@@ -167,7 +164,6 @@ public class NativeLocator {
             }
         }
 
-        return mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-                || mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        return mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 }

@@ -8,11 +8,12 @@ import Flutter
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     let controller: FlutterViewController = window?.rootViewController as! FlutterViewController
-    LocationPlugin.register(with: controller.binaryMessenger)
     
+    LanguagePlugin.register(with: controller.binaryMessenger)
+    LocationPlugin.register(with: controller.binaryMessenger)
     GeneratedPluginRegistrant.register(with: self)
     
-    UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60 * 60))
+    UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(2 * 60 * 60))
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

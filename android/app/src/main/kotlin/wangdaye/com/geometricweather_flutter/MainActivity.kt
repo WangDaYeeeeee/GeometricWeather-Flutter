@@ -11,12 +11,15 @@ import androidx.lifecycle.Observer
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import wangdaye.com.geometricweather_flutter.bus.DataBus
+import wangdaye.com.geometricweather_flutter.background.polling.BackgroundPlugin
+import wangdaye.com.geometricweather_flutter.background.polling.SenderPlugin
+import wangdaye.com.geometricweather_flutter.common.bus.DataBus
+import wangdaye.com.geometricweather_flutter.language.LanguagePlugin
 import wangdaye.com.geometricweather_flutter.location.BackgroundLocationDialog
 import wangdaye.com.geometricweather_flutter.location.LocationPlugin
 
 class MainActivity: FlutterFragmentActivity(),
-    BackgroundLocationDialog.Callback {
+    BackgroundLocationDialog.Callback, SenderPlugin.MethodHandler {
 
     private var requestLocationPermissionsResult: MethodChannel.Result? = null
 
@@ -48,7 +51,18 @@ class MainActivity: FlutterFragmentActivity(),
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        LocationPlugin.register(this, flutterEngine.dartExecutor.binaryMessenger)
+
+        val messenger = flutterEngine.dartExecutor.binaryMessenger
+        LanguagePlugin.register(messenger)
+        LocationPlugin.register(this, messenger)
+        SenderPlugin.register(messenger, this)
+        BackgroundPlugin.register(this, messenger)
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        super.cleanUpFlutterEngine(flutterEngine)
+
+        SenderPlugin.unregister(this)
     }
 
     override fun onRequestPermissionsResult(
@@ -88,6 +102,30 @@ class MainActivity: FlutterFragmentActivity(),
             return
         }
     }
+
+    // method handler.
+
+    override fun onUpdateCompleted(
+        location: Map<String, Any?>,
+        succeed: Boolean,
+        index: Int,
+        total: Int
+    ) {
+        // todo: update remote views.
+    }
+
+    override fun onPollingCompleted(
+        locationList: List<Map<String, Any?>>,
+        succeed: Boolean
+    ) {
+        // todo: update remote views.
+    }
+
+    override fun sendTodayForecast(location: Map<String, Any?>) {}
+
+    override fun sendTomorrowForecast(location: Map<String, Any?>) {}
+
+    // location dialog callback.
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun requestBackgroundLocationPermission() {

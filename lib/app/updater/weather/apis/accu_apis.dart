@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
+import 'package:geometricweather_flutter/app/common/utils/language.dart';
 import 'package:geometricweather_flutter/app/common/utils/logger.dart';
 import 'package:geometricweather_flutter/app/updater/weather/converters/accu_converter.dart';
 import 'package:geometricweather_flutter/app/updater/weather/json/accu/air_quality.dart';
@@ -40,17 +39,6 @@ Dio ensureDio() {
   return _dio;
 }
 
-String getLanguage() {
-  // the local name may contains a location code.
-  // for example: 'zh_Hans_US'.
-  final codes = Platform.localeName.replaceAll('_', '-').split('-');
-  if (codes.length > 2) {
-    return '${codes[0]}-${codes[1]}';
-  }
-
-  return Platform.localeName.replaceAll('_', '-');
-}
-
 class AccuApi implements WeatherApi {
 
   @override
@@ -79,7 +67,7 @@ class AccuApi implements WeatherApi {
             'alias': 'Always',
             'apikey': ACCU_WEATHER_KEY,
             'q': query,
-            'language': getLanguage()
+            'language': await getLanguageCode()
           },
           cancelToken: token
       );
@@ -103,7 +91,7 @@ class AccuApi implements WeatherApi {
 
     try {
       Dio dio = ensureDio();
-      String language = getLanguage();
+      String language = await getLanguageCode();
 
       if (location.currentPosition) {
         testLog('Requesting location by geo position.');

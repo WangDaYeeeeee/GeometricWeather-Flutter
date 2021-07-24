@@ -65,10 +65,14 @@ class _$GeoDatabase extends GeoDatabase {
 
   WeatherDao? _weatherDaoInstance;
 
+  TodayForecastRecordDao? _todayForecastRecordDaoInstance;
+
+  TomorrowForecastRecordDao? _tomorrowForecastRecordDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 3,
+      version: 5,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -87,6 +91,10 @@ class _$GeoDatabase extends GeoDatabase {
             'CREATE TABLE IF NOT EXISTS `LocationEntity` (`formattedId` TEXT NOT NULL, `cityId` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `timezone` TEXT NOT NULL, `country` TEXT NOT NULL, `province` TEXT NOT NULL, `city` TEXT NOT NULL, `district` TEXT NOT NULL, `weatherCodeIndex` INTEGER NOT NULL, `sunriseTimestamp` INTEGER NOT NULL, `sunsetTimestamp` INTEGER NOT NULL, `weatherSourceKey` TEXT NOT NULL, `currentPosition` INTEGER NOT NULL, `residentPosition` INTEGER NOT NULL, `china` INTEGER NOT NULL, PRIMARY KEY (`formattedId`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `WeatherEntity` (`formattedId` TEXT NOT NULL, `json` TEXT NOT NULL, PRIMARY KEY (`formattedId`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `TodayForecastRecord` (`dateTimeMillis` INTEGER NOT NULL, PRIMARY KEY (`dateTimeMillis`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `TomorrowForecastRecord` (`dateTimeMillis` INTEGER NOT NULL, PRIMARY KEY (`dateTimeMillis`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -102,6 +110,18 @@ class _$GeoDatabase extends GeoDatabase {
   @override
   WeatherDao get weatherDao {
     return _weatherDaoInstance ??= _$WeatherDao(database, changeListener);
+  }
+
+  @override
+  TodayForecastRecordDao get todayForecastRecordDao {
+    return _todayForecastRecordDaoInstance ??=
+        _$TodayForecastRecordDao(database, changeListener);
+  }
+
+  @override
+  TomorrowForecastRecordDao get tomorrowForecastRecordDao {
+    return _tomorrowForecastRecordDaoInstance ??=
+        _$TomorrowForecastRecordDao(database, changeListener);
   }
 }
 
@@ -322,5 +342,115 @@ class _$WeatherDao extends WeatherDao {
   @override
   Future<void> deleteWeather(List<WeatherEntity> entityList) async {
     await _weatherEntityDeletionAdapter.deleteList(entityList);
+  }
+}
+
+class _$TodayForecastRecordDao extends TodayForecastRecordDao {
+  _$TodayForecastRecordDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database),
+        _todayForecastRecordInsertionAdapter = InsertionAdapter(
+            database,
+            'TodayForecastRecord',
+            (TodayForecastRecord item) =>
+                <String, Object?>{'dateTimeMillis': item.dateTimeMillis}),
+        _todayForecastRecordDeletionAdapter = DeletionAdapter(
+            database,
+            'TodayForecastRecord',
+            ['dateTimeMillis'],
+            (TodayForecastRecord item) =>
+                <String, Object?>{'dateTimeMillis': item.dateTimeMillis});
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<TodayForecastRecord>
+      _todayForecastRecordInsertionAdapter;
+
+  final DeletionAdapter<TodayForecastRecord>
+      _todayForecastRecordDeletionAdapter;
+
+  @override
+  Future<TodayForecastRecord?> selectTodayForecastRecord() async {
+    return _queryAdapter.query('SELECT * FROM TodayForecastRecord LIMIT 1',
+        mapper: (Map<String, Object?> row) =>
+            TodayForecastRecord(row['dateTimeMillis'] as int));
+  }
+
+  @override
+  Future<List<TodayForecastRecord>> selectTodayForecastRecordList() async {
+    return _queryAdapter.queryList('SELECT * FROM TodayForecastRecord',
+        mapper: (Map<String, Object?> row) =>
+            TodayForecastRecord(row['dateTimeMillis'] as int));
+  }
+
+  @override
+  Future<void> insertTodayForecastRecord(TodayForecastRecord record) async {
+    await _todayForecastRecordInsertionAdapter.insert(
+        record, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteTodayForecastRecord(
+      List<TodayForecastRecord> recordList) async {
+    await _todayForecastRecordDeletionAdapter.deleteList(recordList);
+  }
+}
+
+class _$TomorrowForecastRecordDao extends TomorrowForecastRecordDao {
+  _$TomorrowForecastRecordDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database),
+        _tomorrowForecastRecordInsertionAdapter = InsertionAdapter(
+            database,
+            'TomorrowForecastRecord',
+            (TomorrowForecastRecord item) =>
+                <String, Object?>{'dateTimeMillis': item.dateTimeMillis}),
+        _tomorrowForecastRecordDeletionAdapter = DeletionAdapter(
+            database,
+            'TomorrowForecastRecord',
+            ['dateTimeMillis'],
+            (TomorrowForecastRecord item) =>
+                <String, Object?>{'dateTimeMillis': item.dateTimeMillis});
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<TomorrowForecastRecord>
+      _tomorrowForecastRecordInsertionAdapter;
+
+  final DeletionAdapter<TomorrowForecastRecord>
+      _tomorrowForecastRecordDeletionAdapter;
+
+  @override
+  Future<TomorrowForecastRecord?> selectTomorrowForecastRecord() async {
+    return _queryAdapter.query('SELECT * FROM TomorrowForecastRecord LIMIT 1',
+        mapper: (Map<String, Object?> row) =>
+            TomorrowForecastRecord(row['dateTimeMillis'] as int));
+  }
+
+  @override
+  Future<List<TomorrowForecastRecord>>
+      selectTomorrowForecastRecordList() async {
+    return _queryAdapter.queryList('SELECT * FROM TomorrowForecastRecord',
+        mapper: (Map<String, Object?> row) =>
+            TomorrowForecastRecord(row['dateTimeMillis'] as int));
+  }
+
+  @override
+  Future<void> insertTomorrowForecastRecord(
+      TomorrowForecastRecord record) async {
+    await _tomorrowForecastRecordInsertionAdapter.insert(
+        record, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteTomorrowForecastRecord(
+      List<TomorrowForecastRecord> recordList) async {
+    await _tomorrowForecastRecordDeletionAdapter.deleteList(recordList);
   }
 }

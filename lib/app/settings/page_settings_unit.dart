@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:geometricweather_flutter/app/background/helper.dart';
+import 'package:geometricweather_flutter/app/common/basic/events.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/units.dart';
 import 'package:geometricweather_flutter/app/common/basic/widgets.dart';
+import 'package:geometricweather_flutter/app/common/bus/helper.dart';
 import 'package:geometricweather_flutter/app/settings/page_settings.dart';
 import 'package:geometricweather_flutter/app/settings/widgets.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
@@ -31,6 +34,8 @@ class _UnitSettingsPageState extends AbstractSettingsPageState<UnitSettingsPage>
               onSelect: (String value) {
                 setState(() {
                   settingsManager.temperatureUnit = TemperatureUnit.all[value];
+                  EventBus.send(UpdateUIEvent());
+                  resetPollingBackgroundTask(settingsManager, true);
                 });
               },
             ),
@@ -43,6 +48,8 @@ class _UnitSettingsPageState extends AbstractSettingsPageState<UnitSettingsPage>
               onSelect: (String value) {
                 setState(() {
                   settingsManager.distanceUnit = DistanceUnit.all[value];
+                  EventBus.send(UpdateUIEvent());
+                  resetPollingBackgroundTask(settingsManager, true);
                 });
               },
             ),
@@ -55,6 +62,8 @@ class _UnitSettingsPageState extends AbstractSettingsPageState<UnitSettingsPage>
               onSelect: (String value) {
                 setState(() {
                   settingsManager.precipitationUnit = PrecipitationUnit.all[value];
+                  EventBus.send(UpdateUIEvent());
+                  resetPollingBackgroundTask(settingsManager, true);
                 });
               },
             ),
@@ -67,6 +76,8 @@ class _UnitSettingsPageState extends AbstractSettingsPageState<UnitSettingsPage>
               onSelect: (String value) {
                 setState(() {
                   settingsManager.pressureUnit = PressureUnit.all[value];
+                  EventBus.send(UpdateUIEvent());
+                  resetPollingBackgroundTask(settingsManager, true);
                 });
               },
             ),
@@ -79,6 +90,8 @@ class _UnitSettingsPageState extends AbstractSettingsPageState<UnitSettingsPage>
               onSelect: (String value) {
                 setState(() {
                   settingsManager.speedUnit = SpeedUnit.all[value];
+                  EventBus.send(UpdateUIEvent());
+                  resetPollingBackgroundTask(settingsManager, true);
                 });
               },
             ),

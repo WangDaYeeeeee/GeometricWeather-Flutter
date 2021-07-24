@@ -17,7 +17,7 @@ typedef NS_ENUM(NSInteger, PermissionStatus) {
     PermissionStatusAllowAllTheTime,
 };
 
-NSString * const CHANNEL_NAME = @"com.wangdaye.geometricweather/location";
+NSString * const CHANNEL_LOCATION = @"com.wangdaye.geometricweather/location";
 
 NSString * const METHOD_REQUEST_LOCATION = @"requestLocation";
 NSString * const METHOD_GET_LAST_KNOWN_LOCATION = @"getLastKnownLocation";
@@ -28,6 +28,10 @@ NSString * const METHOD_REQUEST_PERMISSIONS = @"requestPermissions";
 
 NSString * const ERROR_CODE_LACK_OF_PERMISSION = @"0";
 NSString * const ERROR_CODE_TIMEOUT = @"1";
+
+NSString * const PARAM_IN_BACKGROUND = @"inBackground";
+NSString * const PARAM_LATITUDE = @"latitude";
+NSString * const PARAM_LONGITUDE = @"longitude";
 
 @interface LocationPlugin : NSObject
 

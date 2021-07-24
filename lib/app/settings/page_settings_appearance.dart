@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:geometricweather_flutter/app/background/helper.dart';
+import 'package:geometricweather_flutter/app/common/basic/events.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/appearance.dart';
 import 'package:geometricweather_flutter/app/common/basic/widgets.dart';
+import 'package:geometricweather_flutter/app/common/bus/helper.dart';
 import 'package:geometricweather_flutter/app/common/utils/platform.dart';
 import 'package:geometricweather_flutter/app/settings/page_settings.dart';
 import 'package:geometricweather_flutter/app/settings/widgets.dart';
 import 'package:geometricweather_flutter/app/theme/providers/providers.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 import 'package:settings_ui/settings_ui.dart';
+
+import '../../main.dart';
 
 class AppearanceSettingsPage extends GeoStatefulWidget {
   @override
@@ -39,7 +44,11 @@ class _AppearanceSettingsPageState
         switchValue: settingsManager.exchangeDayNightTemperature,
         onToggle: (bool value) {
           setState(() {
+            EventBus.send(UpdateUIEvent());
+
             settingsManager.exchangeDayNightTemperature = value;
+            // we need update all remote views.
+            resetPollingBackgroundTask(settingsManager, true);
           });
         },
       )

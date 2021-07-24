@@ -74,7 +74,7 @@ ItemGenerator airQuality = (
                       initVisible: initVisible,
                       progress: arcProgress,
                       number: weather.current.airQuality.aqiIndex ?? 0,
-                      description: weather.current.airQuality.aqiText ?? '',
+                      description: weather.current.airQuality.getAqiText(context) ?? '',
                       duration: 2000 + (arcProgress * 2000).toInt(),
                       strokeWidth: 10.0,
                       beginColor: ThemeColors.colorLevel1,

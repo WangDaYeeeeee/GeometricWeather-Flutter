@@ -57,3 +57,21 @@ class WeatherEntity {
 
   WeatherEntity(this.formattedId, this.json);
 }
+
+@entity
+class TodayForecastRecord {
+
+  @primaryKey
+  final int dateTimeMillis;
+
+  TodayForecastRecord(this.dateTimeMillis);
+}
+
+@entity
+class TomorrowForecastRecord {
+
+  @primaryKey
+  final int dateTimeMillis;
+
+  TomorrowForecastRecord(this.dateTimeMillis);
+}

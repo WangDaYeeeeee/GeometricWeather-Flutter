@@ -1,5 +1,8 @@
 import 'dart:developer' as developer;
 
 void testLog(String str) {
-  developer.log(str, name: 'testing');
+  developer.log('${DateTime.now()} - $str',
+    name: 'testing',
+    time: DateTime.now(),
+  );
 }

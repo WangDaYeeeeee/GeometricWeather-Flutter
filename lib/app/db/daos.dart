@@ -46,3 +46,35 @@ abstract class WeatherDao {
   @Query("SELECT * FROM WeatherEntity WHERE formattedId = :formattedId")
   Future<List<WeatherEntity>> selectWeatherEntityList(String formattedId);
 }
+
+@dao
+abstract class TodayForecastRecordDao {
+
+  @insert
+  Future<void> insertTodayForecastRecord(TodayForecastRecord record);
+
+  @delete
+  Future<void> deleteTodayForecastRecord(List<TodayForecastRecord> recordList);
+
+  @Query("SELECT * FROM TodayForecastRecord LIMIT 1")
+  Future<TodayForecastRecord?> selectTodayForecastRecord();
+
+  @Query("SELECT * FROM TodayForecastRecord")
+  Future<List<TodayForecastRecord>> selectTodayForecastRecordList();
+}
+
+@dao
+abstract class TomorrowForecastRecordDao {
+
+  @insert
+  Future<void> insertTomorrowForecastRecord(TomorrowForecastRecord record);
+
+  @delete
+  Future<void> deleteTomorrowForecastRecord(List<TomorrowForecastRecord> recordList);
+
+  @Query("SELECT * FROM TomorrowForecastRecord LIMIT 1")
+  Future<TomorrowForecastRecord?> selectTomorrowForecastRecord();
+
+  @Query("SELECT * FROM TomorrowForecastRecord")
+  Future<List<TomorrowForecastRecord>> selectTomorrowForecastRecordList();
+}

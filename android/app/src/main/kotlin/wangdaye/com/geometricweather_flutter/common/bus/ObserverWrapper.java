@@ -1,4 +1,4 @@
-package wangdaye.com.geometricweather_flutter.bus;
+package wangdaye.com.geometricweather_flutter.common.bus;
 
 import androidx.lifecycle.Observer;
 

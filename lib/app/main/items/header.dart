@@ -52,8 +52,8 @@ ItemGenerator header = (
                 ),
                 Text(
                   weather.current.airQuality.isValid()
-                      ? '${S.of(context).air_quality} - ${weather.current.airQuality.aqiText}'
-                      : '${weather.current.wind.getShortWindDescription()}',
+                      ? '${S.of(context).air_quality} - ${weather.current.airQuality.getAqiText(context)}'
+                      : '${weather.current.wind.getShortWindDescription(context)}',
                   style: textTheme.subtitle2.copyWith(
                       color: Colors.white
                   ),

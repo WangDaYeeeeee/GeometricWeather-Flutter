@@ -10,6 +10,7 @@ import 'package:geometricweather_flutter/app/theme/manager.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
+import 'app/background/helper.dart';
 import 'app/common/basic/widgets.dart';
 import 'app/common/utils/router.dart';
 import 'app/common/utils/system_services.dart';
@@ -37,18 +38,27 @@ void main() {
     PackageInfo.fromPlatform(),
     FlutterNativeTimezone.getLocalTimezone(),
   ]).then((value) {
+    // cache data.
     settingsManager = value[1] as SettingsManager;
     themeManager = ThemeManager.getInstance(settingsManager.darkMode);
-
     versionName = (value[2] as PackageInfo).version;
     currentTimezone = value[3] as String;
 
-    WidgetsBinding.instance
-      // ignore: invalid_use_of_protected_member
-      ..scheduleAttachRootWidget(
-          GeometricWeather(themeManager.themeProvider)
-      )..scheduleWarmUpFrame();
+    _attachRootWidget();
+    _resetBackgroundTask();
   });
+}
+
+void _attachRootWidget() {
+  WidgetsBinding.instance
+  // ignore: invalid_use_of_protected_member
+    ..scheduleAttachRootWidget(
+        GeometricWeather(themeManager.themeProvider)
+    )..scheduleWarmUpFrame();
+}
+
+void _resetBackgroundTask() {
+  resetAllBackgroundTask(settingsManager, false);
 }
 
 class GeometricWeather extends StatelessWidget {

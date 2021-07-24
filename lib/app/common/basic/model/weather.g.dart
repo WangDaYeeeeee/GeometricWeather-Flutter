@@ -126,7 +126,7 @@ Wind _$WindFromJson(Map<String, dynamic> json) {
   return Wind(
     json['direction'] as String,
     WindDegree.fromJson(json['degree'] as Map<String, dynamic>),
-    json['level'] as String,
+    json['levelInt'] as int,
     (json['speed'] as num?)?.toDouble(),
   );
 }
@@ -134,7 +134,7 @@ Wind _$WindFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$WindToJson(Wind instance) => <String, dynamic>{
       'direction': instance.direction,
       'degree': instance.degree,
-      'level': instance.level,
+      'levelInt': instance.levelInt,
       'speed': instance.speed,
     };
 
@@ -154,7 +154,7 @@ Map<String, dynamic> _$UVToJson(UV instance) => <String, dynamic>{
 
 AirQuality _$AirQualityFromJson(Map<String, dynamic> json) {
   return AirQuality(
-    json['aqiText'] as String?,
+    json['aqiInt'] as int?,
     json['aqiIndex'] as int?,
     (json['pm25'] as num?)?.toDouble(),
     (json['pm10'] as num?)?.toDouble(),
@@ -167,7 +167,7 @@ AirQuality _$AirQualityFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$AirQualityToJson(AirQuality instance) =>
     <String, dynamic>{
-      'aqiText': instance.aqiText,
+      'aqiInt': instance.aqiInt,
       'aqiIndex': instance.aqiIndex,
       'pm25': instance.pm25,
       'pm10': instance.pm10,

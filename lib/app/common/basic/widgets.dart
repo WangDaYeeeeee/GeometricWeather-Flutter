@@ -18,18 +18,21 @@ abstract class GeoState<T extends GeoStatefulWidget> extends State<T>
   bool topLevelWidget = true;
   bool appResumed = true;
 
+  @mustCallSuper
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
   }
 
+  @mustCallSuper
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     routeObserver.subscribe(this, ModalRoute.of(context));
   }
 
+  @mustCallSuper
   @override
   void dispose() {
     super.dispose();
@@ -58,30 +61,35 @@ abstract class GeoState<T extends GeoStatefulWidget> extends State<T>
     }
   }
 
+  @mustCallSuper
   @override
   void didPush() {
     topLevelWidget = true;
     onVisibilityChanged(topLevelWidget && appResumed);
   }
 
+  @mustCallSuper
   @override
   void didPop() {
     topLevelWidget = false;
     onVisibilityChanged(topLevelWidget && appResumed);
   }
 
+  @mustCallSuper
   @override
   void didPushNext() {
     topLevelWidget = false;
     onVisibilityChanged(topLevelWidget && appResumed);
   }
 
+  @mustCallSuper
   @override
   void didPopNext() {
     topLevelWidget = true;
     onVisibilityChanged(topLevelWidget && appResumed);
   }
 
+  @mustCallSuper
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {

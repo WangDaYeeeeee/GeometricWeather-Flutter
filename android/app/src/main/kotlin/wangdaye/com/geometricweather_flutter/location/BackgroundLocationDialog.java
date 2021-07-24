@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import wangdaye.com.geometricweather_flutter.R;
-import wangdaye.com.geometricweather_flutter.basic.GeoDialog;
+import wangdaye.com.geometricweather_flutter.common.basic.GeoDialog;
 
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class BackgroundLocationDialog extends GeoDialog {

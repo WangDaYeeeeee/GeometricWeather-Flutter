@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:geometricweather_flutter/app/common/basic/model/weather.utils.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/units.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
 import 'package:geometricweather_flutter/app/theme/theme.dart';
+import 'package:geometricweather_flutter/app/updater/weather/converters/_common_converter.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -73,7 +73,6 @@ bool isIce(WeatherCode code) {
 }
 
 @JsonSerializable()
-@DateTimeConverter()
 class Base {
 
   final String cityId;
@@ -304,7 +303,7 @@ class Wind {
 
   final String direction;
   final WindDegree degree;
-  final String level;
+  final int levelInt;
   final double? speed;
 
   static const double WIND_SPEED_0 = 2;
@@ -320,7 +319,7 @@ class Wind {
   static const double WIND_SPEED_10 = 103;
   static const double WIND_SPEED_11 = 117;
 
-  Wind(this.direction, this.degree, this.level, [ this.speed ]);
+  Wind(this.direction, this.degree, this.levelInt, [ this.speed ]);
 
   Color getWindColor() {
     if (speed == null) {
@@ -340,8 +339,8 @@ class Wind {
     }
   }
 
-  String getShortWindDescription() {
-    return "$direction $level";
+  String getShortWindDescription(BuildContext context) {
+    return "$direction ${getWindLevelString(context, levelInt)}";
   }
 
   String getWindDescription(BuildContext context, SpeedUnit unit) {
@@ -353,7 +352,7 @@ class Wind {
     }
     b.write(" ");
     b.write("(");
-    b.write(level);
+    b.write(getWindLevelString(context, levelInt));
     b.write(")");
     if (degree.degree != null) {
       b.write(" ");
@@ -445,7 +444,7 @@ class UV {
 @JsonSerializable()
 class AirQuality {
 
-  final String? aqiText;
+  final int? aqiInt;
   final int? aqiIndex;
   final double? pm25;
   final double? pm10;
@@ -461,7 +460,7 @@ class AirQuality {
   static const int AQI_INDEX_5 = 300;
 
   AirQuality([
-    this.aqiText,
+    this.aqiInt,
     this.aqiIndex,
     this.pm25,
     this.pm10,
@@ -470,6 +469,10 @@ class AirQuality {
     this.o3,
     this.co
   ]);
+
+  String? getAqiText(BuildContext context) {
+    return getAqiQualityString(context, aqiInt);
+  }
 
   Color getAqiColor() {
     if (aqiIndex == null) {
@@ -599,7 +602,7 @@ class AirQuality {
 
   bool isValid() {
     return aqiIndex != null
-        || aqiText != null
+        || aqiInt != null
         || pm25 != null
         || pm10 != null
         || so2 != null
@@ -618,7 +621,6 @@ class AirQuality {
 }
 
 @JsonSerializable()
-@WeatherCodeConverter()
 class Current {
 
   final String weatherText;
@@ -666,7 +668,6 @@ class Current {
 }
 
 @JsonSerializable()
-@DateTimeConverter()
 class History {
 
   final DateTime date;
@@ -688,7 +689,6 @@ class HalfDay {
 
   final String weatherText;
   final String weatherPhase;
-  @WeatherCodeConverter()
   final WeatherCode weatherCode;
 
   final Temperature temperature;
@@ -709,7 +709,6 @@ class HalfDay {
 }
 
 @JsonSerializable()
-@DateTimeConverter()
 class Astro {
 
   final DateTime? riseDate;
@@ -865,7 +864,6 @@ class Pollen {
 }
 
 @JsonSerializable()
-@DateTimeConverter()
 class Daily {
 
   final DateTime date;
@@ -910,8 +908,6 @@ class Daily {
 }
 
 @JsonSerializable()
-@DateTimeConverter()
-@WeatherCodeConverter()
 class Hourly {
 
   final DateTime date;
@@ -957,7 +953,6 @@ class Hourly {
 }
 
 @JsonSerializable()
-@DateTimeConverter()
 class Alert {
 
   final int alertId;
@@ -1048,5 +1043,4 @@ class Weather {
   factory Weather.fromJson(Map<String, dynamic> json) => _$WeatherFromJson(json);
 
   Map<String, dynamic> toJson() => _$WeatherToJson(this);
-
 }

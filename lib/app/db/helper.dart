@@ -25,7 +25,11 @@ class DatabaseHelper {
 
   Future<GeoDatabase> _ensureDatabase() async {
     if (_database == null) {
-      _database = await $FloorGeoDatabase.databaseBuilder(DB_NAME).build();
+      _database = await $FloorGeoDatabase.databaseBuilder(
+        DB_NAME
+      ).addMigrations([
+        migration3to5,
+      ]).build();
     }
     return _database!;
   }
@@ -122,5 +126,39 @@ class DatabaseHelper {
     final database = await _ensureDatabase();
     final entityList = await database.weatherDao.selectWeatherEntityList(formattedId);
     await database.weatherDao.deleteWeather(entityList);
+  }
+
+  @transaction
+  Future<DateTime?> readTodayForecastRecord() async {
+    final database = await _ensureDatabase();
+    final record = await database.todayForecastRecordDao.selectTodayForecastRecord();
+    return record == null ? null : DateTime.fromMillisecondsSinceEpoch(record.dateTimeMillis);
+  }
+
+  @transaction
+  Future<void> writeTodayForecastRecord(DateTime dateTime) async {
+    final database = await _ensureDatabase();
+    final recordList = await database.todayForecastRecordDao.selectTodayForecastRecordList();
+    await database.todayForecastRecordDao.deleteTodayForecastRecord(recordList);
+    await database.todayForecastRecordDao.insertTodayForecastRecord(
+      TodayForecastRecord(dateTime.millisecondsSinceEpoch)
+    );
+  }
+
+  @transaction
+  Future<DateTime?> readTomorrowForecastRecord() async {
+    final database = await _ensureDatabase();
+    final record = await database.tomorrowForecastRecordDao.selectTomorrowForecastRecord();
+    return record == null ? null : DateTime.fromMillisecondsSinceEpoch(record.dateTimeMillis);
+  }
+
+  @transaction
+  Future<void> writeTomorrowForecastRecord(DateTime dateTime) async {
+    final database = await _ensureDatabase();
+    final recordList = await database.tomorrowForecastRecordDao.selectTomorrowForecastRecordList();
+    await database.tomorrowForecastRecordDao.deleteTomorrowForecastRecord(recordList);
+    await database.tomorrowForecastRecordDao.insertTomorrowForecastRecord(
+        TomorrowForecastRecord(dateTime.millisecondsSinceEpoch)
+    );
   }
 }

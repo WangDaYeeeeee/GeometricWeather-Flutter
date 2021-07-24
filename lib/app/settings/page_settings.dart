@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geometricweather_flutter/app/background/helper.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/notification.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/polling.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/widget.dart';
@@ -100,8 +101,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
           onSelect: (String value) {
             setState(() {
               settingsManager.updateInterval = UpdateInterval.all[value];
+              resetPollingBackgroundTask(settingsManager, false);
             });
-            // todo: update interval.
           }
       ),
       getTile(context,
@@ -128,8 +129,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
           onToggle: (bool value) {
             setState(() {
               settingsManager.backgroundFree = value;
+              resetPollingBackgroundTask(settingsManager, false);
             });
-            // todo: background free.
           },
         ),
         getTile(context,
@@ -153,8 +154,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
         onToggle: (bool value) {
           setState(() {
             settingsManager.notificationEnabled = value;
+            resetPollingBackgroundTask(settingsManager, true);
           });
-          // todo: notification.
         },
       ),
     ];
@@ -168,8 +169,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
           onSelect: (String value) {
             setState(() {
               settingsManager.notificationStyle = NotificationStyle.all[value];
+              resetPollingBackgroundTask(settingsManager, true);
             });
-            // todo: notification style.
           }
         ),
         getSwitchTile(context,
@@ -179,8 +180,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
           onToggle: (bool value) {
             setState(() {
               settingsManager.temperatureNotificationIcon = value;
+              resetPollingBackgroundTask(settingsManager, true);
             });
-            // todo: temperature notification icon.
           }
         ),
         getSwitchTile(context,
@@ -190,8 +191,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
             onToggle: (bool value) {
               setState(() {
                 settingsManager.notificationCanBeCleared = value;
+                resetPollingBackgroundTask(settingsManager, true);
               });
-              // todo: notification can be cleared.
             }
         ),
         getSwitchTile(context,
@@ -201,8 +202,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
             onToggle: (bool value) {
               setState(() {
                 settingsManager.notificationHideBigView = value;
+                resetPollingBackgroundTask(settingsManager, true);
               });
-              // todo: notification hide big view.
             }
         ),
       ]);
@@ -227,8 +228,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
               onToggle: (bool value) {
                 setState(() {
                   settingsManager.todayForecastEnabled = value;
+                  resetTodayForecastBackgroundTask(settingsManager, true, false);
                 });
-                // todo: today forecast.
               },
             ),
             getTimePickerTile(context,
@@ -237,8 +238,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
               onPick: (String value) {
                 setState(() {
                   settingsManager.todayForecastTime = value;
+                  resetTodayForecastBackgroundTask(settingsManager, true, false);
                 });
-                // todo: today forecast time.
               },
             ),
             getSwitchTile(context,
@@ -251,8 +252,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
               onToggle: (bool value) {
                 setState(() {
                   settingsManager.tomorrowForecastEnabled = value;
+                  resetTomorrowForecastBackgroundTask(settingsManager, true, false);
                 });
-                // todo: tomorrow forecast.
               },
             ),
             getTimePickerTile(context,
@@ -261,8 +262,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
               onPick: (String value) {
                 setState(() {
                   settingsManager.tomorrowForecastTime = value;
+                  resetTomorrowForecastBackgroundTask(settingsManager, true, false);
                 });
-                // todo: tomorrow forecast time.
               },
             ),
           ],
@@ -278,8 +279,8 @@ class _SettingsPageState extends AbstractSettingsPageState<SettingsPage> {
                 onSelect: (String value) {
                   setState(() {
                     settingsManager.widgetWeekIconMode = WidgetWeekIconMode.all[value];
+                    resetPollingBackgroundTask(settingsManager, true);
                   });
-                  // todo: week icon mode of widget.
                 }
             ),
           ],

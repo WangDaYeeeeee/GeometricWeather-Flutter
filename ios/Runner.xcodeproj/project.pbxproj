@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		3721D1382690524400A78368 /* LocationPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 3721D1372690524400A78368 /* LocationPlugin.m */; };
+		3732780C2693436800FFE7AF /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 3732780B2693436800FFE7AF /* Reachability.m */; };
+		3732781426956CE100FFE7AF /* LanguagePlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 3732781326956CE100FFE7AF /* LanguagePlugin.m */; };
 		37B148D52685B526009AFE7F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 37B148D72685B526009AFE7F /* InfoPlist.strings */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
@@ -37,6 +39,10 @@
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		3721D1362690524400A78368 /* LocationPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LocationPlugin.h; sourceTree = "<group>"; };
 		3721D1372690524400A78368 /* LocationPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocationPlugin.m; sourceTree = "<group>"; };
+		3732780A2693436800FFE7AF /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		3732780B2693436800FFE7AF /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		3732781226956CE100FFE7AF /* LanguagePlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LanguagePlugin.h; sourceTree = "<group>"; };
+		3732781326956CE100FFE7AF /* LanguagePlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LanguagePlugin.m; sourceTree = "<group>"; };
 		3784F73C2658F66500AE02DD /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		37B148D32685B50C009AFE7F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		37B148D42685B50D009AFE7F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
@@ -83,10 +89,21 @@
 		3721D1322690510200A78368 /* Location */ = {
 			isa = PBXGroup;
 			children = (
+				3732780A2693436800FFE7AF /* Reachability.h */,
+				3732780B2693436800FFE7AF /* Reachability.m */,
 				3721D1362690524400A78368 /* LocationPlugin.h */,
 				3721D1372690524400A78368 /* LocationPlugin.m */,
 			);
 			path = Location;
+			sourceTree = "<group>";
+		};
+		3732781126956CCF00FFE7AF /* Language */ = {
+			isa = PBXGroup;
+			children = (
+				3732781226956CE100FFE7AF /* LanguagePlugin.h */,
+				3732781326956CE100FFE7AF /* LanguagePlugin.m */,
+			);
+			path = Language;
 			sourceTree = "<group>";
 		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
@@ -123,6 +140,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				3732781126956CCF00FFE7AF /* Language */,
 				3721D1322690510200A78368 /* Location */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
@@ -295,6 +313,8 @@
 			files = (
 				3721D1382690524400A78368 /* LocationPlugin.m in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				3732781426956CE100FFE7AF /* LanguagePlugin.m in Sources */,
+				3732780C2693436800FFE7AF /* Reachability.m in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -29,7 +29,7 @@ class CardDisplay extends Pair {
     KEY_AIR_QUALITY: CardDisplay._(
         KEY_AIR_QUALITY,
           (context) => S.of(context).air_quality,
-          (weather) => weather.current.airQuality.aqiText != null
+          (weather) => weather.current.airQuality.aqiInt != null
               && weather.current.airQuality.aqiIndex != null
               && (
                   weather.current.airQuality.pm25 != null

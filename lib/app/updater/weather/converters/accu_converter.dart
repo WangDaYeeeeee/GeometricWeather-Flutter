@@ -196,14 +196,14 @@ Future<weather.Weather> toWeather(
             weather.Wind(
                 currentResult.wind.direction.localized,
                 weather.WindDegree(currentResult.wind.direction.degrees.toDouble()),
-                getWindLevelWithoutContext(currentResult.windGust.speed.metric.value.toDouble()),
+                getWindLevelInt(currentResult.windGust.speed.metric.value.toDouble()),
                 currentResult.windGust.speed.metric.value.toDouble(),
             ),
             weather.UV(currentResult.uVIndex, currentResult.uVIndexText),
             aqiResult == null
                 ? weather.AirQuality()
                 : weather.AirQuality(
-                    getAqiQualityWithoutContext(aqiResult.index),
+                    getAqiQualityInt(aqiResult.index),
                     aqiResult.index,
                     aqiResult.particulateMatter25?.toDouble(),
                     aqiResult.particulateMatter10?.toDouble(),
@@ -252,7 +252,7 @@ weather.AirQuality getDailyAirQuality(List<AirAndPollen> list) {
     index = null;
   }
   return weather.AirQuality(
-      getAqiQualityWithoutContext(index),
+      getAqiQualityInt(index),
       index,
       null,
       null,
@@ -342,7 +342,7 @@ Future<List<weather.Daily>> getDailyList(AccuDailyResult dailyResult) async {
                 weather.Wind(
                     forecasts.day.wind.direction.localized,
                     weather.WindDegree(forecasts.day.wind.direction.degrees.toDouble()), 
-                    getWindLevelWithoutContext(forecasts.day.windGust.speed.value.toDouble()),
+                    getWindLevelInt(forecasts.day.windGust.speed.value.toDouble()),
                     forecasts.day.windGust.speed.value.toDouble()
                 ),
                 forecasts.day.cloudCover
@@ -384,7 +384,7 @@ Future<List<weather.Daily>> getDailyList(AccuDailyResult dailyResult) async {
                 weather.Wind(
                     forecasts.night.wind.direction.localized,
                     weather.WindDegree(forecasts.night.wind.direction.degrees.toDouble()),
-                    getWindLevelWithoutContext(forecasts.night.windGust.speed.value.toDouble()),
+                    getWindLevelInt(forecasts.night.windGust.speed.value.toDouble()),
                     forecasts.night.windGust.speed.value.toDouble()
                 ),
                 forecasts.night.cloudCover

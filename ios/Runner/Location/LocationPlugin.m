@@ -7,6 +7,7 @@
 
 #import "LocationPlugin.h"
 #import <CoreLocation/CoreLocation.h>
+#import "Reachability.h"
 
 @interface LocationPlugin ()<CLLocationManagerDelegate>
 
@@ -41,13 +42,13 @@
 
 + (void)registerWithMessenger:(NSObject<FlutterBinaryMessenger> *)binaryMessenger {
     
-    FlutterMethodChannel* batteryChannel = [FlutterMethodChannel methodChannelWithName:CHANNEL_NAME
+    FlutterMethodChannel* batteryChannel = [FlutterMethodChannel methodChannelWithName:CHANNEL_LOCATION
                                                                        binaryMessenger:binaryMessenger];
     [batteryChannel setMethodCallHandler:^(FlutterMethodCall * _Nonnull call,
                                            FlutterResult  _Nonnull result) {
         if ([call.method isEqualToString:METHOD_REQUEST_LOCATION]) {
             NSDictionary *args = (NSDictionary *)call.arguments;
-            NSNumber *inBackground = [args objectForKey:@"inBackground"];
+            NSNumber *inBackground = [args objectForKey:PARAM_IN_BACKGROUND];
             
             [LocationPlugin cancel];
             [LocationPlugin locationInBackground:[inBackground boolValue]
@@ -94,7 +95,10 @@
 
 + (void)locationInBackground:(BOOL)inBackground
                 handleResult:(FlutterResult)result {
-    if (![self isEnabled]) {
+    Reachability *reach = [Reachability reachabilityForInternetConnection];
+    NetworkStatus status = [reach currentReachabilityStatus];
+    
+    if (![self isEnabled] || status == NotReachable) {
         result([FlutterError errorWithCode:ERROR_CODE_TIMEOUT
                                    message:@"Location failed."
                                    details:nil]);
@@ -117,8 +121,8 @@
     }
     
     return @{
-        @"latitude": [NSNumber numberWithDouble:location.coordinate.latitude],
-        @"longitude": [NSNumber numberWithDouble:location.coordinate.longitude],
+        PARAM_LATITUDE: [NSNumber numberWithDouble:location.coordinate.latitude],
+        PARAM_LONGITUDE: [NSNumber numberWithDouble:location.coordinate.longitude],
     };
 }
 
@@ -154,8 +158,8 @@
     CLLocation *location = [locations lastObject];
     
     NSDictionary *result = @{
-        @"latitude": [NSNumber numberWithDouble:location.coordinate.latitude],
-        @"longitude": [NSNumber numberWithDouble:location.coordinate.longitude],
+        PARAM_LATITUDE: [NSNumber numberWithDouble:location.coordinate.latitude],
+        PARAM_LONGITUDE: [NSNumber numberWithDouble:location.coordinate.longitude],
     };
     
     self.result(result);

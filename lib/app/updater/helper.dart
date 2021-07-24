@@ -89,7 +89,7 @@ Stream<UpdateResult<Location>> requestWeatherUpdate(Location location, {
 }) {
 
   StreamController<UpdateResult<Location>> controller;
-  Disposable locationDisposable;
+  StreamSubscription locationSubscription;
   Disposable weatherDisposable;
 
   controller = StreamController(
@@ -101,12 +101,9 @@ Stream<UpdateResult<Location>> requestWeatherUpdate(Location location, {
       }
 
       // get location at first.
-      final disposableFuture = LocationHelper.requestLocation(location,
+      locationSubscription = LocationHelper.requestLocation(location,
         inBackground: inBackground,
-      );
-      locationDisposable = disposableFuture.disposable;
-      disposableFuture.future.then((event) {
-        // check is closed.
+      ).listen((event) {
         if (controller.isClosed) {
           return;
         }
@@ -120,7 +117,7 @@ Stream<UpdateResult<Location>> requestWeatherUpdate(Location location, {
       });
     },
     onCancel: () {
-      locationDisposable?.dispose();
+      locationSubscription?.cancel();
       weatherDisposable?.dispose();
       controller.close();
     },
@@ -139,6 +136,17 @@ Stream<UpdateResult<Location>> pollingUpdate(List<Location> locationList, {
   controller = StreamController(
     onListen: () {
       for (Location location in locationList) {
+        // if we have a recently obtained weather instance, don't request data.
+        if (location.weather?.isValid(1.5) ?? false) {
+          if (controller.isClosed) {
+            return;
+          }
+          controller.add(
+              UpdateResult(location, false, UpdateStatus.REQUEST_SUCCEED)
+          );
+          continue;
+        }
+
         idSubscriptionMap[location.formattedId] = requestWeatherUpdate(location,
           inBackground: inBackground,
         ).listen((event) {

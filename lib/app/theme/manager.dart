@@ -30,9 +30,11 @@ class ThemeManager {
     _themeProvider = ThemeProvider.getInstance(getThemeMode(darkMode, _daytime));
   }
 
-  update({DarkMode darkMode, Location location}) {
+  // return true if daytime changed.
+  bool update({DarkMode darkMode, Location location}) {
     assert(darkMode != null || location != null);
 
+    bool oldDaytime = _daytime;
     if (location != null) {
       _daytime = isDaylightLocation(location);
     }
@@ -51,7 +53,7 @@ class ThemeManager {
     } else {
       _themeProvider.themeMode = ThemeMode.system;
     }
-    return this;
+    return oldDaytime != _daytime;
   }
 
   void registerWeatherViewThemeDelegate(WeatherViewThemeDelegate themeDelegate) {

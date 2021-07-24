@@ -4,11 +4,13 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geometricweather_flutter/app/common/basic/events.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/resources.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/providers.dart';
 import 'package:geometricweather_flutter/app/common/basic/mvvm.dart';
 import 'package:geometricweather_flutter/app/common/basic/widgets.dart';
+import 'package:geometricweather_flutter/app/common/bus/helper.dart';
 import 'package:geometricweather_flutter/app/common/ui/platform/scaffold.dart';
 import 'package:geometricweather_flutter/app/common/ui/snackbar/container.dart';
 import 'package:geometricweather_flutter/app/common/ui/swipe_refresh.dart';
@@ -100,9 +102,11 @@ class _MainPageState extends GeoState<MainPage>
   // ui status.
   LiveData<_MainListState> _listState = LiveData(_MainListState.noCache);
   bool _swipeRefreshing = false;
+  bool _updateUIWhenBecomeVisible = false;
 
-  // callback.
+  // listener.
   VoidCallback _onScrollChanged;
+  StreamSubscription _updateUIEventSubscription;
 
   @override
   void initState() {
@@ -127,6 +131,10 @@ class _MainPageState extends GeoState<MainPage>
         }
       });
     }
+
+    _updateUIEventSubscription = EventBus.on<UpdateUIEvent>().listen((event) {
+      _updateUIWhenBecomeVisible = true;
+    });
   }
 
   @override
@@ -137,6 +145,8 @@ class _MainPageState extends GeoState<MainPage>
 
     initHolder.viewModel.dispose(context);
     initHolder.viewModel.themeManager.unregisterWeatherViewThemeDelegate();
+
+    _updateUIEventSubscription?.cancel();
 
     super.dispose();
   }
@@ -149,6 +159,15 @@ class _MainPageState extends GeoState<MainPage>
       initHolder.viewModel.checkToUpdate();
     }
     _weatherViewKey.currentState?.drawable = visible;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      initHolder.viewModel.checkBackgroundUpdate();
+    }
   }
 
   @override
@@ -291,10 +310,13 @@ class _MainPageState extends GeoState<MainPage>
                   Routers.ROUTER_ID_SETTINGS
               ).then((value) async {
                 await Future.delayed(Duration(milliseconds: 300));
-              }).then((value) {
-                // force update ui.
-                _resetUIUpdateFlag();
-                initHolder.viewModel.offsetLocation(0);
+              }).then((_) {
+                if (_updateUIWhenBecomeVisible) {
+                  _updateUIWhenBecomeVisible = false;
+                  // force update ui.
+                  _resetUIUpdateFlag();
+                  initHolder.viewModel.offsetLocation(0);
+                }
               });
             },
             managementButtonCallback: () {

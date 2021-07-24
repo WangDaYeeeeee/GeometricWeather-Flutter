@@ -3,99 +3,99 @@ import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
 import 'package:geometricweather_flutter/generated/l10n.dart';
 
-String getWindLevel(BuildContext context, double speed) {
-  if (speed <= Wind.WIND_SPEED_0) {
+String getWindLevelString(BuildContext context, int level) {
+  if (level == null || level <= 0) {
     return S.of(context).wind_0;
-  } else if (speed <= Wind.WIND_SPEED_1) {
+  } else if (level <= 1) {
     return S.of(context).wind_1;
-  } else if (speed <= Wind.WIND_SPEED_2) {
+  } else if (level <= 2) {
     return S.of(context).wind_2;
-  } else if (speed <= Wind.WIND_SPEED_3) {
+  } else if (level <= 3) {
     return S.of(context).wind_3;
-  } else if (speed <= Wind.WIND_SPEED_4) {
+  } else if (level <= 4) {
     return S.of(context).wind_4;
-  } else if (speed <= Wind.WIND_SPEED_5) {
+  } else if (level <= 5) {
     return S.of(context).wind_5;
-  } else if (speed <= Wind.WIND_SPEED_6) {
+  } else if (level <= 6) {
     return S.of(context).wind_6;
-  } else if (speed <= Wind.WIND_SPEED_7) {
+  } else if (level <= 7) {
     return S.of(context).wind_7;
-  } else if (speed <= Wind.WIND_SPEED_8) {
+  } else if (level <= 8) {
     return S.of(context).wind_8;
-  } else if (speed <= Wind.WIND_SPEED_9) {
+  } else if (level <= 9) {
     return S.of(context).wind_9;
-  } else if (speed <= Wind.WIND_SPEED_10) {
+  } else if (level <= 10) {
     return S.of(context).wind_10;
-  } else if (speed <= Wind.WIND_SPEED_11) {
+  } else if (level <= 11) {
     return S.of(context).wind_11;
   } else {
     return S.of(context).wind_12;
   }
 }
 
-String getWindLevelWithoutContext(double speed) {
-  if (speed <= Wind.WIND_SPEED_0) {
-    return S.current.wind_0;
-  } else if (speed <= Wind.WIND_SPEED_1) {
-    return S.current.wind_1;
-  } else if (speed <= Wind.WIND_SPEED_2) {
-    return S.current.wind_2;
-  } else if (speed <= Wind.WIND_SPEED_3) {
-    return S.current.wind_3;
-  } else if (speed <= Wind.WIND_SPEED_4) {
-    return S.current.wind_4;
-  } else if (speed <= Wind.WIND_SPEED_5) {
-    return S.current.wind_5;
-  } else if (speed <= Wind.WIND_SPEED_6) {
-    return S.current.wind_6;
-  } else if (speed <= Wind.WIND_SPEED_7) {
-    return S.current.wind_7;
-  } else if (speed <= Wind.WIND_SPEED_8) {
-    return S.current.wind_8;
-  } else if (speed <= Wind.WIND_SPEED_9) {
-    return S.current.wind_9;
-  } else if (speed <= Wind.WIND_SPEED_10) {
-    return S.current.wind_10;
-  } else if (speed <= Wind.WIND_SPEED_11) {
-    return S.current.wind_11;
+int getWindLevelInt(double speed) {
+  if (speed <= 0) {
+    return 0;
+  } else if (speed <= 1) {
+    return 1;
+  } else if (speed <= 2) {
+    return 2;
+  } else if (speed <= 3) {
+    return 3;
+  } else if (speed <= 4) {
+    return 4;
+  } else if (speed <= 5) {
+    return 5;
+  } else if (speed <= 6) {
+    return 6;
+  } else if (speed <= 7) {
+    return 7;
+  } else if (speed <= 8) {
+    return 8;
+  } else if (speed <= 9) {
+    return 9;
+  } else if (speed <= 10) {
+    return 10;
+  } else if (speed <= 11) {
+    return 11;
   } else {
-    return S.current.wind_12;
+    return 12;
   }
 }
 
-String getAqiQuality(BuildContext context, int index) {
-  if (index == null || index < 0) {
+String getAqiQualityString(BuildContext context, int aqiInt) {
+  if (aqiInt == null || aqiInt < 0) {
     return '';
-  } if (index <= AirQuality.AQI_INDEX_1) {
+  } if (aqiInt <= 1) {
     return S.of(context).aqi_1;
-  } else if (index <= AirQuality.AQI_INDEX_2) {
+  } else if (aqiInt <= 2) {
     return S.of(context).aqi_2;
-  } else if (index <= AirQuality.AQI_INDEX_3) {
+  } else if (aqiInt <= 3) {
     return S.of(context).aqi_3;
-  } else if (index <= AirQuality.AQI_INDEX_4) {
+  } else if (aqiInt <= 4) {
     return S.of(context).aqi_4;
-  } else if (index <= AirQuality.AQI_INDEX_5) {
+  } else if (aqiInt <= 5) {
     return S.of(context).aqi_5;
   } else {
     return S.of(context).aqi_6;
   }
 }
 
-String getAqiQualityWithoutContext(int index) {
+int getAqiQualityInt(int index) {
   if (index == null || index < 0) {
-    return '';
+    return null;
   } if (index <= AirQuality.AQI_INDEX_1) {
-    return S.current.aqi_1;
+    return 1;
   } else if (index <= AirQuality.AQI_INDEX_2) {
-    return S.current.aqi_2;
+    return 2;
   } else if (index <= AirQuality.AQI_INDEX_3) {
-    return S.current.aqi_3;
+    return 3;
   } else if (index <= AirQuality.AQI_INDEX_4) {
-    return S.current.aqi_4;
+    return 4;
   } else if (index <= AirQuality.AQI_INDEX_5) {
-    return S.current.aqi_5;
+    return 5;
   } else {
-    return S.current.aqi_6;
+    return 6;
   }
 }
 

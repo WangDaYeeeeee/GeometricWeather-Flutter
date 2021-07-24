@@ -1,4 +1,4 @@
-package wangdaye.com.geometricweather_flutter.basic;
+package wangdaye.com.geometricweather_flutter.common.basic;
 
 import android.content.Context;
 import android.view.ViewGroup;

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:core';
 
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:geometricweather_flutter/app/background/sender.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/location.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/resources.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
@@ -47,6 +48,12 @@ class _MainRepository {
     }
 
     return list;
+  }
+
+  Future<Location> getWeatherCache(Location location) async {
+    return location.copyOf(
+      weather: await DatabaseHelper.getInstance().readWeather(location.formattedId)
+    );
   }
 
   Future<void> writeLocation(Location location) => Future.wait([
@@ -110,6 +117,8 @@ class MainViewModel extends ViewModel {
   final _MainRepository _repository = _MainRepository();
   StreamSubscription? _updateDescription;
   bool _updating = false;
+
+  // life cycle.
 
   MainViewModel._(
       this._totalList,
@@ -179,6 +188,8 @@ class MainViewModel extends ViewModel {
     cancelUpdate();
   }
 
+  // state.
+
   void checkToUpdate() {
     MainEvent ev = event.value;
     Location? location = ev.data;
@@ -186,10 +197,12 @@ class MainViewModel extends ViewModel {
       return;
     }
 
-    _themeManager.update(
+    if (_themeManager.update(
         darkMode: _settingsManager.darkMode,
         location: location
-    );
+    ) && location.formattedId == _validList[0].formattedId) {
+      sendLocationChanged(location, true, 0, _totalList.length);
+    }
 
     if (_updating) {
       return;
@@ -201,6 +214,18 @@ class MainViewModel extends ViewModel {
       initStage: ev.initStage,
       locationEvent: LocationEvent.SET_LOCATION,
     );
+  }
+
+  void checkBackgroundUpdate() {
+    for (var location in _totalList) {
+      _repository.getWeatherCache(location).then((value) {
+        if (value.weather == location.weather) {
+          return;
+        }
+
+        updateLocationFromBackground(value);
+      });
+    }
   }
 
   void updateLocationFromBackground(Location location) {
@@ -286,11 +311,6 @@ class MainViewModel extends ViewModel {
       return;
     }
 
-    _themeManager.update(
-        darkMode: _settingsManager.darkMode,
-        location: location
-    );
-
     _setLiveDataWithVerification(
       location: location,
       defaultLocation: event.value.defaultLocation,
@@ -298,16 +318,19 @@ class MainViewModel extends ViewModel {
     );
 
     _updateDescription = _repository.update(location).listen((event) {
+      int totalIndex = -1;
+
       List<Location> totalList = List.from(_totalList);
       for (int i = 0; i < totalList.length; i ++) {
         if (totalList[i] == event.data) {
+          totalIndex = i;
           totalList[i] = event.data;
           break;
         }
       }
 
       List<Location> validList = Location.excludeInvalidResidentLocation(totalList);
-      int validIndex = indexLocation(validList, getCurrentFormattedId());
+      int validIndex = indexLocation(validList, currentFormattedId);
       bool defaultLocation = event.data == validList[0];
 
       setInnerData(totalList, validList, validIndex);
@@ -352,6 +375,15 @@ class MainViewModel extends ViewModel {
       if (!event.running) {
         _updateDescription = null;
         _updating = false;
+
+        if (totalIndex >= 0) {
+          sendLocationChanged(
+              event.data,
+              event.status == UpdateStatus.REQUEST_SUCCEED,
+              totalIndex,
+              _totalList.length
+          );
+        }
       }
 
       _setLiveDataWithVerification(
@@ -372,6 +404,8 @@ class MainViewModel extends ViewModel {
   }
 
   bool get updating => _updating;
+
+  // list.
 
   bool addLocation(Location location, [int? position]) {
     for (Location l in _totalList) {
@@ -403,6 +437,8 @@ class MainViewModel extends ViewModel {
       _repository.writeLocationListWithIndex(List.unmodifiable(totalList), position);
     }
 
+    sendLocationListChanged(totalList, true);
+
     return true;
   }
 
@@ -425,6 +461,8 @@ class MainViewModel extends ViewModel {
     );
 
     _repository.writeLocationList(totalList);
+
+    sendLocationListChanged(totalList, true);
   }
 
   void forceUpdateLocation(Location location) {
@@ -454,6 +492,8 @@ class MainViewModel extends ViewModel {
     );
 
     _repository.writeLocation(location);
+
+    sendLocationListChanged(totalList, true);
   }
 
   void forceUpdateLocationWithPosition(Location location, int position) {
@@ -479,6 +519,8 @@ class MainViewModel extends ViewModel {
     );
 
     _repository.writeLocation(location);
+
+    sendLocationListChanged(totalList, true);
   }
 
   Location deleteLocation(int position) {
@@ -510,8 +552,12 @@ class MainViewModel extends ViewModel {
 
     _repository.deleteLocation(location);
 
+    sendLocationListChanged(totalList, true);
+
     return location;
   }
+
+  // inner.
 
   set formattedId(String? formattedId) {
     _formattedId = formattedId;
@@ -537,10 +583,13 @@ class MainViewModel extends ViewModel {
     ListEvent? listEvent
   }) {
 
-    _themeManager.update(
+    if (_themeManager.update(
         darkMode: _settingsManager.darkMode,
         location: location
-    );
+    ) && location != null
+        && location.formattedId == _validList[0].formattedId) {
+      sendLocationChanged(location, true, 0, _totalList.length);
+    }
 
     if (location != null
         && defaultLocation != null
@@ -644,6 +693,8 @@ class MainViewModel extends ViewModel {
       || location.weather == null
       || !location.weather!.isValid(1.5);
 
+  // getter.
+
   static int indexLocation(List<Location> locationList, String? formattedId) {
     if (isEmptyString(formattedId)) {
       return 0;
@@ -663,7 +714,7 @@ class MainViewModel extends ViewModel {
     ];
   }
 
-  String getCurrentFormattedId() {
+  String get currentFormattedId {
     Location? location = event.value.data;
     if (location != null) {
       return location.formattedId;

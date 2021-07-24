@@ -1,10 +1,15 @@
 //@dart=2.12
 
+import 'package:geometricweather_flutter/app/common/basic/model/location.utils.dart';
 import 'package:geometricweather_flutter/app/common/basic/model/weather.dart';
 import 'package:geometricweather_flutter/app/common/basic/options/providers.dart';
 import 'package:geometricweather_flutter/app/common/utils/display.dart';
 import 'package:geometricweather_flutter/app/common/utils/text.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'location.g.dart';
+
+@JsonSerializable()
 class Location {
 
   final String cityId;
@@ -18,10 +23,21 @@ class Location {
   final String city;
   final String district;
 
+  @JsonKey(
+      includeIfNull: true,
+      fromJson: WeatherConverter.fromJson,
+      toJson: WeatherConverter.toJson
+  )
   final Weather? weather;
   final WeatherCode _currentWeatherCode;
+  @JsonKey(includeIfNull: true)
   final DateTime? currentSunriseDate;
+  @JsonKey(includeIfNull: true)
   final DateTime? currentSunsetDate;
+  @JsonKey(
+      fromJson: WeatherSourceConverter.fromJson,
+      toJson: WeatherSourceConverter.toJson
+  )
   final WeatherSource weatherSource;
 
   final bool currentPosition;
@@ -207,4 +223,8 @@ class Location {
 
   @override
   int get hashCode => super.hashCode;
+
+  factory Location.fromJson(Map<String, dynamic> json) => _$LocationFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LocationToJson(this);
 }
